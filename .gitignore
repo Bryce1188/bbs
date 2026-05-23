@@ -1,0 +1,29 @@
+# Build output
+target/
+*.war
+*.class
+
+# Local development tools and database files
+.tools/
+
+# Maven local build metadata
+dependency-reduced-pom.xml
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archives generated locally
+*.zip
+*.rar
+*.7z
