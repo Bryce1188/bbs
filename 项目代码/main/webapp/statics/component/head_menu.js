@@ -35,7 +35,10 @@ Vue.component('head_menu_comp', {
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/leek_bbs/skipPage/index"><img src="/leek_bbs/statics/images/logo1.png" width="100" height="40" style="margin-top: -10px" alt=""></a>
+                    <a class="navbar-brand bbs-brand" href="/leek_bbs/skipPage/index">
+                        <span class="bbs-brand-mark">BBS</span>
+                        <span class="bbs-brand-name">Leek</span>
+                    </a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -58,7 +61,10 @@ Vue.component('head_menu_comp', {
                         <div :class="[{dropdown:true},{open:isOpenActive}]" v-show="isUserShow" @mouseenter="isOpenActive=true" @mouseleave="isOpenActive=false">
                               <div class="dropdown-toggle" style="height: 42px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">    
                                <a id="d-photo" href="javascript:;" ></a>
-                               <a href="/leek_bbs/skipPage/msg-notification">&nbsp;<i class="glyphicon glyphicon-envelope"></i><span class="badge" style="display:none;position: relative;top: -10px;left: -6px;font-size: 10px;">0</span></a>
+                               <a class="bbs-mail-link" href="/leek_bbs/skipPage/msg-notification" title="消息">
+                                   <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+                                   <span class="badge" style="display:none;">0</span>
+                               </a>
                              </div>
                             <div class="dropdown-menu" data-stopPropagation="true">
                                 <div class="row" style="margin-left:8px;padding: 10px 0;width:220px;border-bottom: 1px solid #ddd;" >

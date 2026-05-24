@@ -2,7 +2,7 @@
 /*公共js和css start*/
 
 document.write('' +
-    '<link rel="stylesheet" href="/leek_bbs/statics/css/bbs-theme.css?v=20260525c">\n' +
+    '<link rel="stylesheet" href="/leek_bbs/statics/css/bbs-theme.css?v=20260525d">\n' +
     '<script src="/leek_bbs/statics/yu-ui/js_css/yu.min.js"></script>\n' +
     '<script src="/leek_bbs/statics/bootstrap-3.3.7/js/jquery.min.js"></script>\n' +
     '<script src="/leek_bbs/statics/bootstrap-3.3.7/js/bootstrap.min.js"></script>\n' +
@@ -13,3 +13,4 @@ document.write('' +
     '');
 
 /*公共js和css end*/
+
