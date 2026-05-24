@@ -739,6 +739,260 @@ footer {
     }
 }
 
+/* Readability and overlap fixes across legacy content pages. */
+body,
+input,
+button,
+select,
+textarea {
+    font-size: 15px !important;
+    font-weight: 500;
+}
+
+#rankApp,
+#collectApp,
+#careApp,
+#msgApp,
+#personalApp,
+#searchApp,
+#signApp {
+    width: min(1260px, calc(100% - 72px)) !important;
+    max-width: 1260px !important;
+}
+
+#rankApp > .row:nth-child(2),
+#collectApp > .row:nth-child(2),
+#careApp > .row:nth-child(2),
+#msgApp > .row:nth-child(2),
+#personalApp > .row[style*="margin-top: 20px"] {
+    gap: 26px !important;
+    min-height: 500px !important;
+}
+
+#rankApp > .row:nth-child(2) > .col-sm-2,
+#collectApp > .row:nth-child(2) > .col-sm-2,
+#careApp > .row:nth-child(2) > .col-sm-2,
+#msgApp > .row:nth-child(2) > .col-sm-2 {
+    flex-basis: 260px !important;
+    width: 260px !important;
+    min-height: 500px !important;
+}
+
+#rankApp > .row:nth-child(2) > .col-sm-8,
+#rankApp > .row:nth-child(2) > .col-sm-9,
+#collectApp > .row:nth-child(2) > .col-sm-8,
+#careApp > .row:nth-child(2) > .col-sm-8,
+#msgApp > .row:nth-child(2) > .col-sm-8 {
+    min-height: 500px !important;
+}
+
+#rankApp .layui-tab-content,
+#collectApp .layui-tab-content,
+#careApp .layui-tab-content,
+#msgApp .layui-tab-content,
+#personalApp .layui-tab-content {
+    padding: 28px 32px !important;
+}
+
+#rankApp .layui-tab-title li,
+#collectApp .layui-tab-title li,
+#careApp .layui-tab-title li,
+#msgApp .layui-tab-title li,
+#personalApp .layui-tab-title li {
+    height: 62px !important;
+    line-height: 62px !important;
+    font-size: 16px !important;
+}
+
+#rankApp .layui-tab-title .layui-this:after,
+#collectApp .layui-tab-title .layui-this:after,
+#careApp .layui-tab-title .layui-this:after,
+#msgApp .layui-tab-title .layui-this:after,
+#personalApp .layui-tab-title .layui-this:after {
+    height: 62px !important;
+}
+
+#rankApp .m-border-bottom {
+    min-height: 72px !important;
+    padding: 14px 0 !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 {
+    display: grid !important;
+    grid-template-columns: 34px 58px minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 14px !important;
+    align-items: center !important;
+    width: 72% !important;
+    min-height: 58px !important;
+    padding: 0 12px !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > .numberOn,
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > .number {
+    grid-column: 1 !important;
+    grid-row: 1 / span 2 !important;
+    margin: 0 !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > a {
+    grid-column: 2 !important;
+    grid-row: 1 / span 2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 img.img-circle {
+    width: 52px !important;
+    height: 52px !important;
+    margin: 0 !important;
+    object-fit: cover !important;
+    border: 1px solid var(--bbs-border) !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > p {
+    grid-column: 3 !important;
+    padding-left: 0 !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > p:first-of-type {
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    font-weight: 900 !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > p:nth-of-type(2) {
+    margin-top: 4px !important;
+    color: var(--bbs-muted) !important;
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-4 {
+    min-height: 58px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-4 ul {
+    margin: 0 !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-6 {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+#rankApp .layui-tab-content .m-border-bottom > .col-sm-6 a {
+    padding-left: 0 !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+}
+
+#careApp .layui-tab > .row:first-child,
+#collectApp .layui-tab > div,
+#msgApp .layui-tab > div {
+    min-height: 440px !important;
+}
+
+#careApp #tab-user > .row,
+#careApp #tab-posts .layui-tab-content,
+#careApp #tab-plate .layui-tab-content,
+#careApp #tab-care .layui-tab-content {
+    padding: 8px 4px 28px !important;
+}
+
+#careApp #tab-user h4,
+#careApp #tab-user h3 {
+    margin: 0 0 12px !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+}
+
+#careApp #tab-user h5,
+#careApp #tab-user span {
+    color: #222222 !important;
+    font-size: 16px !important;
+    line-height: 1.65 !important;
+}
+
+#careApp #tab-user img[src*="avatar"] {
+    width: 170px !important;
+    height: 170px !important;
+    margin: 16px 0 !important;
+    object-fit: cover !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--bbs-border) !important;
+}
+
+#careApp .layui-upload-drag {
+    width: 280px !important;
+    min-height: 180px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 16px !important;
+    padding: 28px !important;
+}
+
+#careApp .layui-upload-drag .layui-icon {
+    font-size: 46px !important;
+}
+
+#careApp .layui-upload-drag p {
+    margin-top: 12px !important;
+    color: var(--bbs-muted) !important;
+    font-size: 15px !important;
+}
+
+#collectApp .layui-tab h3,
+#msgApp .layui-tab h3,
+#searchApp h3,
+#signApp h3 {
+    margin: 52px 0 0 !important;
+    color: #555555 !important;
+    font-size: 28px !important;
+    line-height: 1.4 !important;
+    font-weight: 850 !important;
+}
+
+#collectApp .layui-tab > div > ul li,
+#msgApp .layui-tab .row > ul > li,
+#careApp .layui-tab .row > ul > li {
+    padding: 16px 12px !important;
+    font-size: 15px !important;
+}
+
+.layui-tab-content,
+.layui-tab-content p,
+.layui-tab-content span,
+.layui-tab-content a,
+.layui-tab-content li,
+.layui-form-label,
+.layui-input,
+.form-control {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+}
+
+@media (max-width: 900px) {
+    #rankApp,
+    #collectApp,
+    #careApp,
+    #msgApp,
+    #personalApp,
+    #searchApp,
+    #signApp {
+        width: calc(100% - 24px) !important;
+    }
+}
+
 /* Final layout polish for legacy Bootstrap pages. */
 html,
 body {
