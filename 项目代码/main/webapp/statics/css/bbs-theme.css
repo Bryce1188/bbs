@@ -321,3 +321,326 @@ img {
         margin-bottom: 16px;
     }
 }
+
+/* Page-level unification: make legacy pages match the Figma-style forum cover. */
+body > .container-fluid {
+    min-height: 100vh;
+    padding: 0 0 56px !important;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.93) 58%, rgba(247, 247, 247, 0.86) 100%),
+        url("/leek_bbs/statics/images/figma-bbs/wide.jpg") right top/auto 520px no-repeat !important;
+}
+
+#rankApp,
+#collectApp,
+#personalApp,
+#careApp,
+#msgApp,
+#searchApp,
+#signApp,
+#dynamicApp,
+#daoDuApp,
+#postPage,
+#app:not(.post-shell) {
+    width: min(1180px, calc(100% - 64px)) !important;
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+    padding-top: 22px !important;
+}
+
+#rankApp > .row:first-child,
+#collectApp > .row:first-child,
+#personalApp > .row:first-child,
+#careApp > .row:first-child,
+#msgApp > .row:first-child,
+#searchApp > .row:first-child {
+    margin: 0 0 22px !important;
+    padding: 0 !important;
+    color: var(--bbs-muted) !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+}
+
+#rankApp > .row:nth-child(2),
+#collectApp > .row:nth-child(2),
+#careApp > .row:nth-child(2),
+#msgApp > .row:nth-child(2),
+#personalApp > .row.p-mpb,
+#personalApp > .row[style*="margin-top: 20px"],
+#signApp .layui-row,
+#dynamicApp > .row,
+#searchApp > .row,
+#postPage > .row,
+#daoDuApp > .row,
+#app:not(.post-shell) > .row {
+    border: 1px solid var(--bbs-border) !important;
+    border-radius: var(--bbs-radius) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    box-shadow: var(--bbs-shadow-lg) !important;
+}
+
+#rankApp > .row:nth-child(2),
+#collectApp > .row:nth-child(2),
+#careApp > .row:nth-child(2),
+#msgApp > .row:nth-child(2),
+#personalApp > .row[style*="margin-top: 20px"] {
+    display: grid !important;
+    grid-template-columns: 230px minmax(0, 1fr) !important;
+    gap: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+#rankApp .col-sm-2,
+#collectApp .col-sm-2,
+#careApp .col-sm-2,
+#msgApp .col-sm-2,
+#rankApp .col-sm-8,
+#rankApp .col-sm-9,
+#collectApp .col-sm-8,
+#careApp .col-sm-8,
+#msgApp .col-sm-8,
+#personalApp .layui-tab-card,
+#personalApp .layui-tab-content {
+    float: none !important;
+    width: auto !important;
+    margin-left: 0 !important;
+    border: 1px solid var(--bbs-border) !important;
+    border-radius: var(--bbs-radius) !important;
+    background: rgba(255, 255, 255, 0.97) !important;
+    box-shadow: var(--bbs-shadow-lg) !important;
+    overflow: hidden !important;
+}
+
+#rankApp .col-sm-2,
+#collectApp .col-sm-2,
+#careApp .col-sm-2,
+#msgApp .col-sm-2 {
+    min-height: 360px !important;
+    padding: 12px !important;
+}
+
+#rankApp .col-sm-8,
+#rankApp .col-sm-9,
+#collectApp .col-sm-8,
+#careApp .col-sm-8,
+#msgApp .col-sm-8 {
+    min-height: 360px !important;
+    padding: 0 !important;
+}
+
+#rankApp .col-sm-2 > .row:first-child,
+#collectApp .col-sm-2 > .row:first-child,
+#careApp .col-sm-2 > .row:first-child,
+#msgApp .col-sm-2 > .row:first-child {
+    margin: -12px -12px 12px !important;
+    padding: 18px 20px !important;
+    border-bottom: 1px solid var(--bbs-border) !important;
+    background: #ffffff !important;
+}
+
+#rankApp .col-sm-2 h4,
+#collectApp .col-sm-2 h4,
+#careApp .col-sm-2 h4,
+#msgApp .col-sm-2 h4 {
+    margin: 0 !important;
+    color: var(--bbs-text) !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+}
+
+.m-hover-bg,
+.m-active,
+#rankApp .col-sm-2 > .row,
+#collectApp .col-sm-2 > .row,
+#careApp .col-sm-2 > .row,
+#msgApp .col-sm-2 > .row {
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    border-left: 0 !important;
+    border-radius: var(--bbs-radius) !important;
+    background: transparent !important;
+}
+
+.m-hover-bg h5,
+.m-active h5 {
+    margin: 0 !important;
+    line-height: 48px !important;
+}
+
+.m-hover-bg:hover,
+.m-active {
+    border-left: 0 !important;
+    background: #111111 !important;
+    color: #ffffff !important;
+}
+
+.m-hover-bg:hover a,
+.m-active a {
+    color: #ffffff !important;
+}
+
+h5 > a,
+.layui-tab a,
+.layui-row a {
+    color: var(--bbs-text) !important;
+}
+
+h5 > a:hover,
+.layui-tab a:hover,
+.layui-row a:hover {
+    color: #000000 !important;
+    text-decoration: underline;
+}
+
+#rankApp .layui-tab,
+#collectApp .layui-tab,
+#careApp .layui-tab,
+#msgApp .layui-tab,
+#personalApp .layui-tab {
+    margin: 0 !important;
+    max-width: none !important;
+}
+
+.layui-tab-title {
+    height: auto !important;
+    padding: 0 18px !important;
+    border-bottom: 1px solid var(--bbs-border) !important;
+    background: #ffffff !important;
+}
+
+.layui-tab-title li {
+    min-width: 0 !important;
+    height: 56px !important;
+    line-height: 56px !important;
+    padding: 0 18px !important;
+    color: var(--bbs-muted) !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+
+.layui-tab-title li:hover,
+.layui-tab-title .layui-this {
+    background: transparent !important;
+    color: #111111 !important;
+}
+
+.layui-tab-title .layui-this:after {
+    height: 56px !important;
+    border-width: 0 0 2px 0 !important;
+    border-bottom-color: #111111 !important;
+}
+
+.layui-tab-content {
+    padding: 18px 22px !important;
+    background: #ffffff !important;
+}
+
+.m-border-bottom,
+#collectApp .layui-tab > div > ul li,
+#careApp .layui-tab .row > ul > li,
+#msgApp .layui-tab .row > ul > li,
+#personalApp .layui-tab-content .row,
+#rankApp .layui-row {
+    border-bottom: 1px solid var(--bbs-border) !important;
+    background: #ffffff !important;
+}
+
+.m-border-bottom:hover,
+#collectApp .layui-tab > div > ul li:hover,
+#careApp .layui-tab .row > ul > li:hover,
+#msgApp .layui-tab .row > ul > li:hover,
+#personalApp .layui-tab-content .row:hover {
+    background: var(--bbs-soft) !important;
+    color: var(--bbs-text) !important;
+}
+
+.numberOn,
+.number {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    border-radius: 999px !important;
+    font-weight: 800;
+}
+
+.numberOn {
+    background: #111111 !important;
+    color: #ffffff !important;
+}
+
+.number {
+    background: var(--bbs-soft) !important;
+    color: var(--bbs-muted) !important;
+}
+
+#personalApp .p-mpb {
+    min-height: 190px !important;
+    margin: 0 0 22px !important;
+    padding: 34px !important;
+    border: 1px solid var(--bbs-border) !important;
+    border-radius: var(--bbs-radius) !important;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.9)),
+        url("/leek_bbs/statics/images/figma-bbs/wide.jpg") right center/auto 100% no-repeat !important;
+    box-shadow: var(--bbs-shadow-lg) !important;
+}
+
+#personalApp .p-mpb img {
+    border-radius: var(--bbs-radius) !important;
+}
+
+#personalApp .layui-tab-card {
+    border: 1px solid var(--bbs-border) !important;
+}
+
+#personalApp .layui-tab-content {
+    min-height: 420px !important;
+    height: auto !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+#careApp .layui-upload-drag {
+    border-color: var(--bbs-border) !important;
+    border-radius: var(--bbs-radius) !important;
+    background: var(--bbs-soft) !important;
+}
+
+footer {
+    width: 100% !important;
+    margin-top: 56px !important;
+    border-top: 1px solid var(--bbs-border) !important;
+    background: #ffffff !important;
+}
+
+@media (max-width: 900px) {
+    #rankApp,
+    #collectApp,
+    #personalApp,
+    #careApp,
+    #msgApp,
+    #searchApp,
+    #signApp,
+    #dynamicApp,
+    #daoDuApp,
+    #postPage,
+    #app:not(.post-shell) {
+        width: calc(100% - 24px) !important;
+    }
+
+    #rankApp > .row:nth-child(2),
+    #collectApp > .row:nth-child(2),
+    #careApp > .row:nth-child(2),
+    #msgApp > .row:nth-child(2),
+    #personalApp > .row[style*="margin-top: 20px"] {
+        grid-template-columns: 1fr !important;
+    }
+}
