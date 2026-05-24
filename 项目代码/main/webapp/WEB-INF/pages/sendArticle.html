@@ -6,6 +6,8 @@
     <title>选择发帖板块</title>
     <link rel="stylesheet" href="/leek_bbs/statics/layui/css/layui.css">
     <script src="/leek_bbs/statics/component/common_import.js"></script>
+    <script src="/leek_bbs/statics/component/wangEditor.min.js"></script>
+    <script src="/leek_bbs/statics/component/wangEditCommon.js"></script>
     <style>
         :root {
             --text: #111111;
@@ -479,6 +481,87 @@
             selectPlate: function (plate) {
                 this.selectedPlate = plate;
             },
+            openLocalSendPost: function (plateId) {
+                if (userInfo == null) {
+                    ui.error("请先登录...", 1500, true);
+                    if (layui && layui.login) {
+                        setTimeout(function () {
+                            layui.login();
+                        }, 300);
+                    }
+                    return;
+                }
+
+                layui.use(["layer"], function () {
+                    var localLayer = layui.layer;
+                    localLayer.open({
+                        type: 1,
+                        area: ["900px", "680px"],
+                        title: "发表新主题",
+                        content: [
+                            '<div class="layui-container bbs-compose-shell" style="width:100%;height:100%;padding:34px;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(247,247,247,.97)),url(/leek_bbs/statics/images/figma-bbs/wide.jpg) center/cover no-repeat;">',
+                            '<style>',
+                            '.bbs-compose-shell,.bbs-compose-shell *{box-sizing:border-box;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",Arial,sans-serif;}',
+                            '.bbs-compose-card{max-width:860px;margin:0 auto;padding:30px;border:1px solid #e8e8e8;border-radius:8px;background:rgba(255,255,255,.96);box-shadow:0 24px 60px rgba(0,0,0,.1);}',
+                            '.bbs-compose-title{margin:0 0 22px;color:#111;font-size:34px;line-height:1.2;font-weight:800;}',
+                            '.bbs-compose-label{display:block;margin:0 0 10px;color:#111;font-size:15px;font-weight:800;}',
+                            '.bbs-compose-shell #title{width:100%;height:48px;padding:0 16px;border:1px solid #dcdcdc;border-radius:8px;color:#111;font-size:16px;outline:none;box-shadow:none;}',
+                            '.bbs-compose-shell #title:focus{border-color:#111;}',
+                            '.bbs-compose-shell #editor{overflow:hidden;border:1px solid #e8e8e8;border-radius:8px;background:#fff;}',
+                            '.bbs-compose-action{display:flex;justify-content:flex-end;margin-top:18px;}',
+                            '.bbs-compose-submit{min-width:132px;height:46px;border:0;border-radius:8px;background:#111;color:#fff;font-size:15px;font-weight:800;cursor:pointer;}',
+                            '</style>',
+                            '<div class="bbs-compose-card">',
+                            '<h2 class="bbs-compose-title">发表帖子</h2>',
+                            '<label class="bbs-compose-label" for="title">帖子标题</label>',
+                            '<input type="text" class="form-control" id="title" placeholder="请输入标题...">',
+                            '<div style="margin-top:20px;"><span class="bbs-compose-label">正文内容</span><div id="editor"></div></div>',
+                            '<div class="bbs-compose-action"><button class="bbs-compose-submit" id="localSendPostBtn" type="button">发表帖子</button></div>',
+                            '</div>',
+                            '</div>'
+                        ].join(""),
+                        success: function () {
+                            if (typeof createEdit === "function") {
+                                createEdit("editor");
+                            }
+
+                            $("#localSendPostBtn").off("click").on("click", function () {
+                                var title = $("#title").val();
+                                var content = window.editor && editor.txt ? editor.txt.html() : "";
+
+                                if (!title) {
+                                    ui.error("标题不能为空", 1500, true);
+                                    return;
+                                }
+                                if (!content || content === "<p><br></p>") {
+                                    ui.error("内容不能为空", 1500, true);
+                                    return;
+                                }
+
+                                axios.post("/leek_bbs/bbs/userPost/insertPost", {
+                                    userId: userInfo.id,
+                                    title: title,
+                                    postAuthor: userInfo.another_name,
+                                    plateId: plateId,
+                                    content: content,
+                                    publishTime: new Date().getTime(),
+                                    lastReply: userInfo.another_name,
+                                    lastReplyTime: new Date().getTime()
+                                }).then(function (response) {
+                                    if (response.data == 1) {
+                                        localLayer.closeAll();
+                                        ui.success("发表主题成功,等待审核", 1500, true);
+                                    } else {
+                                        ui.error("发表主题失败", 1500, true);
+                                    }
+                                }).catch(function () {
+                                    ui.error("发表主题失败", 1500, true);
+                                });
+                            });
+                        }
+                    });
+                });
+            },
             continuePost: function () {
                 if (!this.selectedPlate || !this.selectedPlate.id) {
                     ui.error("请选择发帖板块", 1500, true);
@@ -491,7 +574,7 @@
                 var openSendPost = hostLayui && hostLayui.openSendPost;
 
                 if (typeof openSendPost !== "function") {
-                    ui.error("发帖窗口还没有加载完成，请返回论坛页重新点击发帖", 1800, true);
+                    this.openLocalSendPost(this.selectedPlate.id);
                     return;
                 }
 
