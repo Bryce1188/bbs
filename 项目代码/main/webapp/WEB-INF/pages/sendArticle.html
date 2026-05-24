@@ -1,166 +1,320 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-	<meta charset="UTF-8">
-	<title>Title</title>
-	<link rel="stylesheet" href="/leek_bbs/statics/layui/css/layui.css">
-	<link rel="stylesheet" href="/leek_bbs/statics/bootstrap-3.3.7/css/bootstrap.min.css">
-	<style>
-		.active{
-			background-color: #EEE;
-		}
-		.active a {
-			font-weight: bold;
-			color: #ff6f3d;
-		}
-		.bor{
-			border: 1px solid #E5E5E5;
-		}
-		#app div li:hover {
-			background-color: #EEE;
-			color: #666;
-			font-weight: 700;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>选择发帖板块</title>
+    <link rel="stylesheet" href="/leek_bbs/statics/layui/css/layui.css">
+    <script src="/leek_bbs/statics/component/common_import.js"></script>
+    <style>
+        :root {
+            --text: #111111;
+            --muted: #6f6f6f;
+            --soft: #f7f7f7;
+            --border: #e8e8e8;
+        }
 
-		#app div li a:visited {
-			background-color: #EEE;
-		}
-		a:link,a:hover,a:active{
-			text-decoration: none;
-		}
-		a{
-			font-size: 14px;
-			color: #333;
-		}
-		ul li:hover a{
-			color: #ff6f3d;
-		}
-		ul > li{
-			padding: 5px;
-		}
-	</style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(247, 247, 247, 0.94)),
+                url("/leek_bbs/statics/images/figma-bbs/wide.jpg") center/cover no-repeat;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .post-guide {
+            width: min(100% - 32px, 920px);
+            margin: 0 auto;
+            padding: 30px 0;
+        }
+
+        .guide-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .guide-kicker {
+            margin: 0 0 8px;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .guide-header h1 {
+            margin: 0;
+            font-size: 34px;
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .guide-header p {
+            width: min(520px, 100%);
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .publish-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 128px;
+            height: 44px;
+            border: 0;
+            border-radius: 8px;
+            background: #111111;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            gap: 24px;
+        }
+
+        .guide-panel {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .guide-panel-title {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(247, 247, 247, 0.94);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .guide-list {
+            margin: 0;
+            padding: 10px;
+            list-style: none;
+        }
+
+        .guide-list li {
+            margin: 0;
+        }
+
+        .guide-list button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            min-height: 44px;
+            padding: 0 12px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #222222;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .guide-list button:hover,
+        .guide-list button.active {
+            background: #111111;
+            color: #ffffff;
+        }
+
+        .plate-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            padding: 18px;
+        }
+
+        .plate-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 112px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #ffffff;
+            cursor: pointer;
+            transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .plate-card:hover,
+        .plate-card.active {
+            transform: translateY(-2px);
+            border-color: #111111;
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .plate-card strong {
+            display: block;
+            font-size: 18px;
+            line-height: 1.35;
+        }
+
+        .plate-card span {
+            display: block;
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .empty-state {
+            padding: 36px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 760px) {
+            .guide-header {
+                flex-direction: column;
+            }
+
+            .guide-grid,
+            .plate-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-	<div class="layui-container">
-		<div class="layui-row">
-			<div class="layui-col-md10 layui-col-xs10">
-				<p style="margin: 10px 10px;margin-left: 0px;">Leek论坛
-					<a href="javascript:;">[进入板块]</a>
-				</p>
-			</div>
-			<div class="layui-colmd2 layui-col-xs2" style="padding-top: 10px;">
-				<button class="layui-btn layui-btn-primary layui-btn-xs layui-btn-warm" style="float: right" id="btnEdit">发帖子</button>
-			</div>
-		</div>
-		<div class="layui-row" id="app" v-cloak>
-			<div class="layui-col-xs4 layui-col-md4 bor" style="height: 300px">
-				<ul v-cloak>
-					<li v-for="(item,index) in supClassifies" @click="showDetails(index)">
-						<a href="javascript:;" >
-							{{item}}
-							<span class="layui-icon layui-icon-triangle-r" style="font-size:10px; float: right"></span>
-						</a>
-					</li>
-				</ul>
-			</div>
-			<div class="layui-col-xs4 layui-col-md4 bor" style="height: 300px">
-				<ul v-cloak>
-					<li v-for="(item,index) in showdetails" @click="changePlate(index)" :class="getStyle(index)">
-						<a href="javascript:;" >{{item}}</a>
-					</li>
-				</ul>
-			</div>
-			<div class="layui-col-xs4 layui-col-md4 bor" style="height: 300px">
-				<!--<button class="layui-btn layui-btn-primary layui-btn-xs layui-btn-warm" style="float: right">发帖子</button>-->
-			</div>
-		</div>
-	</div>
+<div id="app" class="post-guide" v-cloak>
+    <header class="guide-header">
+        <div>
+            <p class="guide-kicker">Leek BBS</p>
+            <h1>选择发帖板块</h1>
+            <p>先选一个最合适的板块，再进入编辑器填写标题和正文。板块来自当前数据库，发帖成功后会自动更新对应帖数。</p>
+        </div>
+        <button class="publish-btn" id="btnEdit">继续发帖</button>
+    </header>
 
-	<script src="/leek_bbs/statics/component/common_import.js"></script>
-	<script>
-        var app = new Vue({
-            el:"#app",
-            data:{
-                supClassifies:["常用板块","企业专区","交流与讨论专区"],
-                showdetails:'',		//展示的数据
-                showDetailsPlateIds:'',	//展示板块的id
-                details0:["坊间趣事","游戏交流","告白墙","兼职","资源共享","休闲灌水"],
-                details0PlateIds:[3,4,5,6,7,12],  //常用版块的版块id
-                details1:[],			//校园专区版块的版块名称
-                details1PlateIds:[],  //校园专区版块的版块id
-                details2:[],			//交流与讨论专区版块的版块名称
-                details2PlateIds:[],  //交流与讨论专区版块的版块id
-                details3:[],			//论坛事务专区版块的版块名称
-                details3PlateIds:[],  //论坛事务专区版块的版块id
-				plateId:'',		//所选版块id
-                countInit:'', //选项id
-            },
-            methods:{
-                changePlate(index){
-                  this.plateId= this.showDetailsPlateIds[index];
-				  this.countInit = index;
-				},
-                showDetails(index){
-                    if (index==0){
-                        this.showdetails=this.details0;
-                        this.showDetailsPlateIds =this.details0PlateIds;
-                        this.countInit=0;
-                    }else if(index==1){
-                        this.showdetails=this.details1;
-                        this.showDetailsPlateIds =this.details1PlateIds;
-                        this.countInit=0;
-                    }else if(index==2){
-                        this.showdetails=this.details2;
-                        this.showDetailsPlateIds =this.details2PlateIds;
-                        this.countInit=0;
-                    }
-					// else if(index==3){
-                    //     this.showdetails=this.details3;
-                    //     this.showDetailsPlateIds =this.details3PlateIds;
-                    //     this.countInit=0;
-                    // }
-                    this.plateId=this.showDetailsPlateIds[0]; //初始化版块
-                },
-                initPlate(){
-                    axios.get('/leek_bbs/bbs/plate/findAll').then(response => {
+    <main class="guide-grid">
+        <section class="guide-panel">
+            <div class="guide-panel-title">板块分类</div>
+            <ul class="guide-list">
+                <li v-for="(item,index) in supClassifies" :key="'type-' + index">
+                    <button type="button" :class="{active: currentType === index}" @click="showDetails(index)">
+                        <span>{{item}}</span>
+                        <span>›</span>
+                    </button>
+                </li>
+            </ul>
+        </section>
 
-                        let data = response.data;
-                        data.forEach(item => {
-                            if (item.plate_vest.indexOf("企业专区") != -1) {
-                                this.details1.push(item.plate_name);
-                                this.details1PlateIds.push(item.id)
-                            }else if (item.plate_vest.indexOf("交流与讨论") != -1){
-                                this.details2.push(item.plate_name);
-                                this.details2PlateIds.push(item.id)
-                            }
-							// else {
-                            //     this.details3.push(item.plate_name);
-                            //     this.details3PlateIds.push(item.id)
-                            // }
-                        })
-                        console.log(this.details1PlateIds)
-                        console.log(this.details2PlateIds)
-                        console.log(this.details3PlateIds)
-						console.log(this.showDetailsPlateIds)
-                    })
-                },
-				getStyle(index){
-                    return {active:this.countInit==index};
-				}
+        <section class="guide-panel">
+            <div class="guide-panel-title">选择具体板块</div>
+            <div class="plate-grid" v-if="showdetails.length">
+                <button class="plate-card" type="button" v-for="(item,index) in showdetails" :key="'plate-' + showDetailsPlateIds[index]" :class="{active: countInit === index}" @click="changePlate(index)">
+                    <strong>{{item}}</strong>
+                    <span>点击选择该板块</span>
+                </button>
+            </div>
+            <div class="empty-state" v-else>正在加载板块，请稍等。</div>
+        </section>
+    </main>
+</div>
+
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            supClassifies: ["常用板块", "公司专区", "交流与讨论"],
+            showdetails: [],
+            showDetailsPlateIds: [],
+            details0: ["坊间趣事", "游戏交流", "告白墙", "兼职", "资源共享", "休闲灌水"],
+            details0PlateIds: [3, 4, 5, 6, 7, 12],
+            details1: [],
+            details1PlateIds: [],
+            details2: [],
+            details2PlateIds: [],
+            plateId: "",
+            countInit: 0,
+            currentType: 0
+        },
+        methods: {
+            changePlate: function (index) {
+                this.plateId = this.showDetailsPlateIds[index];
+                this.countInit = index;
             },
-            mounted(){
-                this.showDetails(0);
-                this.initPlate();
+            showDetails: function (index) {
+                this.currentType = index;
+                if (index === 0) {
+                    this.showdetails = this.details0;
+                    this.showDetailsPlateIds = this.details0PlateIds;
+                } else if (index === 1) {
+                    this.showdetails = this.details1;
+                    this.showDetailsPlateIds = this.details1PlateIds;
+                } else {
+                    this.showdetails = this.details2;
+                    this.showDetailsPlateIds = this.details2PlateIds;
+                }
+                this.countInit = 0;
+                this.plateId = this.showDetailsPlateIds[0] || "";
+            },
+            initPlate: function () {
+                axios.get("/leek_bbs/bbs/plate/findAll").then(function (response) {
+                    var data = response.data || [];
+                    app.details1 = [];
+                    app.details1PlateIds = [];
+                    app.details2 = [];
+                    app.details2PlateIds = [];
+                    data.forEach(function (item) {
+                        var vest = item.plate_vest || "";
+                        if (vest.indexOf("企业专区") !== -1 || vest.indexOf("公司专区") !== -1) {
+                            app.details1.push(item.plate_name);
+                            app.details1PlateIds.push(item.id);
+                        } else if (vest.indexOf("交流与讨论") !== -1) {
+                            app.details2.push(item.plate_name);
+                            app.details2PlateIds.push(item.id);
+                        }
+                    });
+                    app.showDetails(app.currentType);
+                }).catch(function (error) {
+                    console.log(error);
+                });
             }
-        });
-		$("#btnEdit").click(function () {
-            var index = parent.layer.getFrameIndex(window.name); //获取上一层弹出层的索引
-            parent.layer.close(index);	//关闭上一层弹出层
-			//parent.window.layui.checkUserLogin(); //如果userInfo为空则直接跳转至登录页面
-			console.log("111"+app.plateId)
-			parent.window.layui.openSendPost(app.plateId);  //userInfo不为空,直接跳转发帖页面
-        })
-	</script>
+        },
+        mounted: function () {
+            this.showDetails(0);
+            this.initPlate();
+        }
+    });
 
+    $("#btnEdit").click(function () {
+        if (!app.plateId) {
+            ui.error("请选择发帖板块", 1500, true);
+            return;
+        }
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        parent.window.layui.openSendPost(app.plateId);
+    });
+</script>
 </body>
 </html>
