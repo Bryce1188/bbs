@@ -394,15 +394,15 @@ body > .container-fluid {
     box-shadow: none !important;
 }
 
-#rankApp .col-sm-2,
-#collectApp .col-sm-2,
-#careApp .col-sm-2,
-#msgApp .col-sm-2,
-#rankApp .col-sm-8,
-#rankApp .col-sm-9,
-#collectApp .col-sm-8,
-#careApp .col-sm-8,
-#msgApp .col-sm-8,
+#rankApp > .row:nth-child(2) > .col-sm-2,
+#collectApp > .row:nth-child(2) > .col-sm-2,
+#careApp > .row:nth-child(2) > .col-sm-2,
+#msgApp > .row:nth-child(2) > .col-sm-2,
+#rankApp > .row:nth-child(2) > .col-sm-8,
+#rankApp > .row:nth-child(2) > .col-sm-9,
+#collectApp > .row:nth-child(2) > .col-sm-8,
+#careApp > .row:nth-child(2) > .col-sm-8,
+#msgApp > .row:nth-child(2) > .col-sm-8,
 #personalApp .layui-tab-card,
 #personalApp .layui-tab-content {
     float: none !important;
@@ -415,37 +415,37 @@ body > .container-fluid {
     overflow: hidden !important;
 }
 
-#rankApp .col-sm-2,
-#collectApp .col-sm-2,
-#careApp .col-sm-2,
-#msgApp .col-sm-2 {
+#rankApp > .row:nth-child(2) > .col-sm-2,
+#collectApp > .row:nth-child(2) > .col-sm-2,
+#careApp > .row:nth-child(2) > .col-sm-2,
+#msgApp > .row:nth-child(2) > .col-sm-2 {
     min-height: 360px !important;
     padding: 12px !important;
 }
 
-#rankApp .col-sm-8,
-#rankApp .col-sm-9,
-#collectApp .col-sm-8,
-#careApp .col-sm-8,
-#msgApp .col-sm-8 {
+#rankApp > .row:nth-child(2) > .col-sm-8,
+#rankApp > .row:nth-child(2) > .col-sm-9,
+#collectApp > .row:nth-child(2) > .col-sm-8,
+#careApp > .row:nth-child(2) > .col-sm-8,
+#msgApp > .row:nth-child(2) > .col-sm-8 {
     min-height: 360px !important;
     padding: 0 !important;
 }
 
-#rankApp .col-sm-2 > .row:first-child,
-#collectApp .col-sm-2 > .row:first-child,
-#careApp .col-sm-2 > .row:first-child,
-#msgApp .col-sm-2 > .row:first-child {
+#rankApp > .row:nth-child(2) > .col-sm-2 > .row:first-child,
+#collectApp > .row:nth-child(2) > .col-sm-2 > .row:first-child,
+#careApp > .row:nth-child(2) > .col-sm-2 > .row:first-child,
+#msgApp > .row:nth-child(2) > .col-sm-2 > .row:first-child {
     margin: -12px -12px 12px !important;
     padding: 18px 20px !important;
     border-bottom: 1px solid var(--bbs-border) !important;
     background: #ffffff !important;
 }
 
-#rankApp .col-sm-2 h4,
-#collectApp .col-sm-2 h4,
-#careApp .col-sm-2 h4,
-#msgApp .col-sm-2 h4 {
+#rankApp > .row:nth-child(2) > .col-sm-2 h4,
+#collectApp > .row:nth-child(2) > .col-sm-2 h4,
+#careApp > .row:nth-child(2) > .col-sm-2 h4,
+#msgApp > .row:nth-child(2) > .col-sm-2 h4 {
     margin: 0 !important;
     color: var(--bbs-text) !important;
     font-size: 18px !important;
@@ -454,10 +454,10 @@ body > .container-fluid {
 
 .m-hover-bg,
 .m-active,
-#rankApp .col-sm-2 > .row,
-#collectApp .col-sm-2 > .row,
-#careApp .col-sm-2 > .row,
-#msgApp .col-sm-2 > .row {
+#rankApp > .row:nth-child(2) > .col-sm-2 > .row,
+#collectApp > .row:nth-child(2) > .col-sm-2 > .row,
+#careApp > .row:nth-child(2) > .col-sm-2 > .row,
+#msgApp > .row:nth-child(2) > .col-sm-2 > .row {
     min-height: 48px !important;
     margin: 0 !important;
     padding: 0 14px !important;
@@ -595,6 +595,100 @@ h5 > a:hover,
 
 #personalApp .p-mpb img {
     border-radius: var(--bbs-radius) !important;
+}
+
+#personalApp .p-mpb > .col-sm-3 {
+    position: static !important;
+    display: flex !important;
+    align-items: center !important;
+    width: auto !important;
+    margin-left: 0 !important;
+}
+
+#personalApp .p-mpb > .col-sm-3 > div {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 24px !important;
+}
+
+#personalApp .p-mpb > .col-sm-3 .col-sm-6 {
+    float: none !important;
+    width: auto !important;
+    padding: 0 !important;
+}
+
+#personalApp .p-mpb > .col-sm-3 img {
+    width: 118px !important;
+    height: 118px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border: 1px solid var(--bbs-border) !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    box-shadow: var(--bbs-shadow) !important;
+}
+
+#personalApp .p-mpb h4 {
+    margin: 0 0 10px !important;
+    font-size: 26px !important;
+    font-weight: 800 !important;
+}
+
+#personalApp .p-mpb > .col-sm-2 {
+    float: right !important;
+    width: auto !important;
+    min-width: 180px !important;
+    height: auto !important;
+    margin-left: auto !important;
+    padding: 0 !important;
+}
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px;
+    border: 1px solid var(--bbs-border);
+    border-radius: var(--bbs-radius);
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.profile-action-link {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    color: var(--bbs-text) !important;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.profile-action-link:hover {
+    text-decoration: none !important;
+}
+
+.profile-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--bbs-border);
+    border-radius: 8px;
+    background: #111111;
+    color: #ffffff;
+}
+
+.profile-action-icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
 }
 
 #personalApp .layui-tab-card {
