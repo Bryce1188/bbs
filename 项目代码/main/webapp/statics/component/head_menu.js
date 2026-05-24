@@ -198,7 +198,7 @@ layui.define(['layer','form','util'],function (exports) {
                             <input type="text" name="imgCode"style="height: 40px;" placeholder="输入验证码" lay-verify="required" autocomplete="off" class="layui-input">     
                         </div>
                         <div class="layui-input-inline" style="margin-left:35px;width: 100px;">   
-                            <img id="captchaPic" style="width: 90px;height: 38px;" src="/leek_bbs/bbs/user/verifyCode" alt="验证码">
+                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="/leek_bbs/bbs/user/verifyCode" alt="验证码">
                         </div>
                     </div>       
                 </div>
@@ -247,9 +247,29 @@ layui.define(['layer','form','util'],function (exports) {
         layui.login();
     });
 
+    function refreshCaptchaImage($scope) {
+        var ts = new Date().getTime();
+        var $imgs = $scope ? $scope.find("img.captchaPic") : $("img.captchaPic:visible");
+        if ($imgs.length === 0) {
+            $imgs = $("img.captchaPic");
+        }
+        $imgs.each(function () {
+            $(this).attr('src', '/leek_bbs/bbs/user/verifyCode?img=' + ts + '&r=' + Math.random());
+        });
+    }
+
+    function clearAndFocusCaptchaInput($scope) {
+        var $input = $scope ? $scope.find("input[name='imgCode']") : $("input[name='imgCode']:visible").first();
+        if ($input.length > 0) {
+            $input.val('');
+            $input.focus();
+        }
+    }
+
     //监听注册提交
     form.on('submit(registerBtn)', function(data){
         var user = data.field;
+        var $form = $(data.form);
         if (data.field.another_name.length > 13) {
             layer.msg('昵称太长了', {icon: 5,time: 2000});
             return false;
@@ -269,6 +289,8 @@ layui.define(['layer','form','util'],function (exports) {
                         });
                     }else if (resdata.code == "500023") {   //验证码错误
                         $("#errorRes").text(resdata.msg);
+                        refreshCaptchaImage($form);
+                        clearAndFocusCaptchaInput($form);
                     }else if (resdata.code == "300022"){    //用户存在
                         $("#errorRes").text(resdata.msg);
                     } else {   //用户注册失败
@@ -286,6 +308,7 @@ layui.define(['layer','form','util'],function (exports) {
     });
     //监听登录提交
     form.on('submit(loginBtn)', function(data){
+        var $form = $(data.form);
         //ui.success('提示内容',时间,是否有遮蔽层);
         $.ajax({
             type: "post",
@@ -312,6 +335,10 @@ layui.define(['layer','form','util'],function (exports) {
                         layer.closeAll();
                     },500);
 
+                }else if (result.code == "500023") {
+                    $("#errorRes").text(result.msg);
+                    refreshCaptchaImage($form);
+                    clearAndFocusCaptchaInput($form);
                 }else if (result.code == "500024"){
                     layer.msg(result.msg);
                 } else {
@@ -353,7 +380,7 @@ layui.define(['layer','form','util'],function (exports) {
                             <input type="text" style="height: 40px;" name="imgCode" placeholder="输入验证码" height="40px;" lay-verify="required" autocomplete="off" class="layui-input">     
                         </div>
                         <div class="layui-input-inline" style="margin-left:35px;width: 100px;">   
-                            <img id="captchaPic" style="width: 90px;height: 38px;" src="/leek_bbs/bbs/user/verifyCode" alt="验证码">
+                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="/leek_bbs/bbs/user/verifyCode" alt="验证码">
                         </div>
                     </div>       
                 </div>
@@ -388,7 +415,7 @@ layui.define(['layer','form','util'],function (exports) {
             area: ['500px', '450px'],
             success: function (layero, index) {
                 setTimeout(() => {
-                    $("#captchaPic").click();
+                    refreshCaptchaImage();
                 },300);
                 $("#layui-layer"+index).find(".layui-layer-title").addClass("lay-head-title");
                 //读取cookie A.rc(名字);
@@ -464,8 +491,8 @@ layui.define(['layer','form','util'],function (exports) {
 
 
     //切换验证码
-    $(document).on("click","#captchaPic",function () {
-        $('#captchaPic').attr('src', '/leek_bbs/bbs/user/verifyCode?img='+new Date().getTime());
+    $(document).on("click",".captchaPic",function () {
+        refreshCaptchaImage($(this).closest("form"));
     });
 
     $(document).on("click","#forgetPassword",function () {

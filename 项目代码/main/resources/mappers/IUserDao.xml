@@ -6,7 +6,7 @@
 
     <!--获取用户密码与加密盐-->
     <select id="getPwdSalt" parameterType="java.lang.String" resultType="user" >
-        select id,password,salt,user_status from user where username=#{username}
+        select id,password,user_status from user where username=#{username}
     </select>
     <!--根据用户名获取用户信息-->
     <select id="findByName" resultType="user" parameterType="string">
@@ -26,8 +26,8 @@
     </select>
     <!--增加一条用户数据-->
     <insert id="addUser" parameterType="java.util.Map">
-        insert into user(username,password,salt,another_name,email,register_time,register_ip) values
-        (#{username},#{password},#{salt},#{another_name},#{email},now(),#{register_ip})
+        insert into user(username,password,another_name,email,register_time,register_ip) values
+        (#{username},#{password},#{another_name},#{email},now(),#{register_ip})
     </insert>
     <!--更新用户数据-->
     <update id="updateUser" parameterType="java.util.Map">
@@ -38,9 +38,6 @@
             </if>
             <if test="password != null and password != ''">
                 password=#{password},
-            </if>
-            <if test="salt != null and salt != ''">
-                salt=#{salt},
             </if>
             <if test="sex != null and sex != ''">
                 sex=#{sex},
