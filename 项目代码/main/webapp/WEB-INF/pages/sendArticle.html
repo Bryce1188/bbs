@@ -349,6 +349,7 @@
     </style>
 </head>
 <body>
+<div id="hmc" style="display:none;"></div>
 <div id="app" class="post-shell" v-cloak>
     <div class="post-frame">
         <header class="post-topbar">
@@ -427,6 +428,7 @@
     </div>
 </div>
 
+<script src="/leek_bbs/statics/component/head_menu.js"></script>
 <script>
     var fallbackPlates = [
         {id: 3, plate_name: "坊间趣事", reserve1: "各类八卦", plate_vest: "常用板块", posts: 0, theme: 0},
@@ -456,6 +458,24 @@
             }
         },
         methods: {
+            getCurrentUser: function () {
+                if (typeof userInfo !== "undefined" && userInfo) {
+                    return userInfo;
+                }
+                try {
+                    var cache = localStorage.getItem("initUser");
+                    if (!cache) {
+                        return null;
+                    }
+                    var parsed = JSON.parse(cache);
+                    if (parsed && parsed.userInfo) {
+                        return parsed.userInfo;
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+                return null;
+            },
             getPlates: function (index) {
                 if (index === 0) {
                     return this.allPlates.filter(function (item) {
@@ -482,7 +502,8 @@
                 this.selectedPlate = plate;
             },
             openLocalSendPost: function (plateId) {
-                if (userInfo == null) {
+                var currentUser = this.getCurrentUser();
+                if (!currentUser) {
                     ui.error("请先登录...", 1500, true);
                     if (layui && layui.login) {
                         setTimeout(function () {
@@ -539,13 +560,13 @@
                                 }
 
                                 axios.post("/leek_bbs/bbs/userPost/insertPost", {
-                                    userId: userInfo.id,
+                                    userId: currentUser.id,
                                     title: title,
-                                    postAuthor: userInfo.another_name,
+                                    postAuthor: currentUser.another_name,
                                     plateId: plateId,
                                     content: content,
                                     publishTime: new Date().getTime(),
-                                    lastReply: userInfo.another_name,
+                                    lastReply: currentUser.another_name,
                                     lastReplyTime: new Date().getTime()
                                 }).then(function (response) {
                                     if (response.data == 1) {
@@ -568,24 +589,8 @@
                     return;
                 }
 
-                var host = window.parent && window.parent !== window ? window.parent : window;
-                var hostLayui = host.layui || (window.top && window.top.layui);
-                var hostLayer = host.layer || (window.top && window.top.layer);
-                var openSendPost = hostLayui && hostLayui.openSendPost;
-
-                if (typeof openSendPost !== "function") {
-                    this.openLocalSendPost(this.selectedPlate.id);
-                    return;
-                }
-
-                openSendPost(this.selectedPlate.id);
-
-                if (hostLayer && hostLayer.getFrameIndex && hostLayer.close) {
-                    var index = hostLayer.getFrameIndex(window.name);
-                    if (index !== undefined) {
-                        hostLayer.close(index);
-                    }
-                }
+                // Always use the local compose flow to avoid depending on parent-page exports.
+                this.openLocalSendPost(this.selectedPlate.id);
             },
             initPlate: function () {
                 axios.get("/leek_bbs/bbs/plate/findAll").then(function (response) {

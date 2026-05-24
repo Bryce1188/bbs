@@ -537,6 +537,7 @@
     </style>
 </head>
 <body>
+<div id="hmc" style="display:none;"></div>
 <div class="bbs-shell" id="indexApp" v-cloak>
     <header class="bbs-nav">
         <a class="bbs-brand" href="/leek_bbs/skipPage/index">
@@ -546,8 +547,10 @@
         <nav class="bbs-nav-items">
             <a href="/leek_bbs/skipPage/index">论坛</a>
             <a href="/leek_bbs/skipPage/ranking_list">排行</a>
-            <a v-if="users.length > 0" href="/leek_bbs/skipPage/my-collect">我的收藏</a>
-            <a v-if="users.length > 0" href="/leek_bbs/skipPage/personal">个人中心</a>
+            <a v-if="currentUser" href="/leek_bbs/skipPage/my-collect">我的收藏</a>
+            <a v-if="currentUser" href="/leek_bbs/skipPage/personal">个人中心</a>
+            <a v-if="!currentUser" href="javascript:;" @click="openLogin">登录</a>
+            <a v-if="!currentUser" href="javascript:;" @click="openRegister">立即注册</a>
             <a class="bbs-button" href="/leek_bbs/skipPage/sendArticle">发布帖子</a>
         </nav>
     </header>
@@ -711,6 +714,7 @@
     </footer>
 </div>
 
+<script src="/leek_bbs/statics/component/head_menu.js"></script>
 <script type="text/javascript">
     var indexApp = new Vue({
         el: "#indexApp",
@@ -729,9 +733,38 @@
             postPublishs: [],
             postlastReplys: [],
             postEssences: [],
-            users: []
+            users: [],
+            currentUser: null
         },
         methods: {
+            syncCurrentUser: function () {
+                if (typeof userInfo !== "undefined" && userInfo) {
+                    this.currentUser = userInfo;
+                    return;
+                }
+                try {
+                    var cache = localStorage.getItem("initUser");
+                    if (cache) {
+                        var parsed = JSON.parse(cache);
+                        this.currentUser = parsed && parsed.userInfo ? parsed.userInfo : null;
+                    } else {
+                        this.currentUser = null;
+                    }
+                } catch (e) {
+                    console.log(e);
+                    this.currentUser = null;
+                }
+            },
+            openLogin: function () {
+                if (layui && layui.login) {
+                    layui.login();
+                }
+            },
+            openRegister: function () {
+                if (layui && layui.register) {
+                    layui.register();
+                }
+            },
             initPlate: function () {
                 axios.get("/leek_bbs/bbs/plate/findAll").then(function (response) {
                     var data = response.data || [];
@@ -776,7 +809,7 @@
                 });
             },
             initOnlineUsers: function () {
-                if (typeof userInfo !== "undefined" && userInfo != null) {
+                if (this.currentUser) {
                     setTimeout(function () {
                         axios.get("/leek_bbs/getOnlineList").then(function (result) {
                             indexApp.users = result.data || [];
@@ -788,6 +821,7 @@
             }
         },
         created: function () {
+            this.syncCurrentUser();
             this.initPlate();
             this.initAllCount();
             this.initPosts();
