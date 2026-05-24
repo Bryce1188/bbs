@@ -417,7 +417,7 @@
                 </div>
 
                 <div>
-                    <button class="publish-btn" id="btnEdit" type="button">继续发帖</button>
+                    <button class="publish-btn" id="btnEdit" type="button" @click="continuePost">继续发帖</button>
                     <div class="secondary-note">提交后会进入标题和正文编辑窗口。</div>
                 </div>
             </aside>
@@ -479,6 +479,31 @@
             selectPlate: function (plate) {
                 this.selectedPlate = plate;
             },
+            continuePost: function () {
+                if (!this.selectedPlate || !this.selectedPlate.id) {
+                    ui.error("请选择发帖板块", 1500, true);
+                    return;
+                }
+
+                var host = window.parent && window.parent !== window ? window.parent : window;
+                var hostLayui = host.layui || (window.top && window.top.layui);
+                var hostLayer = host.layer || (window.top && window.top.layer);
+                var openSendPost = hostLayui && hostLayui.openSendPost;
+
+                if (typeof openSendPost !== "function") {
+                    ui.error("发帖窗口还没有加载完成，请返回论坛页重新点击发帖", 1800, true);
+                    return;
+                }
+
+                openSendPost(this.selectedPlate.id);
+
+                if (hostLayer && hostLayer.getFrameIndex && hostLayer.close) {
+                    var index = hostLayer.getFrameIndex(window.name);
+                    if (index !== undefined) {
+                        hostLayer.close(index);
+                    }
+                }
+            },
             initPlate: function () {
                 axios.get("/leek_bbs/bbs/plate/findAll").then(function (response) {
                     var data = response.data || [];
@@ -496,15 +521,6 @@
         }
     });
 
-    $("#btnEdit").click(function () {
-        if (!app.selectedPlate || !app.selectedPlate.id) {
-            ui.error("请选择发帖板块", 1500, true);
-            return;
-        }
-        var index = parent.layer.getFrameIndex(window.name);
-        parent.layer.close(index);
-        parent.window.layui.openSendPost(app.selectedPlate.id);
-    });
 </script>
 </body>
 </html>
