@@ -88,6 +88,72 @@
             font-weight: 500;
         }
 
+        .bbs-auth-link {
+            color: var(--bbs-text);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .bbs-user-menu {
+            position: relative;
+        }
+
+        .bbs-user-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border: 1px solid var(--bbs-border);
+            border-radius: 999px;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .bbs-user-trigger img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #dddddd;
+        }
+
+        .bbs-user-panel {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            min-width: 170px;
+            padding: 8px;
+            border: 1px solid var(--bbs-border);
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(6px);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+            z-index: 20;
+        }
+
+        .bbs-user-panel.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .bbs-user-panel a {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .bbs-user-panel a:hover {
+            background: #f5f5f5;
+        }
+
         .bbs-button {
             display: inline-flex;
             align-items: center;
@@ -547,11 +613,27 @@
         <nav class="bbs-nav-items">
             <a href="/leek_bbs/skipPage/index">论坛</a>
             <a href="/leek_bbs/skipPage/ranking_list">排行</a>
-            <a v-if="currentUser" href="/leek_bbs/skipPage/my-collect">我的收藏</a>
-            <a v-if="currentUser" href="/leek_bbs/skipPage/personal">个人中心</a>
-            <a v-if="!currentUser" href="javascript:;" @click="openLogin">登录</a>
-            <a v-if="!currentUser" href="javascript:;" @click="openRegister">立即注册</a>
-            <a class="bbs-button" href="/leek_bbs/skipPage/sendArticle">发布帖子</a>
+            <template v-if="currentUser">
+                <a href="/leek_bbs/skipPage/my-collect">我的收藏</a>
+                <a href="/leek_bbs/skipPage/personal">个人中心</a>
+                <div class="bbs-user-menu">
+                    <span class="bbs-user-trigger" @click.stop="toggleUserMenu">
+                        <img :src="getAvatar()" :alt="currentUser.username || 'user'">
+                        <span>{{currentUser.another_name || currentUser.username}}</span>
+                    </span>
+                    <div class="bbs-user-panel" :class="{open: userMenuOpen}" @click.stop>
+                        <a href="/leek_bbs/skipPage/spacecp" @click="closeUserMenu">设置</a>
+                        <a href="/leek_bbs/skipPage/daodu#my_post" @click="closeUserMenu">我的帖子</a>
+                        <a href="/leek_bbs/skipPage/msg-notification" @click="closeUserMenu">我的消息</a>
+                        <a href="javascript:;" @click="logoutUser">退出登录</a>
+                    </div>
+                </div>
+            </template>
+            <template v-else>
+                <a class="bbs-auth-link" href="javascript:;" @click="openLogin">登录</a>
+                <a class="bbs-auth-link" href="javascript:;" @click="openRegister">立即注册</a>
+            </template>
+            <a class="bbs-button" href="javascript:;" @click.prevent="handlePublishEntry">发布帖子</a>
         </nav>
     </header>
 
@@ -560,7 +642,7 @@
             <h1>分享校园里的每一个新鲜想法</h1>
             <p>把部门交流、学习资源、游戏开黑、求助问答放在同一个清爽的入口里。首页会实时读取板块和帖子数据，旧内容清空后也能继续正常发帖统计。</p>
             <div class="bbs-hero-actions">
-                <a class="bbs-button" href="/leek_bbs/skipPage/sendArticle">现在发帖</a>
+                <a class="bbs-button" href="javascript:;" @click.prevent="handlePublishEntry">现在发帖</a>
                 <a class="bbs-button bbs-button-light" href="#plates">浏览板块</a>
             </div>
         </div>
@@ -692,7 +774,7 @@
                 <p>发布后对应板块帖数会按原业务逻辑自动增加，首页刷新后会展示最新数据。</p>
             </div>
             <div class="bbs-hero-actions">
-                <a class="bbs-button" href="/leek_bbs/skipPage/sendArticle">发布帖子</a>
+                <a class="bbs-button" href="javascript:;" @click.prevent="handlePublishEntry">发布帖子</a>
                 <a class="bbs-button bbs-button-light" href="/leek_bbs/skipPage/searchPost">搜索帖子</a>
             </div>
         </section>
@@ -709,7 +791,7 @@
             &nbsp;/&nbsp;
             <a href="/leek_bbs/skipPage/ranking_list">排行榜</a>
             &nbsp;/&nbsp;
-            <a href="/leek_bbs/skipPage/sendArticle">发布帖子</a>
+            <a href="javascript:;" @click.prevent="handlePublishEntry">发布帖子</a>
         </div>
     </footer>
 </div>
@@ -734,36 +816,115 @@
             postlastReplys: [],
             postEssences: [],
             users: [],
-            currentUser: null
+            currentUser: null,
+            userMenuOpen: false
         },
         methods: {
-            syncCurrentUser: function () {
-                if (typeof userInfo !== "undefined" && userInfo) {
-                    this.currentUser = userInfo;
-                    return;
+            getAvatar: function () {
+                if (!this.currentUser || !this.currentUser.picture) {
+                    return "/leek_bbs/statics/images/head_portrait/comiis_nologin.jpg";
                 }
+                return "/leek_bbs/" + this.currentUser.picture;
+            },
+            getCurrentUserFromCache: function () {
                 try {
                     var cache = localStorage.getItem("initUser");
                     if (cache) {
                         var parsed = JSON.parse(cache);
-                        this.currentUser = parsed && parsed.userInfo ? parsed.userInfo : null;
-                    } else {
-                        this.currentUser = null;
+                        if (parsed && parsed.userInfo) {
+                            if (parsed.userInfo.username === "test" && parsed.userInfo.another_name === "测试用户") {
+                                localStorage.removeItem("initUser");
+                                return null;
+                            }
+                            return parsed.userInfo;
+                        }
                     }
                 } catch (e) {
                     console.log(e);
-                    this.currentUser = null;
                 }
+                return null;
+            },
+            syncCurrentUser: function () {
+                this.currentUser = this.getCurrentUserFromCache();
             },
             openLogin: function () {
+                if (typeof window.showLoginLayer === "function") {
+                    window.showLoginLayer();
+                    return;
+                }
                 if (layui && layui.login) {
                     layui.login();
+                    return;
+                }
+                if (layui && layui.use) {
+                    layui.use(["layer"], function () {
+                        if (typeof window.showLoginLayer === "function") {
+                            window.showLoginLayer();
+                        } else if (layui && layui.login) {
+                            layui.login();
+                        } else {
+                            layui.layer.msg("登录模块加载中，请稍后重试", {icon: 0, time: 1500});
+                        }
+                    });
                 }
             },
             openRegister: function () {
+                if (typeof window.showRegisterLayer === "function") {
+                    window.showRegisterLayer();
+                    return;
+                }
                 if (layui && layui.register) {
                     layui.register();
+                    return;
                 }
+                if (layui && layui.use) {
+                    layui.use(["layer"], function () {
+                        if (typeof window.showRegisterLayer === "function") {
+                            window.showRegisterLayer();
+                        } else if (layui && layui.register) {
+                            layui.register();
+                        } else {
+                            layui.layer.msg("注册模块加载中，请稍后重试", {icon: 0, time: 1500});
+                        }
+                    });
+                }
+            },
+            logoutUser: function () {
+                this.closeUserMenu();
+                localStorage.removeItem("initUser");
+                this.currentUser = null;
+                if (typeof userInfo !== "undefined") {
+                    userInfo = null;
+                }
+                try {
+                    if (typeof closeWebsocketForLogout === "function") {
+                        closeWebsocketForLogout();
+                    } else if (typeof ws !== "undefined" && ws && ws.close) {
+                        ws.onclose = null;
+                        ws.close();
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+                if (layui && layui.layer) {
+                    layui.layer.closeAll();
+                }
+            },
+            handlePublishEntry: function () {
+                var current = this.getCurrentUserFromCache();
+                if (!current) {
+                    if (layui && layui.login) {
+                        layui.login();
+                    }
+                    return;
+                }
+                window.location.href = "/leek_bbs/skipPage/sendArticle";
+            },
+            toggleUserMenu: function () {
+                this.userMenuOpen = !this.userMenuOpen;
+            },
+            closeUserMenu: function () {
+                this.userMenuOpen = false;
             },
             initPlate: function () {
                 axios.get("/leek_bbs/bbs/plate/findAll").then(function (response) {
@@ -826,6 +987,18 @@
             this.initAllCount();
             this.initPosts();
             this.initOnlineUsers();
+        },
+        mounted: function () {
+            var that = this;
+            this._closeUserMenuHandler = function () {
+                that.closeUserMenu();
+            };
+            document.addEventListener("click", this._closeUserMenuHandler);
+        },
+        beforeDestroy: function () {
+            if (this._closeUserMenuHandler) {
+                document.removeEventListener("click", this._closeUserMenuHandler);
+            }
         }
     });
 </script>

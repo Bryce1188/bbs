@@ -571,12 +571,26 @@
                                 }).then(function (response) {
                                     if (response.data == 1) {
                                         localLayer.closeAll();
-                                        ui.success("发表主题成功,等待审核", 1500, true);
+                                        localLayer.confirm(
+                                            "发表主题成功，已提交管理员审核。是否前往导读页查看帖子？",
+                                            {
+                                                icon: 1,
+                                                title: "发布成功",
+                                                btn: ["去导读", "继续留在这里"]
+                                            },
+                                            function (idx) {
+                                                localLayer.close(idx);
+                                                window.location.href = "/leek_bbs/skipPage/daodu?my_post=1";
+                                            },
+                                            function (idx) {
+                                                localLayer.close(idx);
+                                            }
+                                        );
                                     } else {
-                                        ui.error("发表主题失败", 1500, true);
+                                        localLayer.msg("发表主题失败，请稍后重试", {icon: 2, time: 1800});
                                     }
                                 }).catch(function () {
-                                    ui.error("发表主题失败", 1500, true);
+                                    localLayer.msg("发表主题失败，请检查网络或后台日志", {icon: 2, time: 1800});
                                 });
                             });
                         }

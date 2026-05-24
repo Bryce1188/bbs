@@ -5,6 +5,23 @@ var ws = null;
 var userInfo = null;
 //聊天对象
 var tarUser = null;
+//主动退出标记，避免退出后 websocket 自动重连干扰登录流程
+var isManualLogout = false;
+
+function closeWebsocketForLogout() {
+    isManualLogout = true;
+    if (ws != null) {
+        try {
+            ws.onclose = null;
+            ws.onerror = null;
+            ws.onmessage = null;
+            ws.close();
+        } catch (e) {
+            console.log(e);
+        }
+        ws = null;
+    }
+}
 
 Vue.component('head_menu_comp', {
     props:['is_login'],
@@ -119,7 +136,7 @@ Vue.component('head_menu_comp', {
         },
         logout(){
             localStorage.removeItem("initUser");
-            ws.close();
+            closeWebsocketForLogout();
             window.location.reload();
         }
     }
@@ -134,7 +151,9 @@ var head_menu = new Vue({
     },
     methods: {
         loginSuccess(){
-            this.$refs.fo.loginSubmit();
+            if (this.$refs && this.$refs.fo && typeof this.$refs.fo.loginSubmit === "function") {
+                this.$refs.fo.loginSubmit();
+            }
         }
     }
 
@@ -154,7 +173,7 @@ layui.define(['layer','form','util'],function (exports) {
 
     getUserInformation('');
 
-    exports('register', function () {
+    var registerLayerOpen = function () {
         layer.open({
             type: 1,
             id: 'Lay-register', //id唯一标识
@@ -228,9 +247,11 @@ layui.define(['layer','form','util'],function (exports) {
             success: function (layero, index) {
                 $("#layui-layer"+index).find(".layui-layer-title").addClass("lay-head-title");
             }
-        })
+        });
 
-    });
+    };
+    exports('register', registerLayerOpen);
+    window.showRegisterLayer = registerLayerOpen;
 
     //自定义验证规则
     form.verify({
@@ -353,7 +374,7 @@ layui.define(['layer','form','util'],function (exports) {
     });
 
     //登录弹窗方法
-    exports('login', function () {
+    var loginLayerOpen = function () {
         layer.open({
             type: 1,
             id: 'Lay-login', //id唯一标识
@@ -425,8 +446,10 @@ layui.define(['layer','form','util'],function (exports) {
                     ,"isRemember":true
                 });
             }
-        })
-    });
+        });
+    };
+    exports('login', loginLayerOpen);
+    window.showLoginLayer = loginLayerOpen;
 
     //修改密码
     function alterPwd(){
@@ -607,7 +630,9 @@ function getUserInformation(username){
                 })
         }
     }else{
-        head_menu.loginSuccess();
+        if (head_menu && typeof head_menu.loginSuccess === "function") {
+            head_menu.loginSuccess();
+        }
         let map = JSON.parse(window.localStorage.getItem("initUser"));
         userInfo = map.userInfo;
         console.log(map);
@@ -625,6 +650,15 @@ function getUserInformation(username){
 
 //封装服务连接方法
 function websocketLinkStart(userInfo) {
+    if (isManualLogout) {
+        return;
+    }
+    if (!userInfo || !userInfo.id) {
+        return;
+    }
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+        return;
+    }
     if(WebSocket){
         //ws = new WebSocket("ws://jxz.free.qydev.com:8080/websocket/"+userInfo.id);
         //本地连接
@@ -634,6 +668,7 @@ function websocketLinkStart(userInfo) {
     }
     //连接建立成功的回调方法
     ws.onopen = function () {
+        isManualLogout = false;
         console.log("连接建立成功!");
     };
     //连接发生错误的回调方法
@@ -679,16 +714,24 @@ function websocketLinkStart(userInfo) {
     };
     // 监听断开连接的方法.
     ws.onclose = function(event) {
-        // 业务需求，例如：聊天室，当某人退出的时候，会给出提示，xxx退出了...
-        websocketLinkStart(userInfo);
+        if (isManualLogout) {
+            return;
+        }
+        if (localStorage.getItem("initUser") == null) {
+            return;
+        }
+        if (!userInfo || !userInfo.id) {
+            return;
+        }
+        setTimeout(function () {
+            websocketLinkStart(userInfo);
+        }, 1500);
     };
 }
 // 退出系统时, 关闭建立的WebSocket链接
 //离开页面,改变用户状态
 window.onunload = function() {
-    if (ws != null){
-        ws.close();
-    }
+    closeWebsocketForLogout();
 };
 
 //获取地地址栏文件部分
@@ -703,10 +746,3 @@ function getUrlParam(name) {
     let r = window.location.search.substr(1).match(reg);  //匹配目标参数
     if (r != null) return decodeURI(r[2]); return null; //返回参数值
 }
-
-// 在 head_menu.js 或页面脚本中添加（临时测试用）
-window.userInfo = {
-    id: 1,
-    username: "test",
-    another_name: "测试用户",
-};
