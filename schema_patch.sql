@@ -188,15 +188,7 @@ SELECT `id`, '0', 0, 0, NULL, NULL, '0' FROM `user`
 WHERE `id` NOT IN (SELECT `user_id` FROM `sign`);
 
 SET @root_id := (SELECT `id` FROM `user` WHERE `username` = 'root' LIMIT 1);
-INSERT INTO `friend_group` (`group_name`, `user_id`)
-SELECT '同学们~', @root_id
-WHERE @root_id IS NOT NULL AND (SELECT COUNT(*) FROM `friend_group` WHERE `user_id` = @root_id) = 0;
-INSERT INTO `friend_group` (`group_name`, `user_id`)
-SELECT '  ╲◢ ╲◢', @root_id
-WHERE @root_id IS NOT NULL AND (SELECT COUNT(*) FROM `friend_group` WHERE `user_id` = @root_id) = 1;
-INSERT INTO `friend_group` (`group_name`, `user_id`)
-SELECT '  兄弟们 ^`', @root_id
-WHERE @root_id IS NOT NULL AND (SELECT COUNT(*) FROM `friend_group` WHERE `user_id` = @root_id) = 2;
-INSERT INTO `friend_group` (`group_name`, `user_id`)
-SELECT '  家人们`~', @root_id
-WHERE @root_id IS NOT NULL AND (SELECT COUNT(*) FROM `friend_group` WHERE `user_id` = @root_id) = 3;
+INSERT INTO `user_role` (`user_id`, `role_id`)
+SELECT @root_id, 1
+WHERE @root_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @root_id AND `role_id` = 1);
+
