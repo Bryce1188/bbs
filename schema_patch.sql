@@ -192,3 +192,44 @@ INSERT INTO `user_role` (`user_id`, `role_id`)
 SELECT @root_id, 1
 WHERE @root_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @root_id AND `role_id` = 1);
 
+SET @admin_id := (SELECT `id` FROM `user` WHERE `username` = 'admin' LIMIT 1);
+SET @root_id := (SELECT `id` FROM `user` WHERE `username` = 'root' LIMIT 1);
+
+DELETE FROM `attention`;
+DELETE FROM `notice`;
+DELETE FROM `post_details`;
+DELETE FROM `post_operation`;
+DELETE FROM `post_share`;
+DELETE FROM `post_report`;
+DELETE FROM `u_collect`;
+DELETE FROM `sys_log`;
+DELETE FROM `sys_warn`;
+DELETE FROM `u_log`;
+DELETE FROM `leave_word`;
+DELETE FROM `user_friend`;
+DELETE FROM `friend_group`;
+DELETE FROM `post`;
+
+DELETE FROM `integral` WHERE `user_id` NOT IN (@admin_id, @root_id);
+DELETE FROM `experience` WHERE `user_id` NOT IN (@admin_id, @root_id);
+DELETE FROM `sign` WHERE `user_id` NOT IN (@admin_id, @root_id);
+DELETE FROM `user_role` WHERE `user_id` NOT IN (@admin_id, @root_id);
+DELETE FROM `user` WHERE `username` NOT IN ('admin', 'root');
+
+UPDATE `plate` SET `theme` = 0, `posts` = 0, `collect_total` = '0';
+
+INSERT INTO `user_role` (`user_id`, `role_id`)
+SELECT @admin_id, 1
+WHERE @admin_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @admin_id AND `role_id` = 1);
+INSERT INTO `user_role` (`user_id`, `role_id`)
+SELECT @admin_id, 2
+WHERE @admin_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @admin_id AND `role_id` = 2);
+INSERT INTO `user_role` (`user_id`, `role_id`)
+SELECT @admin_id, 3
+WHERE @admin_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @admin_id AND `role_id` = 3);
+INSERT INTO `user_role` (`user_id`, `role_id`)
+SELECT @admin_id, 4
+WHERE @admin_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @admin_id AND `role_id` = 4);
+INSERT INTO `user_role` (`user_id`, `role_id`)
+SELECT @root_id, 1
+WHERE @root_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @root_id AND `role_id` = 1);

@@ -11,7 +11,7 @@
  Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 25/05/2025 22:22:57
+ Date: 24/05/2026 22:22:57
 */
 
 SET NAMES utf8mb4;
@@ -251,7 +251,7 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (4, 'admin', 'admin', '管理员', NULL, '男', '33321@qq.com', 15279515773, 'statics/images/toux2.jpg', '2025-05-21 13:38:00', '127.0.0.1', '2025-05-21 17:48:44', '127.0.0.1', '', '0', '1');
+INSERT INTO `user` VALUES (4, 'admin', 'admin', '管理员', NULL, '男', '33321@qq.com', 15279515773, 'statics/images/toux2.jpg', '2026-05-24 13:38:00', '127.0.0.1', '2026-05-24 17:48:44', '127.0.0.1', '', '0', '1');
 
 -- ----------------------------
 -- Table structure for user_role
