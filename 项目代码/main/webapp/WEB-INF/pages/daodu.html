@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="/leek_bbs/statics/bootstrap-3.3.7/css/bootstrap.min.css">
 	<!-- vue-element插件样式 -->
 	<link rel="stylesheet" href="/leek_bbs/statics/vue/element-ui/index.css">
-	<link rel="stylesheet" href="/leek_bbs/statics/css/head.css">
+	<link rel="stylesheet" href="/leek_bbs/statics/css/head.css?v=20260525h">
 	
 	<style>
 		.bgc{
@@ -283,7 +283,7 @@
 <script src="/leek_bbs/statics/component/common_import.js"></script>
 <!-- vue-element插件 -->
 <script src="/leek_bbs/statics/vue/element-ui/index.js"></script>
-<script src="/leek_bbs/statics/component/head_menu.js"></script>
+<script src="/leek_bbs/statics/component/head_menu.js?v=20260525h"></script>
 <!--富文本编辑器-->
 <script src="/leek_bbs/statics/component/wangEditor.min.js"></script>
 <script src="/leek_bbs/statics/component/wangEditCommon.js"></script>
@@ -434,6 +434,13 @@
                 },
                 /*时间转换方法*/
                 changePublishTime(dateTimeStamp){
+                    if (!dateTimeStamp) {
+                        return "-";
+                    }
+                    var ts = Number(dateTimeStamp);
+                    if (!isNaN(ts) && ts <= 0) {
+                        return "-";
+                    }
                     var minute = 1000 * 60;
                     var hour = minute * 60;
                     var day = hour * 24;
@@ -441,9 +448,9 @@
                     var month = day * 30;
                     var year = day * 365;
                     var now = new Date().getTime();
-                    var diffValue = now - dateTimeStamp;
+                    var diffValue = now - (isNaN(ts) ? new Date(dateTimeStamp).getTime() : ts);
                     //console.log(diffValue);
-                    if(diffValue < 0){return;}
+                    if(isNaN(diffValue) || diffValue < 0){return "-";}
                     var monthC =diffValue/month;
                     var weekC =diffValue/(7*day);
                     var dayC =diffValue/day;
@@ -630,3 +637,4 @@
 </body>
 <!--发表新主题弹出框结束-->
 </html>
+

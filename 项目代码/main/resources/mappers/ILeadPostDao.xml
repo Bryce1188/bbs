@@ -120,7 +120,7 @@
     </insert>
 
     <update id="updateExperience" parameterType="java.util.Map">
-        update experience set total_experience=total_experience+#{experience},time=now() where id=#{userId};
+        update experience set total_experience=total_experience+#{experience},time=now() where user_id=#{userId};
     </update>
     <select id="getTodayNewPostCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
     select count(*) from post where publish_time between date_sub(curdate(),interval 0 day) and now() and user_id=#{userId};

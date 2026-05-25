@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" xmlns:v-on="http://java.sun.com/jsf/composite">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/leek_bbs/statics/yu-ui/js_css/yu.css">
     <link rel="stylesheet" href="/leek_bbs/statics/layui/css/layui.css">
     <link rel="stylesheet" href="/leek_bbs/statics/bootstrap-3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/leek_bbs/statics/css/head.css">
+    <link rel="stylesheet" href="/leek_bbs/statics/css/head.css?v=20260525h">
     <style>
         .numberOn{
             color: #fff;
@@ -55,7 +55,7 @@
             color: #ff6f3d;
             background-color: #f5f5f5;
         }
-        .layui-tab-content img{
+        .layui-tab-content img.rank-icon{
             width: 14px;
             height: 13px;
         }
@@ -88,6 +88,88 @@
             color: #7f8da3;
             font-size: 13px;
             margin: 2px 0 0;
+            white-space: nowrap;
+        }
+        #rankApp .layui-tab-content .rank-user-row{
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px;
+        }
+        #rankApp .layui-tab-content .rank-user-row > .col-sm-8,
+        #rankApp .layui-tab-content .rank-user-row > .col-sm-4{
+            float: none !important;
+        }
+        #rankApp .layui-tab-content .rank-user-row > .col-sm-8{
+            display: flex !important;
+            align-items: center !important;
+            flex: 1 1 auto !important;
+            width: auto !important;
+            min-height: 64px !important;
+            padding: 0 12px !important;
+        }
+        #rankApp .layui-tab-content .rank-user-row > .col-sm-4{
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+            flex: 0 0 138px !important;
+            width: 138px !important;
+            max-width: 138px !important;
+            min-height: 64px !important;
+            padding-right: 14px !important;
+        }
+        #rankApp .layui-tab-content .rank-user-row .rank-user-card{
+            align-items: center !important;
+            display: grid !important;
+            grid-template-columns: 34px 56px minmax(0,1fr) !important;
+            column-gap: 14px !important;
+            width: 100% !important;
+        }
+        #rankApp .layui-tab-content .rank-user-row .rank-avatar{
+            width: 52px !important;
+            height: 52px !important;
+            object-fit: cover !important;
+            border: 1px solid #e3e8f0 !important;
+        }
+        #rankApp .layui-tab-content .rank-user-row .rank-user-meta{
+            min-width: 0 !important;
+            width: auto !important;
+            flex: 1 !important;
+        }
+        #rankApp .layui-tab-content .rank-user-row .rank-user-name{
+            margin: 0 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+        #rankApp .layui-tab-content .rank-user-row .rank-user-extra{
+            margin: 4px 0 0 !important;
+        }
+        .rank-action{
+            align-items: center;
+            background: #141922;
+            border: 1px solid #141922;
+            border-radius: 10px;
+            color: #fff !important;
+            display: inline-flex;
+            font-size: 12px;
+            font-weight: 700;
+            height: 34px;
+            justify-content: center;
+            min-width: 88px;
+            padding: 0 12px;
+            text-decoration: none;
+        }
+        .rank-action,
+        .rank-action:link,
+        .rank-action:visited,
+        .rank-action:active,
+        .rank-action:focus{
+            color: #fff !important;
+        }
+        .rank-action:hover{
+            background: #0f131c;
+            border-color: #0f131c;
+            color: #fff !important;
         }
         .bbs-nav{
             align-items: center;
@@ -274,25 +356,24 @@
                     <ul class="layui-tab-title">
                         <li class="layui-this">积分排行</li>
                         <li v-on:click="getuPost">发帖数排行</li>
-                        <li v-on:click="getLogs">日志排行</li>
                         <li v-on:click="getExperience">经验排行</li>
                     </ul>
                     <div class="layui-tab-content">
                         <div class="layui-tab-item layui-show">
-                            <div class="layui-row m-border-bottom" v-for="(integral,index) in integrals" style="padding-top: 15px;padding-bottom: 1px;border-bottom: 1px solid #e5e5e5; ">
+                            <div class="layui-row m-border-bottom rank-user-row" v-for="(integral,index) in integrals" style="padding-top: 15px;padding-bottom: 1px;border-bottom: 1px solid #e5e5e5; ">
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
                                         <a :href="personalUrl(integral)" :title="'进入'+integral.another_name+'空间'"><img :src="'/leek_bbs/'+integral.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
-                                            <p class="rank-user-name">{{integral.another_name}}</p>
+                                            <p class="rank-user-name">{{displayUserName(integral)}}</p>
                                             <p class="rank-user-extra">积分数:<em>{{integral.integral.total_integral}}</em></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
-                                    <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(integral)">去串个门</a></li>
+                                    <ul style="font-size: 12px;float: right;margin:0;">
+                                        <li><a class="rank-action" :href="personalUrl(integral)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -302,20 +383,20 @@
                             <p style="margin-top:5px;font-size: 12px;font-family: Arial;color: #7f8da3">排行榜显示前10位数据</p>
                         </div>
                         <div class="layui-tab-item">
-                            <div class="layui-row m-border-bottom" v-for="(essay,index) in essays"style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
+                            <div class="layui-row m-border-bottom rank-user-row" v-for="(essay,index) in essays"style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px"><em>{{index+1>9?index+1:(index+1)}}</em></span>
                                         <a :href="personalUrl(essay)" :title="'进入'+essay.another_name+'空间'"><img :src="'/leek_bbs/'+essay.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
-                                            <p class="rank-user-name">{{essay.another_name}}</p>
+                                            <p class="rank-user-name">{{displayUserName(essay)}}</p>
                                             <p class="rank-user-extra">发帖数:<em>{{essay.posts}}</em></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
-                                    <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(essay)">去串个门</a></li>
+                                    <ul style="font-size: 12px;float: right;margin:0;">
+                                        <li><a class="rank-action" :href="personalUrl(essay)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -325,43 +406,20 @@
                             <p style="margin-top:5px;font-size: 12px;font-family: Arial;color: #7f8da3">排行榜显示前10位数据</p>
                         </div>
                         <div class="layui-tab-item">
-                            <div class="layui-row m-border-bottom" v-for="(log,index) in logs" style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
-                                <div class="col-sm-8">
-                                    <div class="rank-user-card">
-                                        <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                        <a :href="personalUrl(log)" :title="'进入'+log.another_name+'空间'"><img :src="'/leek_bbs/'+log.picture" class="img-circle rank-avatar"></a>
-                                        <div class="rank-user-meta">
-                                            <p class="rank-user-name">{{log.another_name}}</p>
-                                            <p class="rank-user-extra">日志数:<em>{{log.log}}</em></p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(log)">去串个门</a></li>
-                                        <!--<li><a href="javascript;">打个招呼</a></li>-->
-                                        <!--<li><a href="javascript;">发送消息</a></li>-->
-                                        <!--<li><a href="javascript;">加为好友</a></li>-->
-                                    </ul>
-                                </div>
-                            </div>
-                            <p style="margin-top:5px;font-size: 12px;font-family: Arial;color: #7f8da3">排行榜显示前10位数据</p>
-                        </div>
-                        <div class="layui-tab-item">
-                            <div class="layui-row m-border-bottom" v-for="(experience,index) in experiences" style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
+                            <div class="layui-row m-border-bottom rank-user-row" v-for="(experience,index) in experiences" style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
                                         <a :href="personalUrl(experience)" :title="'进入'+experience.another_name+'空间'"><img :src="'/leek_bbs/'+experience.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
-                                            <p class="rank-user-name">{{experience.another_name}}</p>
+                                            <p class="rank-user-name">{{displayUserName(experience)}}</p>
                                             <p class="rank-user-extra">经验数:<em>{{experience.total_experience}}</em></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
-                                    <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(experience)">去串个门</a></li>
+                                    <ul style="font-size: 12px;float: right;margin:0;">
+                                        <li><a class="rank-action" :href="personalUrl(experience)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -632,7 +690,7 @@
 <!--    </footer>-->
 </div>
 <script src="/leek_bbs/statics/component/common_import.js"></script>
-<script src="/leek_bbs/statics/component/head_menu.js"></script>
+<script src="/leek_bbs/statics/component/head_menu.js?v=20260525h"></script>
 <script src="/leek_bbs/statics/js/my_project_rs.js"></script>
 
 <script>
@@ -672,6 +730,12 @@
                 }
                 var parsed = parseInt(raw, 10);
                 return isNaN(parsed) ? null : parsed;
+            },
+            displayUserName: function (user) {
+                if (!user) {
+                    return "匿名用户";
+                }
+                return user.another_name || user.username || ("用户" + (this.resolveUserId(user) || ""));
             },
             personalUrl: function (user) {
                 var userId = user;
@@ -802,16 +866,6 @@
                         this.essays = data;
                     });
             },
-            getLogs(){
-                axios.post("/leek_bbs/bbs/rank/selectLog",{
-                    pageSize: this.pageSize,
-                    pageNo: this.pageNo,
-                })
-                    .then(response => {
-                        var data = response.data;
-                        this.logs = data;
-                    });
-            },
             getExperience(){
                 axios.post("/leek_bbs/bbs/rank/selectExperience",{
                     pageSize: this.pageSize,
@@ -931,7 +985,13 @@
         },
         filters: {
             format(value) {
+                if (!value) {
+                    return "-";
+                }
                 let date = new Date(value);
+                if (isNaN(date.getTime())) {
+                    return "-";
+                }
                 return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
             }
         }
@@ -947,3 +1007,4 @@
 </script>
 </body>
 </html>
+

@@ -104,6 +104,8 @@ public class PostBrowseCommentController {
         postBrowseService.insertPostDetails(postDetails);
         map.put("id",map.get("post_id"));
         map.put("reply_count",1);
+        map.put("post_heat",1);
+        map.put("last_reply_uid",map.get("pd_uid"));
         map.put("last_reply_time",1);
         postBrowseService.updatePost(map);      //更新主题数据
         Plate plate = new Plate();
@@ -122,6 +124,8 @@ public class PostBrowseCommentController {
             postBrowseService.deleteThemeOperation(map);
             map.put("post_grade",1);
             map.put("post_grade_op","sub");
+            map.put("post_heat",1);
+            map.put("post_heat_op","sub");
             postBrowseService.updatePost(map);
             ApiResult result = ApiResult.of(ResultCode.SUCCESS);
             result.setMsg("UNLIKE_SUCCESS");
@@ -130,6 +134,8 @@ public class PostBrowseCommentController {
         postBrowseService.insertThemeOperation(map);
         map.put("post_grade",1);
         map.put("post_grade_op","add");
+        map.put("post_heat",1);
+        map.put("post_heat_op","add");
         postBrowseService.updatePost(map);
         ApiResult result = ApiResult.of(ResultCode.SUCCESS);
         result.setMsg("LIKE_SUCCESS");
@@ -144,6 +150,8 @@ public class PostBrowseCommentController {
             userCollectService.deleteCollectByMap(map);
             map.put("post_collect",1);
             map.put("post_collect_op","sub");
+            map.put("post_heat",1);
+            map.put("post_heat_op","sub");
             postBrowseService.updatePost(map);
             ApiResult result = ApiResult.of(ResultCode.SUCCESS);
             result.setMsg("UNCOLLECT_SUCCESS");
@@ -158,6 +166,8 @@ public class PostBrowseCommentController {
         userCollectService.insertUserCollect(userCollect);
         map.put("post_collect",1);
         map.put("post_collect_op","add");
+        map.put("post_heat",1);
+        map.put("post_heat_op","add");
         postBrowseService.updatePost(map);
         ApiResult result = ApiResult.of(ResultCode.SUCCESS);
         result.setMsg("COLLECT_SUCCESS");
@@ -174,6 +184,7 @@ public class PostBrowseCommentController {
         postShareService.insertPostShare(map);
         map.put("id",map.get("post_id"));   //帖子主题id
         map.put("share_count","1"); //表示分享次数+1
+        map.put("post_heat","1");
         //更新帖子分享数
         postBrowseService.updatePost(map);
         return ApiResult.of(ResultCode.SUCCESS);

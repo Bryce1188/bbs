@@ -207,28 +207,8 @@ SET @ljj_id := (SELECT `id` FROM `user` WHERE `username` = 'ljj' LIMIT 1);
 SET @lp_id := (SELECT `id` FROM `user` WHERE `username` = 'lp' LIMIT 1);
 SET @xzr_id := (SELECT `id` FROM `user` WHERE `username` = 'xzr' LIMIT 1);
 
-DELETE FROM `attention`;
-DELETE FROM `notice`;
-DELETE FROM `post_details`;
-DELETE FROM `post_operation`;
-DELETE FROM `post_share`;
-DELETE FROM `post_report`;
-DELETE FROM `u_collect`;
-DELETE FROM `sys_log`;
-DELETE FROM `sys_warn`;
-DELETE FROM `u_log`;
-DELETE FROM `leave_word`;
-DELETE FROM `user_friend`;
-DELETE FROM `friend_group`;
-DELETE FROM `post`;
-
-DELETE FROM `integral` WHERE `user_id` NOT IN (@admin_id, @root_id, @ljj_id, @lp_id, @xzr_id);
-DELETE FROM `experience` WHERE `user_id` NOT IN (@admin_id, @root_id, @ljj_id, @lp_id, @xzr_id);
-DELETE FROM `sign` WHERE `user_id` NOT IN (@admin_id, @root_id, @ljj_id, @lp_id, @xzr_id);
-DELETE FROM `user_role` WHERE `user_id` NOT IN (@admin_id, @root_id, @ljj_id, @lp_id, @xzr_id);
-DELETE FROM `user` WHERE `username` NOT IN ('admin', 'root', 'ljj', 'lp', 'xzr');
-
-UPDATE `plate` SET `theme` = 0, `posts` = 0, `collect_total` = '0';
+-- Keep real user data. The launcher must not wipe forum activity on every start.
+-- Seed only missing demo records, then recompute counters from real detail tables.
 
 INSERT INTO `user_role` (`user_id`, `role_id`)
 SELECT @admin_id, 1
@@ -255,38 +235,253 @@ INSERT INTO `user_role` (`user_id`, `role_id`)
 SELECT @xzr_id, 3
 WHERE @xzr_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `user_role` WHERE `user_id` = @xzr_id AND `role_id` = 3);
 
+CREATE TEMPORARY TABLE IF NOT EXISTS `_seed_posts` (
+    `title` varchar(50) NOT NULL,
+    `content` varchar(1000) NOT NULL,
+    `username` varchar(11) NOT NULL,
+    `plate_id` int NOT NULL,
+    `browse_count` int NOT NULL,
+    `hours_ago` int NOT NULL
+) ENGINE=Memory DEFAULT CHARSET=utf8mb3;
+DELETE FROM `_seed_posts`;
+INSERT INTO `_seed_posts` (`title`, `content`, `username`, `plate_id`, `browse_count`, `hours_ago`) VALUES
+('部门周会纪要模板，拿去直接改', '我把周会模板做成了三段：本周进展、风险点、下周计划。大家可以直接按这个格式提报，省很多时间。', 'ljj', 1, 76, 44),
+('新来的实习同学怎么快速熟悉项目', '我们组最近来了新人，我整理了一份代码阅读顺序和接口联调清单，欢迎补充。', 'lp', 1, 58, 40),
+('摄影初学者避坑：先学构图再追器材', '我试了两周，先把光线和构图练好确实更值。预算不多的同学，先别急着上全套器材。', 'lp', 2, 63, 38),
+('跑步两周后膝盖有点不舒服', '配速不快，但是下楼梯会酸。有没有同学知道是不是鞋子或者姿势的问题？', 'xzr', 2, 42, 36),
+('你们最近在食堂吃到的宝藏窗口是哪个？', '我先投三楼砂锅饭一票，出餐快味道也稳。欢迎大家来个真实测评，避雷也欢迎。', 'xzr', 3, 88, 33),
+('校门口那家面馆是不是换师傅了', '上周吃还很香，今天汤底有点淡。想确认是我口味变了还是确实换了。', 'ljj', 3, 47, 31),
+('今晚开黑差两人，主打沟通不甩锅', '8点到11点，段位不限，能听麦就行。上分其次，心态第一。', 'ljj', 4, 71, 29),
+('有没有轻松一点的双人游戏推荐', '想和室友周末玩，不要太肝，最好一局半小时以内。', 'lp', 4, 39, 28),
+('告白墙匿名提问：怎么自然开启聊天', '不是土味情话那种，就想正常认识一下。有没有一句不尴尬的开场白推荐？', 'lp', 5, 95, 25),
+('图书馆三楼靠窗位置有人落了耳机', '黑色耳机盒，下午四点左右看到的。我交到前台了，失主可以去问一下。', 'xzr', 5, 52, 24),
+('周末兼职信息汇总（更新版）', '整理了校内外相对靠谱的兼职渠道，时薪和时间我都标了。需要表格版可以回帖。', 'xzr', 6, 67, 21),
+('家教面试会问什么问题', '第一次接家教，有点怕讲不清楚。有没有做过的同学分享一下流程？', 'ljj', 6, 44, 20),
+('高数和数据结构复习资料打包', '把我期中复习用过的讲义、题单和错题思路整理好了，想要的同学留邮箱。', 'ljj', 7, 109, 17),
+('英语六级听力怎么稳住心态', '一到听力就容易慌，尤其第二篇开始脑子发空。求一些真实有效的练法。', 'xzr', 7, 64, 16),
+('SpringBoot 接口偶发 500，已定位一半', '目前怀疑是并发下对象复用导致的空指针，贴了日志关键段，欢迎懂后端的同学一起看看。', 'lp', 8, 83, 13),
+('MySQL 联表查询突然变慢怎么排查', '数据量不大但 join 后很慢，explain 里 type 是 ALL。索引应该怎么加比较合适？', 'ljj', 8, 72, 12),
+('最近状态有点低，求一份作息自救方案', '总觉得白天效率低，晚上又睡不早。有没有同学实践过能坚持的节奏，给我抄个作业。', 'xzr', 9, 74, 10),
+('宿舍晚上总有人外放怎么沟通', '不想把关系弄僵，但确实影响睡觉。有没有比较不尴尬的说法？', 'lp', 9, 61, 9),
+('课程设计需求不明确，怎么和老师沟通更有效', '我现在最大问题是边界太模糊。想问问大家一般怎么准备问题清单，避免沟通后还返工。', 'ljj', 10, 79, 7),
+('毕设开题报告被打回一次', '老师说研究内容太散，我准备重新收束成两个模块。有没有类似经历的同学？', 'xzr', 10, 55, 6),
+('寻物启事：灰色保温杯，杯盖有贴纸', '地点大概在实验楼一层自习区。杯子里有茶包，如果捡到麻烦联系我，真的感谢。', 'lp', 11, 58, 4),
+('有人捡到校园卡吗，姓李', '大概在操场到食堂这一路丢的，已经挂失了，但还是想找回来。', 'ljj', 11, 49, 3),
+('今天不卷了，来个轻松话题：你最爱的宵夜', '我先说：炒粉加一杯冰豆奶。最近加班有点多，想看看大家都靠什么回血。', 'xzr', 12, 69, 2),
+('有没有适合雨天听的歌单', '今天下雨，写代码写到一半突然想听点安静的。大家丢几首歌吧。', 'lp', 12, 36, 1),
+('服务器异常排查记录：NPE 复盘', '昨晚把线上空指针问题复盘了一遍，核心原因是返回对象判空遗漏。把排查链路整理给大家。', 'admin', 8, 92, 5),
+('图书馆自习室临时维护通知', '今天晚间 8 点到 10 点东区自习室临时检修，建议大家提前换到南楼。', 'root', 11, 46, 8);
+
 INSERT INTO `post` (
     `title`, `content`, `user_id`, `browse_count`, `reply_count`, `publish_time`,
     `first_post`, `post_status`, `post_heat`, `share_count`, `post_grade`,
     `post_collect`, `post_top`, `post_tread`, `post_author`, `plate_id`, `last_reply`, `last_reply_time`
-) VALUES
-('部门周会纪要模板，拿去直接改', '我把周会模板做成了三段：本周进展、风险点、下周计划。大家可以直接按这个格式提报，省很多时间。', @ljj_id, 76, 7, NOW() - INTERVAL 44 HOUR, 0, '1', 24, 1, '1', '4', '5', '1', 'ljj', 1, 'lp', NOW() - INTERVAL 40 HOUR),
-('摄影初学者避坑：先学构图再追器材', '我试了两周，先把光线和构图练好确实更值。预算不多的同学，先别急着上全套器材。', @lp_id, 63, 5, NOW() - INTERVAL 38 HOUR, 0, '1', 19, 1, '1', '3', '4', '1', 'lp', 2, 'xzr', NOW() - INTERVAL 35 HOUR),
-('你们最近在食堂吃到的宝藏窗口是哪个？', '我先投三楼砂锅饭一票，出餐快味道也稳。欢迎大家来个真实测评，避雷也欢迎。', @xzr_id, 88, 10, NOW() - INTERVAL 33 HOUR, 0, '1', 27, 2, '1', '6', '6', '1', 'xzr', 3, 'ljj', NOW() - INTERVAL 31 HOUR),
-('今晚开黑差两人，主打沟通不甩锅', '8点到11点，段位不限，能听麦就行。上分其次，心态第一。', @ljj_id, 71, 6, NOW() - INTERVAL 29 HOUR, 0, '1', 22, 1, '1', '4', '5', '1', 'ljj', 4, 'lp', NOW() - INTERVAL 27 HOUR),
-('告白墙匿名提问：怎么自然开启聊天', '不是土味情话那种，就想正常认识一下。有没有一句不尴尬的开场白推荐？', @lp_id, 95, 12, NOW() - INTERVAL 25 HOUR, 0, '1', 30, 2, '1', '7', '7', '1', 'lp', 5, 'xzr', NOW() - INTERVAL 23 HOUR),
-('周末兼职信息汇总（更新版）', '整理了校内外相对靠谱的兼职渠道，时薪和时间我都标了。需要表格版可以回帖。', @xzr_id, 67, 5, NOW() - INTERVAL 21 HOUR, 0, '1', 20, 1, '1', '4', '4', '1', 'xzr', 6, 'ljj', NOW() - INTERVAL 19 HOUR),
-('高数和数据结构复习资料打包', '把我期中复习用过的讲义、题单和错题思路整理好了，想要的同学留邮箱。', @ljj_id, 109, 14, NOW() - INTERVAL 17 HOUR, 0, '1', 35, 3, '1', '8', '9', '1', 'ljj', 7, 'lp', NOW() - INTERVAL 15 HOUR),
-('SpringBoot 接口偶发 500，已定位一半', '目前怀疑是并发下对象复用导致的空指针，贴了日志关键段，欢迎懂后端的同学一起看看。', @lp_id, 83, 8, NOW() - INTERVAL 13 HOUR, 0, '1', 26, 2, '1', '5', '6', '1', 'lp', 8, 'xzr', NOW() - INTERVAL 12 HOUR),
-('最近状态有点低，求一份作息自救方案', '总觉得白天效率低，晚上又睡不早。有没有同学实践过能坚持的节奏，给我抄个作业。', @xzr_id, 74, 9, NOW() - INTERVAL 10 HOUR, 0, '1', 23, 1, '1', '5', '5', '1', 'xzr', 9, 'ljj', NOW() - INTERVAL 9 HOUR),
-('课程设计需求不明确，怎么和老师沟通更有效', '我现在最大问题是边界太模糊。想问问大家一般怎么准备问题清单，避免沟通后还返工。', @ljj_id, 79, 7, NOW() - INTERVAL 7 HOUR, 0, '1', 24, 1, '1', '5', '5', '1', 'ljj', 10, 'lp', NOW() - INTERVAL 6 HOUR),
-('寻物启事：灰色保温杯，杯盖有贴纸', '地点大概在实验楼一层自习区。杯子里有茶包，如果捡到麻烦联系我，真的感谢。', @lp_id, 58, 4, NOW() - INTERVAL 4 HOUR, 0, '1', 16, 0, '1', '3', '3', '1', 'lp', 11, 'xzr', NOW() - INTERVAL 3 HOUR),
-('今天不卷了，来个轻松话题：你最爱的宵夜', '我先说：炒粉加一杯冰豆奶。最近加班有点多，想看看大家都靠什么回血。', @xzr_id, 69, 6, NOW() - INTERVAL 2 HOUR, 0, '1', 21, 1, '1', '4', '4', '1', 'xzr', 12, 'ljj', NOW() - INTERVAL 80 MINUTE);
+)
+SELECT sp.`title`, sp.`content`, u.`id`, sp.`browse_count`, 0, NOW() - INTERVAL sp.`hours_ago` HOUR,
+       0, '1', sp.`browse_count`, 0, '0', '0', '0', '0', u.`username`, sp.`plate_id`, NULL, NULL
+FROM `_seed_posts` sp
+JOIN `user` u ON u.`username` = sp.`username`
+WHERE NOT EXISTS (SELECT 1 FROM `post` p WHERE p.`title` = sp.`title`);
 
--- 以 post_details 为准同步回复统计，避免“有回复数但看不到回复”
+CREATE TEMPORARY TABLE IF NOT EXISTS `_seed_replies` (
+    `title` varchar(50) NOT NULL,
+    `username` varchar(11) NOT NULL,
+    `content` varchar(255) NOT NULL,
+    `minutes_ago` int NOT NULL,
+    `seat` varchar(6) NOT NULL
+) ENGINE=Memory DEFAULT CHARSET=utf8mb3;
+DELETE FROM `_seed_replies`;
+INSERT INTO `_seed_replies` (`title`, `username`, `content`, `minutes_ago`, `seat`) VALUES
+('部门周会纪要模板，拿去直接改','lp','这个模板挺实用的，我准备把风险点那栏加一个负责人。',2310,'沙发'),
+('部门周会纪要模板，拿去直接改','xzr','建议再加一列截止时间，不然后面追任务会忘。',2260,'椅子'),
+('新来的实习同学怎么快速熟悉项目','ljj','可以先从接口文档和数据库表关系看，别一上来就啃所有代码。',2140,'沙发'),
+('摄影初学者避坑：先学构图再追器材','xzr','同意，我之前买镜头买太早了，最后发现主要是不会找光。',2020,'沙发'),
+('跑步两周后膝盖有点不舒服','lp','先降跑量吧，膝盖不舒服别硬顶，鞋底磨损也检查一下。',1940,'沙发'),
+('你们最近在食堂吃到的宝藏窗口是哪个？','ljj','二楼麻辣拌最近也不错，少辣刚刚好。',1810,'沙发'),
+('你们最近在食堂吃到的宝藏窗口是哪个？','lp','三楼砂锅我也投一票，就是饭点排队太久。',1760,'椅子'),
+('校门口那家面馆是不是换师傅了','xzr','我昨天也觉得淡了，可能真换了，辣油味道不一样。',1680,'沙发'),
+('今晚开黑差两人，主打沟通不甩锅','lp','我可以来，先说好我只会辅助，别嫌弃。',1600,'沙发'),
+('今晚开黑差两人，主打沟通不甩锅','xzr','加我一个，输赢无所谓，别红温就行。',1540,'椅子'),
+('有没有轻松一点的双人游戏推荐','ljj','双人成行挺合适，就是有些关卡会互相甩锅哈哈。',1500,'沙发'),
+('告白墙匿名提问：怎么自然开启聊天','xzr','可以从共同课程或者活动聊起，比硬夸自然很多。',1380,'沙发'),
+('告白墙匿名提问：怎么自然开启聊天','ljj','别一上来问太私人的，先轻松一点比较好。',1330,'椅子'),
+('图书馆三楼靠窗位置有人落了耳机','lp','帮顶，这种能交前台真的很靠谱。',1280,'沙发'),
+('周末兼职信息汇总（更新版）','ljj','求表格版，最好能标一下是否需要面试。',1130,'沙发'),
+('家教面试会问什么问题','xzr','一般会问你擅长科目和能不能长期稳定，准备一个试讲思路。',1060,'沙发'),
+('高数和数据结构复习资料打包','lp','想要数据结构部分，邮箱我私信你。',910,'沙发'),
+('高数和数据结构复习资料打包','xzr','高数错题思路太需要了，感谢整理。',870,'椅子'),
+('英语六级听力怎么稳住心态','ljj','我之前是每天固定二十分钟精听，别一次刷太猛。',820,'沙发'),
+('SpringBoot 接口偶发 500，已定位一半','xzr','看起来像空对象没判，建议把异常栈第一行贴出来。',690,'沙发'),
+('SpringBoot 接口偶发 500，已定位一半','ljj','如果是并发下才出现，可以先查共享变量和单例 Bean。',660,'椅子'),
+('MySQL 联表查询突然变慢怎么排查','lp','先看 join 字段有没有索引，再看过滤条件是不是走了函数。',600,'沙发'),
+('最近状态有点低，求一份作息自救方案','ljj','我试过固定起床时间，比强行早睡更容易坚持。',510,'沙发'),
+('宿舍晚上总有人外放怎么沟通','xzr','可以先说自己最近睡眠不好，麻烦戴耳机，语气软一点。',470,'沙发'),
+('课程设计需求不明确，怎么和老师沟通更有效','lp','带着三个具体方案去问，不要只问“怎么做”，老师更好回答。',350,'沙发'),
+('毕设开题报告被打回一次','ljj','先把问题、方法、结果三件事写清楚，别急着堆功能。',300,'沙发'),
+('寻物启事：灰色保温杯，杯盖有贴纸','xzr','帮顶，实验楼前台我下午路过可以顺便问一下。',190,'沙发'),
+('有人捡到校园卡吗，姓李','lp','建议也去保卫处问问，校园卡经常会有人送过去。',150,'沙发'),
+('今天不卷了，来个轻松话题：你最爱的宵夜','ljj','炒粉加豆奶这个组合太懂了，我再加一个烤冷面。',80,'沙发'),
+('有没有适合雨天听的歌单','xzr','陈绮贞和落日飞车都挺适合雨天写代码。',45,'沙发'),
+('服务器异常排查记录：NPE 复盘','root','这个复盘很完整，尤其是链路定位那段，值班同学可以照着走。',120,'沙发'),
+('图书馆自习室临时维护通知','admin','收到，已经帮你转到班群，避免同学白跑。',95,'沙发');
+
+INSERT INTO `post_details` (`pd_uid`, `post_id`, `pd_content`, `seat`, `reply_time`, `isLook`)
+SELECT u.`id`, p.`id`, sr.`content`, sr.`seat`, NOW() - INTERVAL sr.`minutes_ago` MINUTE, '0'
+FROM `_seed_replies` sr
+JOIN `post` p ON p.`title` = sr.`title`
+JOIN `user` u ON u.`username` = sr.`username`
+WHERE NOT EXISTS (
+    SELECT 1 FROM `post_details` d WHERE d.`post_id` = p.`id` AND d.`pd_content` = sr.`content`
+);
+
+CREATE TEMPORARY TABLE IF NOT EXISTS `_seed_likes` (`title` varchar(50), `username` varchar(11)) ENGINE=Memory DEFAULT CHARSET=utf8mb3;
+DELETE FROM `_seed_likes`;
+INSERT INTO `_seed_likes` (`title`, `username`) VALUES
+('部门周会纪要模板，拿去直接改','root'),('部门周会纪要模板，拿去直接改','lp'),('部门周会纪要模板，拿去直接改','xzr'),
+('你们最近在食堂吃到的宝藏窗口是哪个？','root'),('你们最近在食堂吃到的宝藏窗口是哪个？','ljj'),('你们最近在食堂吃到的宝藏窗口是哪个？','lp'),
+('今晚开黑差两人，主打沟通不甩锅','lp'),('今晚开黑差两人，主打沟通不甩锅','xzr'),
+('告白墙匿名提问：怎么自然开启聊天','root'),('告白墙匿名提问：怎么自然开启聊天','ljj'),('告白墙匿名提问：怎么自然开启聊天','xzr'),
+('周末兼职信息汇总（更新版）','root'),('周末兼职信息汇总（更新版）','ljj'),
+('高数和数据结构复习资料打包','root'),('高数和数据结构复习资料打包','lp'),('高数和数据结构复习资料打包','xzr'),
+('SpringBoot 接口偶发 500，已定位一半','root'),('SpringBoot 接口偶发 500，已定位一半','ljj'),('SpringBoot 接口偶发 500，已定位一半','xzr'),
+('MySQL 联表查询突然变慢怎么排查','root'),('MySQL 联表查询突然变慢怎么排查','lp'),
+('最近状态有点低，求一份作息自救方案','root'),('最近状态有点低，求一份作息自救方案','ljj'),
+('今天不卷了，来个轻松话题：你最爱的宵夜','root'),('今天不卷了，来个轻松话题：你最爱的宵夜','ljj'),
+('服务器异常排查记录：NPE 复盘','root'),('服务器异常排查记录：NPE 复盘','xzr'),
+('图书馆自习室临时维护通知','admin'),('图书馆自习室临时维护通知','lp');
+
+INSERT INTO `post_operation` (`postId`, `uid`, `isCompletion`)
+SELECT p.`id`, u.`id`, 1
+FROM `_seed_likes` sl
+JOIN `post` p ON p.`title` = sl.`title`
+JOIN `user` u ON u.`username` = sl.`username`
+WHERE NOT EXISTS (SELECT 1 FROM `post_operation` o WHERE o.`postId` = p.`id` AND o.`uid` = u.`id`);
+
+CREATE TEMPORARY TABLE IF NOT EXISTS `_seed_collects` (`title` varchar(50), `username` varchar(11)) ENGINE=Memory DEFAULT CHARSET=utf8mb3;
+DELETE FROM `_seed_collects`;
+INSERT INTO `_seed_collects` (`title`, `username`) VALUES
+('部门周会纪要模板，拿去直接改','root'),('摄影初学者避坑：先学构图再追器材','xzr'),
+('你们最近在食堂吃到的宝藏窗口是哪个？','ljj'),('告白墙匿名提问：怎么自然开启聊天','xzr'),
+('周末兼职信息汇总（更新版）','root'),('高数和数据结构复习资料打包','lp'),
+('SpringBoot 接口偶发 500，已定位一半','ljj'),('MySQL 联表查询突然变慢怎么排查','root'),
+('最近状态有点低，求一份作息自救方案','lp'),('课程设计需求不明确，怎么和老师沟通更有效','xzr'),
+('寻物启事：灰色保温杯，杯盖有贴纸','root'),('今天不卷了，来个轻松话题：你最爱的宵夜','ljj'),
+('服务器异常排查记录：NPE 复盘','admin'),('图书馆自习室临时维护通知','root');
+
+INSERT INTO `u_collect` (`u_id`, `all_id`, `title`, `source_plate`, `collect_time`, `type`)
+SELECT u.`id`, p.`id`, p.`title`, CAST(p.`plate_id` AS CHAR), DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), '1'
+FROM `_seed_collects` sc
+JOIN `post` p ON p.`title` = sc.`title`
+JOIN `user` u ON u.`username` = sc.`username`
+WHERE NOT EXISTS (SELECT 1 FROM `u_collect` c WHERE c.`u_id` = u.`id` AND c.`all_id` = p.`id` AND c.`type` = '1');
+
+CREATE TEMPORARY TABLE IF NOT EXISTS `_seed_attention` (`user_name` varchar(11), `follow_name` varchar(11)) ENGINE=Memory DEFAULT CHARSET=utf8mb3;
+DELETE FROM `_seed_attention`;
+INSERT INTO `_seed_attention` (`user_name`, `follow_name`) VALUES
+('root','ljj'),('root','lp'),('root','xzr'),
+('ljj','lp'),('ljj','xzr'),('lp','ljj'),('lp','xzr'),('xzr','ljj'),('xzr','lp');
+
+INSERT INTO `attention` (`uid`, `aid`)
+SELECT u.`id`, f.`id`
+FROM `_seed_attention` sa
+JOIN `user` u ON u.`username` = sa.`user_name`
+JOIN `user` f ON f.`username` = sa.`follow_name`
+WHERE u.`id` <> f.`id`
+  AND NOT EXISTS (SELECT 1 FROM `attention` a WHERE a.`uid` = u.`id` AND a.`aid` = f.`id`);
+
+-- Recompute visible counters from persisted rows. No fake likes/collects/replies.
 UPDATE `post` p
-LEFT JOIN (
-    SELECT `post_id`, COUNT(*) AS cnt, MAX(`reply_time`) AS last_time
-    FROM `post_details`
-    GROUP BY `post_id`
-) d ON d.`post_id` = p.`id`
-LEFT JOIN `post_details` pd ON pd.`post_id` = p.`id` AND pd.`reply_time` = d.`last_time`
-LEFT JOIN `user` u ON u.`id` = pd.`pd_uid`
-SET p.`reply_count` = IFNULL(d.cnt,0),
-    p.`last_reply` = u.`username`,
-    p.`last_reply_time` = d.`last_time`;
+SET p.`reply_count` = (SELECT COUNT(*) FROM `post_details` d WHERE d.`post_id` = p.`id`),
+    p.`post_grade` = CAST((SELECT COUNT(*) FROM `post_operation` o WHERE o.`postId` = p.`id`) AS CHAR),
+    p.`post_collect` = CAST((SELECT COUNT(*) FROM `u_collect` c WHERE c.`all_id` = p.`id` AND c.`type` = '1') AS CHAR),
+    p.`last_reply` = ifnull((SELECT u.`username` FROM `post_details` d JOIN `user` u ON u.`id` = d.`pd_uid` WHERE d.`post_id` = p.`id` ORDER BY d.`reply_time` DESC, d.`pid` DESC LIMIT 1), p.`post_author`),
+    p.`last_reply_time` = ifnull((SELECT MAX(d.`reply_time`) FROM `post_details` d WHERE d.`post_id` = p.`id`), p.`publish_time`);
+
+UPDATE `post` p
+SET p.`post_heat` = IFNULL(p.`browse_count`,0) + IFNULL(p.`reply_count`,0) + CAST(IFNULL(p.`post_grade`,'0') AS UNSIGNED) + CAST(IFNULL(p.`post_collect`,'0') AS UNSIGNED) + IFNULL(p.`share_count`,0);
 
 UPDATE `plate` p
-SET
-    p.`theme` = (SELECT COUNT(*) FROM `post` t WHERE t.`plate_id` = p.`id` AND t.`post_status` <> '0'),
-    p.`posts` = (SELECT COUNT(*) FROM `post` t WHERE t.`plate_id` = p.`id` AND t.`post_status` <> '0');
+SET p.`theme` = (SELECT COUNT(*) FROM `post` t WHERE t.`plate_id` = p.`id` AND t.`post_status` <> '0'),
+    p.`posts` = (SELECT COUNT(*) FROM `post_details` d JOIN `post` t ON t.`id` = d.`post_id` WHERE t.`plate_id` = p.`id` AND t.`post_status` <> '0'),
+    p.`collect_total` = CAST((SELECT COUNT(*) FROM `u_collect` c WHERE c.`type` = '2' AND c.`all_id` = p.`id`) AS CHAR);
+
+-- Recompute user experience/integral from real activity rows.
+UPDATE `experience` e
+JOIN `user` u ON u.`id` = e.`user_id`
+LEFT JOIN (
+    SELECT p.`user_id` uid,
+           COUNT(p.`id`) post_cnt,
+           IFNULL(SUM(p.`browse_count`),0) browse_sum
+    FROM `post` p
+    WHERE p.`post_status` not in ('0','6')
+    GROUP BY p.`user_id`
+) ps ON ps.uid = u.`id`
+LEFT JOIN (
+    SELECT d.`pd_uid` uid, COUNT(*) reply_cnt
+    FROM `post_details` d
+    GROUP BY d.`pd_uid`
+) rs ON rs.uid = u.`id`
+LEFT JOIN (
+    SELECT p.`user_id` uid, COUNT(o.`id`) got_like_cnt
+    FROM `post` p
+    JOIN `post_operation` o ON o.`postId` = p.`id`
+    GROUP BY p.`user_id`
+) ls ON ls.uid = u.`id`
+LEFT JOIN (
+    SELECT p.`user_id` uid, COUNT(c.`id`) got_collect_cnt
+    FROM `post` p
+    JOIN `u_collect` c ON c.`all_id` = p.`id` AND c.`type` = '1'
+    GROUP BY p.`user_id`
+) cs ON cs.uid = u.`id`
+LEFT JOIN (
+    SELECT a.`aid` uid, COUNT(*) fans_cnt
+    FROM `attention` a
+    GROUP BY a.`aid`
+) fs ON fs.uid = u.`id`
+SET e.`total_experience` = ifnull(ps.post_cnt,0) * 10
+                         + ifnull(rs.reply_cnt,0) * 3
+                         + ifnull(ls.got_like_cnt,0) * 2
+                         + ifnull(cs.got_collect_cnt,0) * 2
+                         + ifnull(fs.fans_cnt,0) * 2,
+    e.`time` = now();
+
+UPDATE `integral` i
+JOIN `user` u ON u.`id` = i.`user_id`
+LEFT JOIN (
+    SELECT p.`user_id` uid,
+           COUNT(p.`id`) post_cnt,
+           IFNULL(SUM(p.`browse_count`),0) browse_sum
+    FROM `post` p
+    WHERE p.`post_status` not in ('0','6')
+    GROUP BY p.`user_id`
+) ps ON ps.uid = u.`id`
+LEFT JOIN (
+    SELECT d.`pd_uid` uid, COUNT(*) reply_cnt
+    FROM `post_details` d
+    GROUP BY d.`pd_uid`
+) rs ON rs.uid = u.`id`
+LEFT JOIN (
+    SELECT p.`user_id` uid, COUNT(o.`id`) got_like_cnt
+    FROM `post` p
+    JOIN `post_operation` o ON o.`postId` = p.`id`
+    GROUP BY p.`user_id`
+) ls ON ls.uid = u.`id`
+LEFT JOIN (
+    SELECT p.`user_id` uid, COUNT(c.`id`) got_collect_cnt
+    FROM `post` p
+    JOIN `u_collect` c ON c.`all_id` = p.`id` AND c.`type` = '1'
+    GROUP BY p.`user_id`
+) cs ON cs.uid = u.`id`
+LEFT JOIN (
+    SELECT a.`aid` uid, COUNT(*) fans_cnt
+    FROM `attention` a
+    GROUP BY a.`aid`
+) fs ON fs.uid = u.`id`
+SET i.`total_integral` = ifnull(ps.post_cnt,0) * 20
+                      + ifnull(rs.reply_cnt,0) * 6
+                      + ifnull(ls.got_like_cnt,0) * 5
+                      + ifnull(cs.got_collect_cnt,0) * 5
+                      + ifnull(fs.fans_cnt,0) * 4
+                      + floor(ifnull(ps.browse_sum,0) / 8),
+    i.`last_time` = now();
+

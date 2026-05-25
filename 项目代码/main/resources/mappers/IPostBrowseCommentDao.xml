@@ -111,7 +111,14 @@
                 post_status=#{post_status},
             </if>
             <if test="post_heat != null and post_heat != ''">
-                post_heat=post_heat+1,
+                <choose>
+                    <when test="post_heat_op != null and post_heat_op == 'sub'">
+                        post_heat=if(post_heat &gt; 0,post_heat-1,0),
+                    </when>
+                    <otherwise>
+                        post_heat=post_heat+1,
+                    </otherwise>
+                </choose>
             </if>
             <if test="share_count != null and share_count != ''">
                 share_count=share_count+1,
@@ -148,6 +155,9 @@
             <if test="last_reply != null and last_reply != ''">
                 last_reply=#{last_reply},
             </if>
+            <if test="last_reply_uid != null and last_reply_uid != ''">
+                last_reply=(select username from user where id=#{last_reply_uid}),
+            </if>
             <if test="last_reply_time != null and last_reply_time != ''">
                 last_reply_time=now(),
             </if>
@@ -178,7 +188,7 @@
 
     <!--点击主题,给主题的浏览次数加一 -->
     <update id="clickAddBrowseCount" parameterType="Integer">
-        update post set browse_count =browse_count+1 where id=#{id};
+        update post set browse_count=browse_count+1, post_heat=post_heat+1 where id=#{id};
     </update>
 
     <select id="getSearchDatas" parameterType="java.util.Map" resultType="post">

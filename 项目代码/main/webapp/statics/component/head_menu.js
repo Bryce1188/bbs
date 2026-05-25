@@ -43,31 +43,31 @@ Vue.component('head_menu_comp', {
             <nav class="bbs-topnav">
                 <a :href="ctx + '/skipPage/index'">首页</a>
                 <a :href="ctx + '/skipPage/ranking_list'">排行</a>
-                <a :href="ctx + '/skipPage/daodu'">导读</a>
-                <a href="javascript:;" @click="openDynamic">动态</a>
-                <div class="bbs-search-wrap">
-                    <input type="text" id="searchParam" placeholder="搜索..." @keyup.enter="getSearchParam">
-                </div>
-                <div v-if="isLoginShow" class="bbs-auth-wrap">
-                    <a href="javascript:;" class="bbs-auth-link" @click="loginBtn()">登录</a>
-                    <a href="javascript:;" class="bbs-auth-link" @click="registerBtn()">立即注册</a>
-                </div>
-                <div v-show="isUserShow" class="bbs-user-menu">
-                    <div class="bbs-user-access">
-                        <a id="d-photo" class="bbs-user-trigger" href="javascript:;" @click.stop="toggleMenu"></a>
-                        <a class="bbs-mail-link" :href="ctx + '/skipPage/msg-notification'" title="我的消息">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
-                            <span class="badge" style="display:none;">0</span>
-                        </a>
+                <template v-if="isUserShow">
+                    <div class="bbs-user-menu" @mouseenter="openMenu" @mouseleave="scheduleMenuClose">
+                        <div class="bbs-user-access">
+                            <a id="d-photo" class="bbs-user-trigger" href="javascript:;" @click.stop="toggleMenu">
+                                <img :src="getAvatar()" :alt="displayName">
+                                <span>{{displayName}}</span>
+                            </a>
+                            <a class="bbs-mail-link" :href="ctx + '/skipPage/msg-notification'" title="我的消息">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+                                <span class="badge" v-if="unreadCount > 0">{{unreadCount > 99 ? '99+' : unreadCount}}</span>
+                            </a>
+                        </div>
+                        <div class="bbs-user-panel" :class="{open:isOpenActive}" @mouseenter="holdMenu" @mouseleave="scheduleMenuClose" data-stopPropagation>
+                            <a :href="ctx + '/skipPage/spacecp'" @click="closeMenu">设置</a>
+                            <a :href="ctx + '/skipPage/daodu#my_post'" @click="closeMenu">我的帖子</a>
+                            <a :href="ctx + '/skipPage/my-collect'" @click="closeMenu">我的收藏</a>
+                            <a :href="ctx + '/skipPage/spacecp#care'" @click="closeMenu">我的关注</a>
+                            <a href="javascript:;" @click="logout">退出登录</a>
+                        </div>
                     </div>
-                    <div class="bbs-user-panel" :class="{open:isOpenActive}" data-stopPropagation>
-                        <a :href="ctx + '/skipPage/spacecp'">设置</a>
-                        <a :href="ctx + '/skipPage/daodu#my_post'">我的帖子</a>
-                        <a :href="ctx + '/skipPage/my-collect'">我的收藏</a>
-                        <a :href="ctx + '/skipPage/spacecp#care'">我的关注</a>
-                        <a href="javascript:;" @click="logout">退出登录</a>
-                    </div>
-                </div>
+                </template>
+                <template v-else>
+                    <a href="javascript:;" class="bbs-auth-link" @click="loginBtn">登录</a>
+                    <a href="javascript:;" class="bbs-auth-link" @click="registerBtn">立即注册</a>
+                </template>
                 <a class="bbs-publish-btn" href="javascript:;" @click.prevent="handlePublishEntry">发布帖子</a>
             </nav>
         </div>
@@ -80,21 +80,92 @@ Vue.component('head_menu_comp', {
             isLoginShow:this.is_login,
             isUserShow:false,
             ctx:APP_CTX,
-            menuList:{forum:"index",read:"read",dynamic:"dynamic",ranking:"rank",aboutUs:"about"}
+            currentUser:null,
+            unreadCount:0,
+            closeTimer:null
         }
 
     },
+    computed:{
+        displayName:function () {
+            if (!this.currentUser) {
+                return "用户";
+            }
+            return this.currentUser.another_name || this.currentUser.username || "用户";
+        }
+    },
     methods: {
+        syncCurrentUser:function () {
+            try {
+                var cache = localStorage.getItem("initUser");
+                if (cache) {
+                    var parsed = JSON.parse(cache);
+                    if (parsed && parsed.userInfo) {
+                        this.currentUser = parsed.userInfo;
+                        userInfo = parsed.userInfo;
+                        this.isUserShow = true;
+                        this.isLoginShow = false;
+                        this.refreshUnreadCount();
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            this.currentUser = null;
+            this.isUserShow = false;
+            this.isLoginShow = true;
+            this.unreadCount = 0;
+        },
+        getAvatar:function () {
+            if (!this.currentUser || !this.currentUser.picture) {
+                return this.ctx + "/statics/images/head_portrait/comiis_nologin.jpg";
+            }
+            return this.ctx + "/" + this.currentUser.picture;
+        },
+        refreshUnreadCount:function () {
+            if (!this.currentUser || !this.currentUser.id) {
+                this.unreadCount = 0;
+                return;
+            }
+            try {
+                var list = JSON.parse(localStorage.getItem("msgData") || "[]");
+                var currentId = this.currentUser.id;
+                var unread = 0;
+                list.forEach(function (item) {
+                    if (item && item.status === 0 && item.tarUser && item.tarUser.userId === currentId) {
+                        unread++;
+                    }
+                });
+                this.unreadCount = unread;
+            } catch (e) {
+                this.unreadCount = 0;
+            }
+        },
         toggleMenu(){
+            this.holdMenu();
             this.isOpenActive = !this.isOpenActive;
         },
-        getSearchParam() {
-            window.location.href=this.ctx+"/skipPage/searchPost?searchParam="+$("#searchParam").val();
+        openMenu:function () {
+            this.holdMenu();
+            this.isOpenActive = true;
         },
-        isActiveMenu(path){
-            if (getUrlIndexOf(path)){
-                return true;
+        holdMenu:function () {
+            if (this.closeTimer != null) {
+                clearTimeout(this.closeTimer);
+                this.closeTimer = null;
             }
+        },
+        scheduleMenuClose:function () {
+            var that = this;
+            this.holdMenu();
+            this.closeTimer = setTimeout(function () {
+                that.isOpenActive = false;
+            }, 260);
+        },
+        closeMenu:function () {
+            this.holdMenu();
+            this.isOpenActive = false;
         },
         registerBtn(){
            layui.register();
@@ -103,14 +174,8 @@ Vue.component('head_menu_comp', {
             layui.login();
 
         },
-        openDynamic(){
-          if (userInfo != null){
-              window.location.href = this.ctx + "/skipPage/dynamic";
-          } else {
-              layui.login();
-          }
-        },
         loginSubmit(){
+            this.syncCurrentUser();
             this.isLoginShow = false;
             this.isUserShow = true;
         },
@@ -122,9 +187,36 @@ Vue.component('head_menu_comp', {
             }
         },
         logout(){
+            this.closeMenu();
             localStorage.removeItem("initUser");
             closeWebsocketForLogout();
             window.location.reload();
+        },
+        handleDocumentClick:function () {
+            this.closeMenu();
+        }
+    },
+    mounted:function () {
+        this.syncCurrentUser();
+        var that = this;
+        this._docClickHandler = function () {
+            that.handleDocumentClick();
+        };
+        document.addEventListener("click", this._docClickHandler);
+        this._refreshUnreadTimer = setInterval(function () {
+            that.syncCurrentUser();
+            that.refreshUnreadCount();
+        }, 3000);
+    },
+    beforeDestroy:function () {
+        if (this.closeTimer != null) {
+            clearTimeout(this.closeTimer);
+        }
+        if (this._docClickHandler) {
+            document.removeEventListener("click", this._docClickHandler);
+        }
+        if (this._refreshUnreadTimer) {
+            clearInterval(this._refreshUnreadTimer);
         }
     }
 });
@@ -152,8 +244,8 @@ $(document).on("click", "[data-stopPropagation]", function(e) {
     e.stopPropagation();
 });
 $(document).on("click", function() {
-    if (head_menu && head_menu.$refs && head_menu.$refs.fo) {
-        head_menu.$refs.fo.isOpenActive = false;
+    if (head_menu && head_menu.$refs && head_menu.$refs.fo && typeof head_menu.$refs.fo.closeMenu === "function") {
+        head_menu.$refs.fo.closeMenu();
     }
 });
 
@@ -607,10 +699,6 @@ function getUserInformation(username){
                         window.location.reload();
                         let map = JSON.parse(window.localStorage.getItem("initUser"));
                         userInfo = map.userInfo;
-                        let str = `<img src="${APP_CTX}/${userInfo.picture}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
-                                    &nbsp;&nbsp;<span>${userInfo.another_name}</span>`;
-                        $("#d-photo").html(str);
-                        $("#c-photo").html(`<img src="${APP_CTX}/${userInfo.picture}" width="40px" class="img-circle" height="40px" alt="头像">`);
                         $("#u-ig").html(`<span>积分:&nbsp;${map.total_integral}</span>&nbsp;<span>用户组:&nbsp;${map.grade.name}</span>`);
                         setTimeout(function () {
                             websocketLinkStart(userInfo);
@@ -628,12 +716,6 @@ function getUserInformation(username){
         let map = JSON.parse(window.localStorage.getItem("initUser"));
         userInfo = map.userInfo;
         console.log(map);
-        $('#d-photo').attr('href',`${APP_CTX}/skipPage/personal?id=${userInfo.id}`);
-        // $('#c-photo').attr('href',`/leek_bbs/skipPage/personal?id=${userInfo.id}`);
-        let str = `<img src="${APP_CTX}/${userInfo.picture}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
-                                &nbsp;&nbsp;<span>${userInfo.another_name}</span>`;
-        $("#d-photo").html(str);
-        $("#c-photo").html(`<img src="${APP_CTX}/${userInfo.picture}" class="img-circle" width="40px" height="40px" alt="头像">`);
         $("#u-ig").html(`<span>积分:&nbsp;${map.total_integral}</span>&nbsp;<span>用户组:&nbsp;${map.grade.name}</span>`);
         websocketLinkStart(userInfo)
     }
