@@ -1,4 +1,4 @@
-
+﻿
 //通讯服务器
 var ws = null;
 //登录用户信息
@@ -256,83 +256,73 @@ layui.define(['layer','form','util'],function (exports) {
     var registerLayerOpen = function () {
         layer.open({
             type: 1,
-            id: 'Lay-register', //id唯一标识
+            id: 'Lay-register',
+            skin: 'bbs-auth-layer',
             title: '用户注册',
-            content: `<div style="margin-top: 30px;">
-            <form class="layui-form" lay-filter="registerForm">
-                <div class="layui-form-item">
+            content: `<div class="bbs-auth-modal bbs-auth-modal-register">
+            <form class="layui-form bbs-auth-form" lay-filter="registerForm">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">昵称</label>
                     <div class="layui-input-inline">
                         <input type="text" name="another_name" lay-verify="required" autocomplete="off" placeholder="请输入昵称" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">用户名</label>
                     <div class="layui-input-inline">
                         <input type="text" name="username" lay-verify="required" autocomplete="off" placeholder="请输入用户名" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">密码</label>
                     <div class="layui-input-inline">
-                        <input type="password" name="password" placeholder="请输入密码" lay-verify="required|password" autocomplete="off" class="layui-input">
+                        <input type="password" name="password" lay-verify="required|password" autocomplete="off" placeholder="请输入密码" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">确认密码</label>
                     <div class="layui-input-inline">
-                        <input type="password" name="pwd" placeholder="请再次输入密码" lay-verify="required" autocomplete="off" class="layui-input">
+                        <input type="password" name="pwd" lay-verify="required" autocomplete="off" placeholder="请再次输入密码" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">Email</label>
+                <div class="bbs-auth-field">
+                    <label class="layui-form-label">邮箱</label>
                     <div class="layui-input-inline">
-                        <input type="email" name="email" lay-verify="required|email" autocomplete="off" placeholder="请输入邮箱地址" class="layui-input">
+                        <input type="email" name="email" lay-verify="required|email" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">验证码</label>
-                        <div class="layui-input-inline" style="width: 100px;">   
-                            <input type="text" name="imgCode"style="height: 40px;" placeholder="输入验证码" lay-verify="required" autocomplete="off" class="layui-input">     
-                        </div>
-                        <div class="layui-input-inline" style="margin-left:35px;width: 100px;">   
-                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
-                        </div>
-                    </div>       
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-left: 252px;"><a id="toLogin" href="javascript:;" style="color: #dcdedc;">已有账号,去登陆</a></div>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-bottom: 52px;margin-top: -34px;">
-                        <span id="errorRes" style="margin-left:0;font-size: 18px;color: red;"></span>
+                <div class="bbs-auth-field bbs-auth-captcha-row">
+                    <label class="layui-form-label">验证码</label>
+                    <div class="layui-input-inline bbs-auth-captcha-input">
+                        <input type="text" name="imgCode" lay-verify="required" autocomplete="off" placeholder="输入验证码" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline bbs-auth-captcha-img-wrap">
+                        <img id="captchaPic" class="captchaPic" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-top: -40px;">
-                      <button type="submit" class="layui-btn btn-bg" lay-submit="" lay-filter="registerBtn">注册</button>
-                      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-                    </div>
+                <div class="bbs-auth-helper-row">
+                    <a id="toLogin" href="javascript:;">已有账号，去登录</a>
+                </div>
+                <div class="bbs-auth-error-row">
+                    <span id="errorRes"></span>
+                </div>
+                <div class="bbs-auth-actions-row bbs-auth-actions-row-double">
+                    <button type="submit" class="layui-btn btn-bg" lay-submit="" lay-filter="registerBtn">注册</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                 </div>
             </form>
             </div>`,
-            anim: 2,    //动画
-            /*shade: 1,*/
+            anim: 2,
             fixed: false,
-            maxmin: false,   //最大化
-            resize: false,  //关闭拉伸
-            scrollbar: false,   //不允许出现滚动条
-            area: ['510px', '554px'],
-            success: function (layero, index) {
-                $("#layui-layer"+index).find(".layui-layer-title").addClass("lay-head-title");
-            }
+            maxmin: false,
+            resize: false,
+            scrollbar: false,
+            area: ['560px', '640px']
         });
 
     };
     exports('register', registerLayerOpen);
     window.showRegisterLayer = registerLayerOpen;
-
     //自定义验证规则
     form.verify({
         password: [
@@ -457,138 +447,116 @@ layui.define(['layer','form','util'],function (exports) {
     var loginLayerOpen = function () {
         layer.open({
             type: 1,
-            id: 'Lay-login', //id唯一标识
+            id: 'Lay-login',
+            skin: 'bbs-auth-layer',
             title: '用户登录',
-            content: `<div style="margin-top: 30px;">
-            <form class="layui-form" lay-filter="loginForm">
-                <div class="layui-form-item">
+            content: `<div class="bbs-auth-modal bbs-auth-modal-login">
+            <form class="layui-form bbs-auth-form" lay-filter="loginForm">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">用户名</label>
-                   
                     <div class="layui-input-inline">
                         <input type="text" name="username" lay-verify="required" autocomplete="off" placeholder="请输入用户名" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">密码</label>
                     <div class="layui-input-inline">
-                        <input type="password" name="password" placeholder="请输入密码" lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
-                </div> 
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">验证码</label>
-                        <div class="layui-input-inline" style="width: 100px;">   
-                            <input type="text" style="height: 40px;" name="imgCode" placeholder="输入验证码" height="40px;" lay-verify="required" autocomplete="off" class="layui-input">     
-                        </div>
-                        <div class="layui-input-inline" style="margin-left:35px;width: 100px;">   
-                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
-                        </div>
-                    </div>       
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-left: 105px;">   
-                        <input id="remember" type="checkbox" name="isRemember" title="记住我" value="1" lay-skin="primary" >
-                    </div>      
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-left: 280px;margin-top: -18px;">
-                        <a href="javascript:;" id="forgetPassword" style="color: #fff;">忘记密码?</a>
+                        <input type="password" name="password" lay-verify="required" autocomplete="off" placeholder="请输入密码" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-bottom: 40px;margin-top: -25px;">
-                        <span id="errorRes" style="margin-left:0;font-size: 18px;color: red;"></span>
+                <div class="bbs-auth-field bbs-auth-captcha-row">
+                    <label class="layui-form-label">验证码</label>
+                    <div class="layui-input-inline bbs-auth-captcha-input">
+                        <input type="text" name="imgCode" lay-verify="required" autocomplete="off" placeholder="输入验证码" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline bbs-auth-captcha-img-wrap">
+                        <img id="captchaPic" class="captchaPic" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-left:95px;margin-top: -24px;">
-                      <button type="submit" class="layui-btn layui-btn-fluid btn-bg" lay-submit="" lay-filter="loginBtn">登录</button>   
+                <div class="bbs-auth-switch-row">
+                    <div class="bbs-auth-check-wrap">
+                        <input id="remember" type="checkbox" name="isRemember" title="记住我" value="1" lay-skin="primary">
                     </div>
+                    <a href="javascript:;" id="forgetPassword">忘记密码？</a>
+                </div>
+                <div class="bbs-auth-error-row">
+                    <span id="errorRes"></span>
+                </div>
+                <div class="bbs-auth-actions-row">
+                    <button type="submit" class="layui-btn layui-btn-fluid btn-bg" lay-submit="" lay-filter="loginBtn">登录</button>
                 </div>
             </form>
             </div>`,
-            anim: 2,    //动画
-            /*shade: 1,*/
+            anim: 2,
             fixed: false,
-            maxmin: false,   //最大化
-            resize: false,  //关闭拉伸
-            scrollbar: false,   //不允许出现滚动条
-            area: ['500px', '450px'],
-            success: function (layero, index) {
+            maxmin: false,
+            resize: false,
+            scrollbar: false,
+            area: ['560px', '500px'],
+            success: function () {
                 setTimeout(() => {
                     refreshCaptchaImage();
                 },300);
-                $("#layui-layer"+index).find(".layui-layer-title").addClass("lay-head-title");
-                //读取cookie A.rc(名字);
                 form.val('loginForm', {
-                    "username": A.rc("username")
-                    ,"password": A.rc("password")
-                    ,"isRemember":true
+                    "username": A.rc("username"),
+                    "password": A.rc("password"),
+                    "isRemember": true
                 });
             }
         });
     };
     exports('login', loginLayerOpen);
     window.showLoginLayer = loginLayerOpen;
-
     //修改密码
     function alterPwd(){
         layer.open({
             type: 1,
-            id: 'Lay-pwd', //id唯一标识
-            title: '修改密码',
-            content: `<div style="margin-top: 30px;">
-            <form class="layui-form" lay-filter="alterPwdForm">
-                <div class="layui-form-item">
+            id: 'Lay-pwd',
+            skin: 'bbs-auth-layer',
+            title: '找回密码',
+            content: `<div class="bbs-auth-modal bbs-auth-modal-pwd">
+            <form class="layui-form bbs-auth-form" lay-filter="alterPwdForm">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">用户名</label>
                     <div class="layui-input-inline">
-                        <input id="user-name" type="username" name="username" lay-verify="required" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+                        <input id="user-name" type="text" name="username" lay-verify="required" autocomplete="off" placeholder="请输入用户名" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">新密码</label>
                     <div class="layui-input-inline">
                         <input type="password" name="password" lay-verify="required" autocomplete="off" placeholder="请输入新密码" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
+                <div class="bbs-auth-field">
                     <label class="layui-form-label">确认密码</label>
                     <div class="layui-input-inline">
-                        <input type="pwd" id="classPwd" name="pwd" placeholder="确认密码" lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
-                </div> 
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">验证码</label>
-                        <div class="layui-input-inline" style="width: 100px;">   
-                            <input type="text" style="height: 40px;" name="emailCode" placeholder="输入验证码" height="40px;" lay-verify="required" autocomplete="off" class="layui-input">     
-                        </div>
-                        <div id="sendVerify" class="layui-input-inline" style="margin-left:35px;width: 100px;">   
-                            <button id="sendCode" class="btn btn-default btn-primary">发送验证码</button>
-                        </div>
-                    </div>       
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-bottom: 40px;margin-top: -25px;">
-                        <span id="errorRes" style="margin-left:0;font-size: 18px;color: red;"></span>
+                        <input type="password" id="classPwd" name="pwd" placeholder="再次输入新密码" lay-verify="required" autocomplete="off" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block" style="margin-left:95px;margin-top: -24px;">
-                      <button type="submit" class="layui-btn layui-btn-fluid btn-bg" lay-submit="" lay-filter="alterPwdBtn">提交</button>   
+                <div class="bbs-auth-field bbs-auth-captcha-row">
+                    <label class="layui-form-label">邮箱验证码</label>
+                    <div class="layui-input-inline bbs-auth-captcha-input">
+                        <input type="text" name="emailCode" placeholder="输入邮箱验证码" lay-verify="required" autocomplete="off" class="layui-input">
                     </div>
+                    <div id="sendVerify" class="layui-input-inline bbs-auth-send-wrap">
+                        <button id="sendCode" class="btn btn-default btn-primary" type="button">发送验证码</button>
+                    </div>
+                </div>
+                <div class="bbs-auth-error-row">
+                    <span id="errorRes"></span>
+                </div>
+                <div class="bbs-auth-actions-row">
+                    <button type="submit" class="layui-btn layui-btn-fluid btn-bg" lay-submit="" lay-filter="alterPwdBtn">提交</button>
                 </div>
             </form>
             </div>`,
-            anim: 2,    //动画
-            /*shade: 1,*/
+            anim: 2,
             fixed: false,
-            maxmin: false,   //最大化
-            resize: false,  //关闭拉伸
-            scrollbar: false,   //不允许出现滚动条
-            area: ['500px', '450px'],
-            success: function (layero, index) {
-            }
+            maxmin: false,
+            resize: false,
+            scrollbar: false,
+            area: ['560px', '500px']
         })
     }
 

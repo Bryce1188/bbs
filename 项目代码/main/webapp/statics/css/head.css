@@ -193,6 +193,135 @@ a:link,a:hover,a:active{
     border: 1px solid #d8dee8;
     border-radius: 6px;
 }
+.bbs-auth-layer{
+    border-radius: 14px !important;
+    box-shadow: 0 26px 70px rgba(15, 23, 42, .18) !important;
+    overflow: hidden !important;
+}
+.bbs-auth-layer .layui-layer-title{
+    align-items: center;
+    background: #ffffff !important;
+    border-bottom: 1px solid #edf1f6 !important;
+    color: #111827 !important;
+    display: flex;
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    height: 64px;
+    padding-left: 26px !important;
+}
+.bbs-auth-layer .layui-layer-content{
+    background: linear-gradient(160deg, #ffffff 0%, #f6f8fb 100%) !important;
+}
+.bbs-auth-modal{
+    padding: 22px 28px 26px;
+}
+.bbs-auth-form{
+    width: 100%;
+}
+.bbs-auth-field{
+    align-items: center;
+    display: flex;
+    margin-bottom: 14px;
+}
+.bbs-auth-field .layui-form-label{
+    color: #4b5563 !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    padding-left: 4px;
+    text-align: left !important;
+    width: 96px !important;
+}
+.bbs-auth-field .layui-input-inline{
+    margin-left: 0 !important;
+    width: calc(100% - 96px) !important;
+}
+.bbs-auth-field .layui-input{
+    font-size: 15px !important;
+    height: 44px !important;
+    width: 100% !important;
+}
+.bbs-auth-captcha-row .bbs-auth-captcha-input{
+    flex: 0 0 52%;
+    margin-right: 10px;
+    width: auto !important;
+}
+.bbs-auth-captcha-row .bbs-auth-captcha-img-wrap{
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    width: auto !important;
+}
+.bbs-auth-captcha-row .captchaPic{
+    border-radius: 8px;
+    height: 42px !important;
+    width: 116px !important;
+}
+.bbs-auth-send-wrap{
+    flex: 1 1 auto;
+    width: auto !important;
+}
+.bbs-auth-send-wrap .btn{
+    border-radius: 8px !important;
+    font-weight: 700;
+    height: 42px;
+    padding: 0 14px;
+    width: 116px;
+}
+.bbs-auth-helper-row{
+    display: flex;
+    justify-content: flex-end;
+    margin: 6px 0 10px;
+    padding-right: 2px;
+}
+.bbs-auth-helper-row a{
+    color: #1f2937 !important;
+    font-size: 14px;
+    font-weight: 600;
+}
+.bbs-auth-switch-row{
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0 10px;
+}
+.bbs-auth-switch-row a{
+    color: #334155 !important;
+    font-size: 14px;
+    font-weight: 600;
+}
+.bbs-auth-check-wrap{
+    margin-left: 100px;
+}
+.bbs-auth-error-row{
+    min-height: 26px;
+    padding-left: 100px;
+}
+.bbs-auth-error-row #errorRes{
+    color: #dc2626 !important;
+    font-size: 13px !important;
+    font-weight: 600;
+}
+.bbs-auth-actions-row{
+    margin-top: 8px;
+    padding-left: 100px;
+}
+.bbs-auth-actions-row .layui-btn{
+    height: 46px !important;
+    width: 100% !important;
+}
+.bbs-auth-actions-row-double{
+    display: flex;
+    gap: 10px;
+}
+.bbs-auth-actions-row-double .layui-btn{
+    margin-left: 0 !important;
+}
+.bbs-auth-actions-row-double .layui-btn-primary{
+    background: #eef2f7 !important;
+    border: 1px solid #d7dee8 !important;
+    color: #0f172a !important;
+}
 .navbar-right a{
     color: #fff;
 }
