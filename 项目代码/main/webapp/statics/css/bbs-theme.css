@@ -1322,3 +1322,50 @@ body {
         flex-basis: auto !important;
     }
 }
+
+/* Header hotfix: keep avatar + nickname and publish button style consistent on non-home pages. */
+.bbs-topbar #d-photo.bbs-user-trigger {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 42px !important;
+    max-width: 190px !important;
+    padding: 6px 12px !important;
+    border-radius: 999px !important;
+    overflow: visible !important;
+    gap: 8px !important;
+}
+
+.bbs-topbar #d-photo.bbs-user-trigger img {
+    width: 28px !important;
+    height: 28px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    flex: 0 0 auto !important;
+}
+
+.bbs-topbar #d-photo.bbs-user-trigger span {
+    display: inline-block !important;
+    max-width: 104px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+}
+
+.bbs-topbar #c-photo {
+    display: none !important;
+}
+
+.bbs-topbar .bbs-publish-btn,
+.bbs-topbar .bbs-publish-btn:link,
+.bbs-topbar .bbs-publish-btn:visited,
+.bbs-topbar .bbs-publish-btn:hover,
+.bbs-topbar .bbs-publish-btn:active,
+.bbs-topbar .bbs-publish-btn:focus {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}

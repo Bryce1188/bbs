@@ -24,6 +24,13 @@ public interface IUserCollectDao extends IBaseDao {
     int selectCollectCountByMap(Map map);
 
     /**
+     * 根据用户和业务id删除收藏
+     * @param map
+     * @return
+     */
+    int deleteCollectByMap(Map map);
+
+    /**
      * 批量删除收藏数据
      * @param ids
      * @return

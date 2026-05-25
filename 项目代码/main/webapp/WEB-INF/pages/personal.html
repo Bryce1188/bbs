@@ -338,8 +338,14 @@
             methods:{
                 resolveProfileUserId(){
                     var rawId = getUrlParam('id');
+                    if (rawId == null || rawId === '') {
+                        rawId = getUrlParam('userId');
+                    }
                     if (rawId != null && rawId !== '') {
-                        return parseInt(rawId, 10);
+                        var parsedId = parseInt(rawId, 10);
+                        if (!isNaN(parsedId)) {
+                            return parsedId;
+                        }
                     }
                     if (this.userInfo && this.userInfo.id != null) {
                         return parseInt(this.userInfo.id, 10);

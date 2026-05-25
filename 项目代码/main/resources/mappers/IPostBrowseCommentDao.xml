@@ -117,10 +117,24 @@
                 share_count=share_count+1,
             </if>
             <if test="post_grade != null and post_grade != ''">
-                post_grade=post_grade+1,
+                <choose>
+                    <when test="post_grade_op != null and post_grade_op == 'sub'">
+                        post_grade=if(post_grade &gt; 0,post_grade-1,0),
+                    </when>
+                    <otherwise>
+                        post_grade=post_grade+1,
+                    </otherwise>
+                </choose>
             </if>
             <if test="post_collect != null and post_collect != ''">
-                post_collect=post_collect+1,
+                <choose>
+                    <when test="post_collect_op != null and post_collect_op == 'sub'">
+                        post_collect=if(post_collect &gt; 0,post_collect-1,0),
+                    </when>
+                    <otherwise>
+                        post_collect=post_collect+1,
+                    </otherwise>
+                </choose>
             </if>
             <if test="post_top != null and post_top != ''">
                 post_top=post_top+1,
@@ -148,6 +162,10 @@
     <insert id="insertThemeOperation" parameterType="int">
         insert into post_operation(postId,uid) values(#{id},#{uid});
     </insert>
+    <!--删除用户对主题已操作记录-->
+    <delete id="deleteThemeOperation" parameterType="java.util.Map">
+        delete from post_operation where postId=#{id} and uid=#{uid}
+    </delete>
 
     <!--查询用户关注记录-->
     <select id="selectAttention" resultType="int">

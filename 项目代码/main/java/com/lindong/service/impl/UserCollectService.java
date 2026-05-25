@@ -28,9 +28,22 @@ public class UserCollectService implements IUserCollectService {
 
     @Override
     public boolean selectCollectCountByMap(Map map) {
-        int i = userCollectDao.selectCollectCountByMap(map);
-        if (i > 0){    //帖子已收藏过了
+        if (this.hasCollectByMap(map)){    //帖子已收藏过了
             throw new CustomException(ResultCode.POST_COLLECT_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean hasCollectByMap(Map map) {
+        return userCollectDao.selectCollectCountByMap(map) > 0;
+    }
+
+    @Override
+    public boolean deleteCollectByMap(Map map) {
+        int i = userCollectDao.deleteCollectByMap(map);
+        if (i == 0){
+            throw new CustomException(ResultCode.DELETE_ERROR);
         }
         return true;
     }

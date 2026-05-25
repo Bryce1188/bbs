@@ -78,6 +78,15 @@ public class PostBrowseCommentService implements IPostBrowseCommentService {
     }
 
     @Override
+    public boolean deleteThemeOperation(Map<String, Integer> map) {
+        int i = postDao.deleteThemeOperation(map);
+        if (i == 0){
+            throw new CustomException(ResultCode.OPERATION_ERROR);
+        }
+        return true;
+    }
+
+    @Override
     public boolean selectAttention(Integer uid, Integer aid) {
         int i = postDao.selectAttention(uid, aid);
         if (i > 0){

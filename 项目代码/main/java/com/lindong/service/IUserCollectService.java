@@ -22,6 +22,20 @@ public interface IUserCollectService extends IBaseService {
     boolean selectCollectCountByMap(Map map);
 
     /**
+     * 查询用户是否已收藏
+     * @param map
+     * @return
+     */
+    boolean hasCollectByMap(Map map);
+
+    /**
+     * 根据用户和业务id删除收藏
+     * @param map
+     * @return
+     */
+    boolean deleteCollectByMap(Map map);
+
+    /**
      * 批量删除收藏数据
      * @param ids
      * @return

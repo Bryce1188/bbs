@@ -283,7 +283,7 @@
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                        <a :href="personalUrl(integral.id)" :title="'进入'+integral.another_name+'空间'"><img :src="'/leek_bbs/'+integral.picture" class="img-circle rank-avatar"></a>
+                                        <a :href="personalUrl(integral)" :title="'进入'+integral.another_name+'空间'"><img :src="'/leek_bbs/'+integral.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
                                             <p class="rank-user-name">{{integral.another_name}}</p>
                                             <p class="rank-user-extra">积分数:<em>{{integral.integral.total_integral}}</em></p>
@@ -292,7 +292,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(integral.id)">去串个门</a></li>
+                                        <li><a :href="personalUrl(integral)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -306,7 +306,7 @@
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px"><em>{{index+1>9?index+1:(index+1)}}</em></span>
-                                        <a :href="personalUrl(essay.id)" :title="'进入'+essay.another_name+'空间'"><img :src="'/leek_bbs/'+essay.picture" class="img-circle rank-avatar"></a>
+                                        <a :href="personalUrl(essay)" :title="'进入'+essay.another_name+'空间'"><img :src="'/leek_bbs/'+essay.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
                                             <p class="rank-user-name">{{essay.another_name}}</p>
                                             <p class="rank-user-extra">发帖数:<em>{{essay.posts}}</em></p>
@@ -315,7 +315,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(essay.id)">去串个门</a></li>
+                                        <li><a :href="personalUrl(essay)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -329,7 +329,7 @@
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                        <a :href="personalUrl(log.id)" :title="'进入'+log.another_name+'空间'"><img :src="'/leek_bbs/'+log.picture" class="img-circle rank-avatar"></a>
+                                        <a :href="personalUrl(log)" :title="'进入'+log.another_name+'空间'"><img :src="'/leek_bbs/'+log.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
                                             <p class="rank-user-name">{{log.another_name}}</p>
                                             <p class="rank-user-extra">日志数:<em>{{log.log}}</em></p>
@@ -338,7 +338,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(log.id)">去串个门</a></li>
+                                        <li><a :href="personalUrl(log)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -352,7 +352,7 @@
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                        <a :href="personalUrl(experience.id)" :title="'进入'+experience.another_name+'空间'"><img :src="'/leek_bbs/'+experience.picture" class="img-circle rank-avatar"></a>
+                                        <a :href="personalUrl(experience)" :title="'进入'+experience.another_name+'空间'"><img :src="'/leek_bbs/'+experience.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
                                             <p class="rank-user-name">{{experience.another_name}}</p>
                                             <p class="rank-user-extra">经验数:<em>{{experience.total_experience}}</em></p>
@@ -361,7 +361,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="personalUrl(experience.id)">去串个门</a></li>
+                                        <li><a :href="personalUrl(experience)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -659,7 +659,33 @@
             unreadCount:0
         },
         methods: {
-            personalUrl: function (userId) {
+            resolveUserId: function (user) {
+                if (!user) {
+                    return null;
+                }
+                var raw = user.id;
+                if (raw == null) {
+                    raw = user.user_id;
+                }
+                if (raw == null) {
+                    raw = user.userId;
+                }
+                var parsed = parseInt(raw, 10);
+                return isNaN(parsed) ? null : parsed;
+            },
+            personalUrl: function (user) {
+                var userId = user;
+                if (typeof user === "object") {
+                    userId = this.resolveUserId(user);
+                }
+                userId = parseInt(userId, 10);
+                if (isNaN(userId)) {
+                    if (this.currentUser && this.currentUser.id != null) {
+                        userId = parseInt(this.currentUser.id, 10);
+                    } else {
+                        return "javascript:;";
+                    }
+                }
                 var pathName = window.location.pathname || "";
                 var first = pathName.split("/")[1] || "leek_bbs";
                 return "/" + first + "/skipPage/personal?id=" + userId;

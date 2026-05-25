@@ -73,6 +73,13 @@ public interface IPostBrowseCommentService extends IBaseService {
     boolean insertThemeOperation(Map<String,Integer> map);
 
     /**
+     * 删除用户对主题已操作记录
+     * @param map
+     * @return
+     */
+    boolean deleteThemeOperation(Map<String,Integer> map);
+
+    /**
      * 查询用户关注记录
      * @param uid
      * @param aid

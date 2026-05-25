@@ -9,6 +9,9 @@
     <select id="selectCollectCountByMap" parameterType="java.util.Map" resultType="int">
         select count(*) from u_collect where u_id=#{u_id} and all_id=#{id} and type=#{type}
     </select>
+    <delete id="deleteCollectByMap" parameterType="java.util.Map">
+        delete from u_collect where u_id=#{u_id} and all_id=#{id} and type=#{type}
+    </delete>
     <!--根据条件获取收藏数据-->
     <select id="paging" parameterType="java.util.Map" resultType="userCollect">
         select * from u_collect

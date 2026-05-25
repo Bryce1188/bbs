@@ -273,6 +273,19 @@ INSERT INTO `post` (
 ('寻物启事：灰色保温杯，杯盖有贴纸', '地点大概在实验楼一层自习区。杯子里有茶包，如果捡到麻烦联系我，真的感谢。', @lp_id, 58, 4, NOW() - INTERVAL 4 HOUR, 0, '1', 16, 0, '1', '3', '3', '1', 'lp', 11, 'xzr', NOW() - INTERVAL 3 HOUR),
 ('今天不卷了，来个轻松话题：你最爱的宵夜', '我先说：炒粉加一杯冰豆奶。最近加班有点多，想看看大家都靠什么回血。', @xzr_id, 69, 6, NOW() - INTERVAL 2 HOUR, 0, '1', 21, 1, '1', '4', '4', '1', 'xzr', 12, 'ljj', NOW() - INTERVAL 80 MINUTE);
 
+-- 以 post_details 为准同步回复统计，避免“有回复数但看不到回复”
+UPDATE `post` p
+LEFT JOIN (
+    SELECT `post_id`, COUNT(*) AS cnt, MAX(`reply_time`) AS last_time
+    FROM `post_details`
+    GROUP BY `post_id`
+) d ON d.`post_id` = p.`id`
+LEFT JOIN `post_details` pd ON pd.`post_id` = p.`id` AND pd.`reply_time` = d.`last_time`
+LEFT JOIN `user` u ON u.`id` = pd.`pd_uid`
+SET p.`reply_count` = IFNULL(d.cnt,0),
+    p.`last_reply` = u.`username`,
+    p.`last_reply_time` = d.`last_time`;
+
 UPDATE `plate` p
 SET
     p.`theme` = (SELECT COUNT(*) FROM `post` t WHERE t.`plate_id` = p.`id` AND t.`post_status` <> '0'),

@@ -116,21 +116,39 @@ public class PostBrowseCommentController {
     @RequestMapping("/updatePosts")
     @ResponseBody
     public ApiResult updatePosts(@RequestBody Map map){
-//        帖子操作(点赞/反对)
+//        帖子点赞切换
         boolean isOperation = postBrowseService.selectThemeOperation(map);
-        if (isOperation){   //判断用户是否对主题已经评价过
-            throw new CustomException(ResultCode.POST_OPERATION_FAILED);
+        if (isOperation){
+            postBrowseService.deleteThemeOperation(map);
+            map.put("post_grade",1);
+            map.put("post_grade_op","sub");
+            postBrowseService.updatePost(map);
+            ApiResult result = ApiResult.of(ResultCode.SUCCESS);
+            result.setMsg("UNLIKE_SUCCESS");
+            return result;
         }
         postBrowseService.insertThemeOperation(map);
+        map.put("post_grade",1);
+        map.put("post_grade_op","add");
         postBrowseService.updatePost(map);
-        return ApiResult.of(ResultCode.SUCCESS);
+        ApiResult result = ApiResult.of(ResultCode.SUCCESS);
+        result.setMsg("LIKE_SUCCESS");
+        return result;
     }
 
     @RequestMapping(value = "/postsCollect",method = RequestMethod.POST)
     @ResponseBody
     public ApiResult postsCollect(@RequestBody Map map){
-//        收藏帖子
-        userCollectService.selectCollectCountByMap(map);    //判断帖子是否收藏,若收藏则抛异常
+//        收藏帖子切换
+        if (userCollectService.hasCollectByMap(map)){
+            userCollectService.deleteCollectByMap(map);
+            map.put("post_collect",1);
+            map.put("post_collect_op","sub");
+            postBrowseService.updatePost(map);
+            ApiResult result = ApiResult.of(ResultCode.SUCCESS);
+            result.setMsg("UNCOLLECT_SUCCESS");
+            return result;
+        }
         UserCollect userCollect = new UserCollect();
         userCollect.setU_id((Integer)map.get("u_id"));
         userCollect.setAll_id((Integer)map.get("id"));
@@ -139,8 +157,11 @@ public class PostBrowseCommentController {
         userCollect.setType((String)map.get("type"));
         userCollectService.insertUserCollect(userCollect);
         map.put("post_collect",1);
+        map.put("post_collect_op","add");
         postBrowseService.updatePost(map);
-        return ApiResult.of(ResultCode.SUCCESS);
+        ApiResult result = ApiResult.of(ResultCode.SUCCESS);
+        result.setMsg("COLLECT_SUCCESS");
+        return result;
     }
 
     @RequestMapping(value = "/postsShare",method = RequestMethod.POST)
