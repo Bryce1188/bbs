@@ -238,11 +238,20 @@ def health_check() -> None:
         "http://localhost:8080/leek_bbs/bbs/plate/findAll",
         "http://localhost:8080/bbs/index",
     ]
-    # Let hot deploy finish
-    for _ in range(90):
-        if http_status(urls[1]) == 200 and http_status(urls[2]) == 200:
+    # Let hot deploy finish. Print progress so it doesn't look frozen in IDE console.
+    ready = False
+    for i in range(90):
+        s1 = http_status(urls[1])
+        s2 = http_status(urls[2])
+        if s1 == 200 and s2 == 200:
+            ready = True
+            print(f"  - warmup ready after {i + 1}s")
             break
+        if i % 5 == 0:
+            print(f"  - waiting deploy... {i + 1}s (assets={s1}, api={s2})")
         time.sleep(1)
+    if not ready:
+        print("  - warmup timeout after 90s, continue with direct checks")
     for u in urls:
         s = http_status(u)
         print(f"  - {u} => {s if s is not None else 'ERR'}")
