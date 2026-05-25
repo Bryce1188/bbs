@@ -42,6 +42,7 @@ Vue.component('head_menu_comp', {
             </a>
             <nav class="bbs-topnav">
                 <a :href="ctx + '/skipPage/index'">首页</a>
+                <a :href="ctx + '/skipPage/daodu'">全部帖子</a>
                 <a :href="ctx + '/skipPage/ranking_list'">排行</a>
                 <template v-if="isUserShow">
                     <div class="bbs-user-menu" @mouseenter="openMenu" @mouseleave="scheduleMenuClose">
@@ -57,7 +58,7 @@ Vue.component('head_menu_comp', {
                         </div>
                         <div class="bbs-user-panel" :class="{open:isOpenActive}" @mouseenter="holdMenu" @mouseleave="scheduleMenuClose" data-stopPropagation>
                             <a :href="ctx + '/skipPage/spacecp'" @click="closeMenu">设置</a>
-                            <a :href="ctx + '/skipPage/daodu#my_post'" @click="closeMenu">我的帖子</a>
+                            <a :href="ctx + '/skipPage/my-post'" @click="closeMenu">我的帖子</a>
                             <a :href="ctx + '/skipPage/my-collect'" @click="closeMenu">我的收藏</a>
                             <a :href="ctx + '/skipPage/spacecp#care'" @click="closeMenu">我的关注</a>
                             <a href="javascript:;" @click="logout">退出登录</a>

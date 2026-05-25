@@ -36,7 +36,7 @@
 	<mvc:resources mapping="/WEB-INF/admin/**" location="/WEB-INF/admin/"></mvc:resources>
 	<mvc:resources mapping="/statics/**" location="/statics/"></mvc:resources>
 	<!-- 用户上传头像/图片固定映射到桌面仓库目录，避免热部署后丢失 -->
-	<mvc:resources mapping="/uploadfiles/**" location="file:/C:/Users/Ywt/Desktop/bbs/uploadfiles/"></mvc:resources>
+	<mvc:resources mapping="/uploadfiles/**" location="file:///C:/Users/Ywt/Desktop/bbs/uploadfiles/"></mvc:resources>
 
 	<!-- 文件上传 -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

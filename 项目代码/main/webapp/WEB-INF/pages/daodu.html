@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="/leek_bbs/statics/bootstrap-3.3.7/css/bootstrap.min.css">
 	<!-- vue-element插件样式 -->
 	<link rel="stylesheet" href="/leek_bbs/statics/vue/element-ui/index.css">
-	<link rel="stylesheet" href="/leek_bbs/statics/css/head.css?v=20260525k">
+	<link rel="stylesheet" href="/leek_bbs/statics/css/head.css?v=20260525j">
 	
 	<style>
 		.bgc{
@@ -124,12 +124,32 @@
 			padding-top: 10px;
 			border-top: 2px solid #E5E5E5 ;
 		}
-		#lay-btn >.layui-col-sm11 > button{
-			margin-right: -7px;
-			margin-bottom:10px ;
+		.bbs-filter-btn{
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 34px;
+			padding: 0 16px;
+			border: 1px solid #d9d9d9;
+			border-radius: 999px;
+			background: #fff;
+			color: #111827;
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 1;
+			margin-right: 10px;
+			margin-bottom:10px;
+			transition: all .2s ease;
 		}
-		.btn-bg-2{
-			background-color: orange;
+		.bbs-filter-btn:hover{
+			color: #111827;
+			border-color: #111827;
+			background: #f8f8f8;
+		}
+		.bbs-filter-btn.is-active{
+			background: #111827;
+			border-color: #111827;
+			color: #fff;
 		}
 	</style>
 </head>
@@ -144,21 +164,17 @@
 		<div class="layui-row">
 			<span>
 				<a href="/leek_bbs/skipPage/index"><span class="glyphicon glyphicon-home"></span></a>&nbsp;>&nbsp;
-				<a href="/leek_bbs/skipPage/daodu">导读</a>&nbsp;>&nbsp;
+				<a href="/leek_bbs/skipPage/daodu">全部帖子</a>&nbsp;>&nbsp;
 				<a href="/leek_bbs/skipPage/index">{{condition}}</a></span>
 		</div>
 		<!--分类按钮开始-->
 		<div class="layui-row " id="lay-btn">
-			<div class="layui-col-sm11" >
-				<button class="layui-btn layui-btn-primary layui-btn-xs " @click="getPostData('NewHotPost',1)">最近热门</button>
+			<div class="layui-col-sm12" >
+				<button class="bbs-filter-btn" :class="{'is-active':isActiveFilter('NewHotPost')}" @click="getPostData('NewHotPost',1)">最近热门</button>
 <!--				<button class="layui-btn layui-btn-primary layui-btn-xs " @click="getPostData('NewEssencePost',1)">最新精华</button>-->
-				<button class="layui-btn layui-btn-primary layui-btn-xs " @click="getPostData('NewReplyPost',1)">最新回复</button>
-				<button class="layui-btn layui-btn-primary layui-btn-xs " @click="getPostData('NewPublishPost',1)">最新发表</button>
+				<button class="bbs-filter-btn" :class="{'is-active':isActiveFilter('NewReplyPost')}" @click="getPostData('NewReplyPost',1)">最新回复</button>
+				<button class="bbs-filter-btn" :class="{'is-active':isActiveFilter('NewPublishPost')}" @click="getPostData('NewPublishPost',1)">最新发表</button>
 <!--				<button class="layui-btn layui-btn-primary layui-btn-xs " @click="getPostData('SofaPost',1)">抢沙发</button>-->
-				<button class="layui-btn layui-btn-primary layui-btn-xs " id="myPost" @click="getPostData('MyPost',1)" v-show="checkLoginStatus">我的帖子</button>
-			</div>
-			<div class="layui-col-sm1">
-				<button class="layui-btn layui-btn-primary layui-btn-warm layui-btn-xs btn2 " id="btnShow">发帖</button>
 			</div>
 		</div>
 		<!--分类按钮结束-->
@@ -250,11 +266,6 @@
 					<a :href="userUrlByName(item.last_reply)" class="wid" >{{item.last_reply}}</a>
 					<p style="padding-top: 4px;" class="wid"><em>{{changePublishTime(item.last_reply_time)}}</em></p>
 				</div>
-				<div class="layui-col-sm1 font-site" v-if="canDeletePost(item)" style="line-height: 11px">
-					<button class="btn btn-danger btn-xs" @click="deletePost(item.id)">
-						<span class="glyphicon glyphicon-trash"></span> 删除
-					</button>
-				</div>
 			</div>
 		</div>
 		<!--内容结束-->
@@ -284,33 +295,25 @@
 <!-- vue-element插件 -->
 <script src="/leek_bbs/statics/vue/element-ui/index.js"></script>
 <script src="/leek_bbs/statics/component/head_menu.js?v=20260525i"></script>
-<!--富文本编辑器-->
-<script src="/leek_bbs/statics/component/wangEditor.min.js"></script>
-<script src="/leek_bbs/statics/component/wangEditCommon.js"></script>
-<!--发表新主题弹出框开始-->
 <script>
-
-
-
     setTimeout(function () {
         new Vue({
             el:"#daoDuApp",
             data:{
-                pageSize:10,			//每页显示多少条数据
-                currentPage:1,		//当前页
-                totalCount:0,		//总数据条数
-                login_userId:'', //当前登录的用户id
-				checkLoginStatus:false,
-                postInfo:[],	//帖子信息
-                chooseSelect: "SelectPost", //选择查看的模块
-                leadUserInfo:{},
-                gradeInfo:{},//等级信息
-                plateId: '', //所选版块id
+                pageSize:10,
+                currentPage:1,
+                totalCount:0,
+                login_userId:'',
+                postInfo:[],
+                chooseSelect: "NewHotPost",
                 condition:'全部',
                 plateMap:{},
                 userIdMap:{}
             },
             methods:{
+                isActiveFilter(filter){
+                    return this.chooseSelect === filter;
+                },
                 loadPlateMap(){
                     var that = this;
                     $.ajax({
@@ -326,9 +329,6 @@
                                     }
                                 });
                             }
-                        },
-                        error: function(error){
-                            console.log("加载板块映射失败"+error);
                         }
                     });
                 },
@@ -346,102 +346,16 @@
                             if (response && response.userInfo && response.userInfo.id) {
                                 that.userIdMap[userName] = response.userInfo.id;
                             }
-                        },
-                        error: function(error){
-                            console.log("加载用户ID失败"+error);
                         }
                     });
                 },
                 checkLogin(){
-                  if (userInfo!=null){
-                      this.login_userId=userInfo.id;
-                      this.checkLoginStatus =true;
-				  }
-				},
-                canDeletePost(item){
-                    if (!item || !item.user_id || !this.login_userId) {
-                        return false;
+                    if (userInfo!=null){
+                        this.login_userId=userInfo.id;
                     }
-                    return Number(item.user_id) === Number(this.login_userId);
                 },
-				deletePost(postId) {
-                    var target = null;
-                    for (var i = 0; i < this.postInfo.length; i++) {
-                        if (Number(this.postInfo[i].id) === Number(postId)) {
-                            target = this.postInfo[i];
-                            break;
-                        }
-                    }
-                    if (!this.canDeletePost(target)) {
-                        layer.msg("无权限删除该帖子", {icon: 2, time: 1500});
-                        return;
-                    }
-					let that = this;
-					layer.confirm('确定删除该帖子吗？', {icon: 3, title: '提示'}, function(index){
-						axios.post('/leek_bbs/stair/postsManage/deletePosts', [postId])
-								.then(res => {
-									let data = res.data;
-									if (data.code == "500020") {
-										layer.msg("删除成功", {icon: 1, time: 1000});
-										that.getPostData('MyPost', 1);  // 重新加载“我的帖子”
-									} else {
-										layer.alert(data.msg || "删除失败", {icon: 2, time: 1500});
-									}
-								})
-								.catch(error => {
-									console.error("删除异常", error);
-									layer.alert("请求异常，请稍后再试", {icon: 2, time: 1500});
-								});
-						layer.close(index);
-					});
-				},
-                getGrade(total){
-                    var that = this;
-                    $.ajax({
-                        type:"post",
-                        url: "/leek_bbs/bbs/user/getGrade",
-                        data:{
-                            totalExperience:total,
-                        },
-                        dataType: "json",
-                        success:function (response) {
-                            //console.log(response);
-                            that.gradeInfo = response;
-                            //console.log(that.gradeInfo);
-                        },
-                        error: function(error){
-                            console.log("请求失败"+error);
-                        }
-                    })
-                },
-                /*获取用户信息*/
-                getUserInfo(userId,totalExperience){
-                    var that = this;
-                    $.ajax({
-                        type:"post",
-                        url: "/leek_bbs/bbs/userPost/leadUserInfo",
-                        data:{
-                            userId:userId
-                        },
-                        dataType: "json",
-                        success:function (response) {
-                            // console.log(response);
-                            that.leadUserInfo =response;
-                            // console.log(that.leadUserInfo);
-                            that.getGrade(response.experience.total_experience);
-                        },
-                        error: function(error){
-                            console.log("请求失败"+error);
-                        }
-                    })
-                },
-                // 将页码，及每页显示的条数以参数传递提交给后台
                 getPostData(chooseSelect,tag){
                     var that = this;
-                    if (chooseSelect === "MyPost" && !that.login_userId) {
-                        layer.msg("请先登录", {icon: 2, time: 1200});
-                        return;
-                    }
                     if(tag!=null){
                         that.currentPage = 1;
                     }
@@ -449,29 +363,17 @@
                         type: "post",
                         url: "/leek_bbs/bbs/userPost/findClassifyPost",
                         data:{
-                            // 每页显示的条数
                             PageSize:that.pageSize,
-                            // 显示第几页
                             PageCurrent:that.currentPage,
-                            //查看模块
                             chooseSelect:chooseSelect,
-                            //当前登录的用户id
-                            userId:that.login_userId,
+                            userId:that.login_userId
                         },
                         dataType:"json",
                         success: function(response) {
-                            // console.log(response);
                             var list = Array.isArray(response.list) ? response.list : [];
-                            if (chooseSelect === "MyPost" && that.login_userId) {
-                                list = list.filter(function (item) {
-                                    return item && Number(item.user_id) === Number(that.login_userId);
-                                });
-                            }
-                            that.postInfo = list;		//将数据给postInfo
-                            // console.log(that.postInfo)
-                            // 将数据的长度赋值给totalCount
-                            that.totalCount = (chooseSelect === "MyPost") ? list.length : response.total,	//将数据总条数赋值给totalCount
-                            that.chooseSelect = chooseSelect; //将选择的查看方式重置
+                            that.postInfo = list;
+                            that.totalCount = response.total || list.length;
+                            that.chooseSelect = chooseSelect;
                             if (Array.isArray(that.postInfo)) {
                                 that.postInfo.forEach(function (item) {
                                     if (item && item.post_author && item.user_id) {
@@ -482,35 +384,13 @@
                                     }
                                 });
                             }
-                            //console.log(that.totalCount)
-                        },
-                        error: function(error){
-                            console.log("请求失败"+error);
                         }
                     });
                 },
-                // 分页
-                // 每页显示的条数
-                handleSizeChange(val) {
-                    // console.log("我变了")
-                    /*  // 改变每页显示的条数
-                      this.PageSize=val
-                      // 点击每页显示的条数时，显示第一页
-                      this.getData(val,1)
-                      // 注意：在改变每页显示的条数时，要将页码显示到第一页
-                      this.currentPage=1*/
-                },
-                // 显示第几页
+                handleSizeChange() {},
                 handleCurrentChange(val) {
-                    var that = this;
-                    //console.log("我也变了")
-                    //console.log(val);
-                    that.currentPage =val;
-                    this.getPostData(that.chooseSelect);
-                    /*  // 改变默认的页数
-                      this.currentPage=val
-                      // 切换页码时，要获取每页显示的条数
-                      this.getData(this.PageSize,(val)*(this.PageSize))*/
+                    this.currentPage =val;
+                    this.getPostData(this.chooseSelect);
                 },
                 plateUrl(item){
                     if (!item) {
@@ -538,17 +418,8 @@
                     if (this.userIdMap[userName]) {
                         return "/leek_bbs/skipPage/personal?id=" + this.userIdMap[userName];
                     }
-                    for (var i = 0; i < this.postInfo.length; i++) {
-                        if (this.postInfo[i].post_author === userName && this.postInfo[i].user_id) {
-                            return "/leek_bbs/skipPage/personal?id=" + this.postInfo[i].user_id;
-                        }
-                    }
-                    if (typeof userInfo !== "undefined" && userInfo && userInfo.another_name === userName) {
-                        return "/leek_bbs/skipPage/personal?id=" + userInfo.id;
-                    }
                     return "javascript:;";
                 },
-                /*时间转换方法*/
                 changePublishTime(dateTimeStamp){
                     if (!dateTimeStamp) {
                         return "-";
@@ -560,196 +431,37 @@
                     var minute = 1000 * 60;
                     var hour = minute * 60;
                     var day = hour * 24;
-                    var halfamonth = day * 15;
                     var month = day * 30;
                     var year = day * 365;
                     var now = new Date().getTime();
                     var diffValue = now - (isNaN(ts) ? new Date(dateTimeStamp).getTime() : ts);
-                    //console.log(diffValue);
                     if(isNaN(diffValue) || diffValue < 0){return "-";}
                     var monthC =diffValue/month;
-                    var weekC =diffValue/(7*day);
                     var dayC =diffValue/day;
                     var hourC =diffValue/hour;
                     var minC =diffValue/minute;
                     var yearC = diffValue/year;
                     if(yearC>=1){
-                        result=""+ parseInt(yearC) +"年前";
+                        return ""+ parseInt(yearC) +"年前";
                     }else if(monthC>=1){
-                        result="" + parseInt(monthC) + "月前";
-                    }else if(weekC>=1){
-                        result="" + parseInt(weekC) + "周前";
+                        return "" + parseInt(monthC) + "月前";
                     }else if(dayC>=1){
-                        result=""+ parseInt(dayC) +"天前";
+                        return ""+ parseInt(dayC) +"天前";
                     }else if(hourC>=1){
-                        result=""+ parseInt(hourC) +"小时前";
+                        return ""+ parseInt(hourC) +"小时前";
                     }else if(minC>=1){
-                        result=""+ parseInt(minC) +"分钟前";
-                    }else{
-                        result="刚刚";
-					}
-                    return result;
+                        return ""+ parseInt(minC) +"分钟前";
+                    }
+                    return "刚刚";
                 }
             },
             mounted:function () {
                 this.loadPlateMap();
                 this.checkLogin();
-                this.getPostData(this.chooseSelect);
-                if (getUrlName("my_post")) {
-                    this.getPostData("MyPost",1);
-                    $("#myPost").addClass('btn-bg-2');
-                }
-
-            },
-            created(){
-                loadingLayui();
+                this.getPostData("NewHotPost",1);
             }
         });
     },200);
-	layui.use(['laypage','layer','element'], function(){
-		var layer = layui.layer;
-		var laypage = layui.laypage;
-		var element = layui.element;
-		/*发表新主题弹出层*/
-		$(document).on('click','#btnShow',function () {
-            if (userInfo==null){    //未登录直接跳转登录页面
-                layer.msg("请先登录...",{ icon: 2,time:'1500'},function () {
-                    layui.login();
-                });
-            }else if(userInfo!=null){
-                layer.open({
-                    type: 2,
-                    content: '/leek_bbs/skipPage/sendArticle' ,//这里content是一个普通的String
-                    area:['1120px', '680px'],
-                    /*	btn: '发新帖',*/
-                    title:'论坛导航',
-					success: function (layero, index) {    //成功获得加载页面时，预先加载，将值从父窗口传到 子窗口
-                        let body = layer.getChildFrame('body', index);
-                        //意思是将rowselect[0].path这个值传递到子窗口的class="filepath"这个的文本框中，（预先加载）
-                        body.find("plateId").val();
-                    }
-                })
-			}
-		});
-	})
-
-	function loadingLayui(){
-            layui.define(['layer','element'], function(exports){
-                var layer = layui.layer;
-                var element = layui.element;
-               //console.log("这"+JSON.stringify(userInfo))
-                /*发表新主题弹出层*/
-                exports('openSendPost', function (plateId) {
-                    console.log("2222"+plateId)
-                    top.layer.open({
-                        type: 1,
-                        content: `
-				<div class="layui-container bbs-compose-shell" style="width: 100%;height: 100%;padding:34px;background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(247,247,247,.96)),url('/leek_bbs/statics/images/figma-bbs/wide.jpg') center/cover no-repeat;">
-		  <style>
-		    .bbs-compose-shell, .bbs-compose-shell * { box-sizing: border-box; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; }
-		    .bbs-compose-shell .layui-tab-title { border-bottom: 0; }
-		    .bbs-compose-shell .layui-tab-title li { padding: 0; font-size: 0; font-weight: 800; color: #111; }
-		    .bbs-compose-shell .layui-tab-title li:before { content: "发表帖子"; font-size: 34px; line-height: 1.2; }
-		    .bbs-compose-shell .layui-tab-title .layui-this:after { display: none; }
-		    .bbs-compose-shell .layui-tab-content { height: auto !important; padding: 24px 0 0; }
-		    .bbs-compose-shell .form-group { width: 100%; font-size: 0; }
-		    .bbs-compose-shell .form-group:before { content: "帖子标题"; display: block; margin-bottom: 10px; color: #111; font-size: 15px; font-weight: 800; }
-		    .bbs-compose-shell #title { width: 100% !important; height: 48px; padding: 0 16px; border: 1px solid #dcdcdc; border-radius: 8px; color: #111; font-size: 16px; outline: none; box-shadow: none; }
-		    .bbs-compose-shell #title:focus { border-color: #111; }
-		    .bbs-compose-shell #editor { overflow: hidden; border: 1px solid #e8e8e8; border-radius: 8px; background: #fff; }
-		    .bbs-compose-shell #editor:before { content: "正文内容"; display: block; margin-bottom: 10px; color: #111; font-size: 15px; font-weight: 800; }
-		    .bbs-compose-shell button[onclick^="sendPost"] { min-width: 132px; height: 46px; border: 0; border-radius: 8px; background: #111 !important; color: #fff !important; font-size: 0 !important; font-weight: 800; cursor: pointer; }
-		    .bbs-compose-shell button[onclick^="sendPost"]:before { content: "发表帖子"; font-size: 15px; }
-		  </style>
-		  <div class="layui-col-xs12" style="max-width:860px;margin:0 auto;float:none;">
-			<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="padding:30px;border:1px solid #e8e8e8;border-radius:8px;background:rgba(255,255,255,.96);box-shadow:0 24px 60px rgba(0,0,0,.1);">
-			  <ul class="layui-tab-title">
-				<li class="layui-this">发表帖子</li>
-			  </ul>
-			  <div class="layui-tab-content" style="height: 100px;">
-				<div class="layui-tab-item layui-show">
-					<div class="layui-col-xs12" style="margin-bottom:20px;">
-						<form class="form-inline">
-						  <div class="form-group">
-							标题:<input type="text" class="form-control" id="title" placeholder="请输入标题..." style="width:100%;">
-						  </div>
-						  <div style="margin-top: 20px">
-						  	<div id="editor"></div>
-						  </div>
-						</form>
-					</div>
-				</div>
-				<div class="layui-col-xs12">
-					<button class="layui-btn layui-btn-primary layui-btn-sm layui-btn-warm" style="float: right;margin-right:10px;" onclick="sendPost(userInfo.id,${plateId},userInfo.another_name)">发表帖子</button>
-				</div>
-			  </div>
-			</div>
-		  </div>
-		</div>` ,//这里content是一个普通的String
-                        area:['900px', '680px'],
-                        /*	btn: '发新帖',*/
-                        title:'发表新主题',
-                        success:function () {
-                            /*创建富文本编辑器*/
-							createEdit("editor");
-                        },
-
-                    });
-                });
-
-                //发表帖子
-                window.sendPost = function(userId,plateId,postAuthor){
-                    if($("#title").val()==null||$("#title").val()==''){
-                        layer.closeAll();
-                        ui.error("标题不能为空",1500,true);
-                    }else if(editor.txt.html()=='<p><br></p>'){
-                        layer.closeAll();
-                        ui.error("内容不能为空",1500,true);
-                    }else {
-                        axios.post("/leek_bbs/bbs/userPost/insertPost", {
-                            userId: userId,	//发帖用户id
-                            title: $("#title").val(), //获取当前帖子主题
-                            postAuthor: postAuthor, //帖子作者
-                            plateId: plateId, //帖子所在版块id
-                            content: editor.txt.html(), //内容
-                            publishTime: new Date().getTime(), //获取当前时间的时间戳
-                            lastReply: postAuthor,//默认设置自己为最后回复者
-                            lastReplyTime: new Date().getTime(), //默认获取当前时间戳
-                        }).then(function (response) {
-                            // var index = parent.layer.getFrameIndex(window.name); //获取上一层弹出层的索引
-                            //parent.layer.closeAll();	//关闭上一层弹出层
-                            layer.closeAll();
-                            // console.log(response);
-                            if (response.data == 1) {
-                                ui.success("发表主题成功,等待审核", 1500, true);
-                            } else {
-                                ui.error("发表主题失败", {icon: 5, time: '1500'});
-                            }
-                        });
-                    }
-				}
-            });
-	}
-
-	$(document).on('click','#lay-btn >.layui-col-sm11 > button',function () {
-	    removeCalss();
-		$(this).addClass('btn-bg-2');
-    });
-
-	function removeCalss() {
-		$('#lay-btn >.layui-col-sm11 > button').each(function () {
-			$(this).removeClass('btn-bg-2');
-        })
-    }
-
-    function getUrlName(name) {
-        let url = window.location.href;
-        if (url.indexOf(name) != -1){
-            return true;
-        } else {
-            return false;
-        }
-    }
 </script>
 </body>
 <!--发表新主题弹出框结束-->

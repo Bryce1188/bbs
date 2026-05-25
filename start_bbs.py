@@ -36,6 +36,7 @@ TOMCAT_HOME = TOOLS / "apache-tomcat-9.0.105"
 TOMCAT_WEBAPPS = TOMCAT_HOME / "webapps"
 TOMCAT_BIN = TOMCAT_HOME / "bin"
 TOMCAT_STARTUP = TOMCAT_BIN / "startup.bat"
+TOMCAT_SHUTDOWN = TOMCAT_BIN / "shutdown.bat"
 PERSIST_UPLOAD_DIR = ROOT / "uploadfiles"
 
 MAVEN_CMD = TOOLS / "apache-maven-3.9.9" / "bin" / "mvn.cmd"
@@ -199,10 +200,25 @@ def deploy_wars() -> None:
         raise FileNotFoundError(f"Tomcat webapps not found: {TOMCAT_WEBAPPS}")
     if not TARGET_WAR.exists():
         raise FileNotFoundError(f"WAR not found: {TARGET_WAR}")
+    stop_tomcat()
     bbs_war = TOMCAT_WEBAPPS / "bbs.war"
     leek_war = TOMCAT_WEBAPPS / "leek_bbs.war"
-    shutil.copy2(TARGET_WAR, bbs_war)
-    shutil.copy2(TARGET_WAR, leek_war)
+    bbs_dir = TOMCAT_WEBAPPS / "bbs"
+    leek_dir = TOMCAT_WEBAPPS / "leek_bbs"
+    if bbs_war.exists():
+        bbs_war.unlink()
+    if leek_war.exists():
+        leek_war.unlink()
+    if bbs_dir.exists():
+        shutil.rmtree(bbs_dir, ignore_errors=True)
+    if leek_dir.exists():
+        shutil.rmtree(leek_dir, ignore_errors=True)
+    tmp_bbs = TOMCAT_WEBAPPS / "bbs.war.tmp"
+    tmp_leek = TOMCAT_WEBAPPS / "leek_bbs.war.tmp"
+    shutil.copy2(TARGET_WAR, tmp_bbs)
+    shutil.copy2(TARGET_WAR, tmp_leek)
+    os.replace(tmp_bbs, bbs_war)
+    os.replace(tmp_leek, leek_war)
     print("  - Deployed bbs.war and leek_bbs.war")
 
 
@@ -259,13 +275,40 @@ def ensure_tomcat() -> None:
     print("  - Tomcat started")
 
 
+def stop_tomcat(timeout_sec: int = 40) -> None:
+    if not is_port_open("127.0.0.1", 8080):
+        return
+    print("  - Stopping Tomcat for safe deploy...")
+    env = os.environ.copy()
+    env["JAVA_HOME"] = str(JDK8_HOME)
+    env["JRE_HOME"] = str(JDK8_HOME / "jre")
+    env["Path"] = str(JDK8_HOME / "bin") + os.pathsep + env.get("Path", "")
+    if TOMCAT_SHUTDOWN.exists():
+        subprocess.Popen(
+            [str(TOMCAT_SHUTDOWN)],
+            cwd=str(TOMCAT_BIN),
+            env=env,
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+    end = time.time() + timeout_sec
+    while time.time() < end:
+        if not is_port_open("127.0.0.1", 8080):
+            print("  - Tomcat stopped")
+            return
+        time.sleep(1)
+    raise RuntimeError("Tomcat stop timeout")
+
+
 def health_check() -> None:
     print("[7/7] Health checking...")
     urls = [
-        "http://localhost:8080/leek_bbs/index",
+        "http://localhost:8080/leek_bbs/skipPage/index",
         "http://localhost:8080/leek_bbs/statics/component/common_import.js",
-        "http://localhost:8080/leek_bbs/bbs/plate/findAll",
-        "http://localhost:8080/bbs/index",
+        "http://localhost:8080/leek_bbs/bbs/user/verifyCode",
+        "http://localhost:8080/bbs/skipPage/index",
     ]
     # Let hot deploy finish. Print progress so it doesn't look frozen in IDE console.
     ready = False
@@ -285,7 +328,7 @@ def health_check() -> None:
         s = http_status(u)
         print(f"  - {u} => {s if s is not None else 'ERR'}")
     print("\nRecommended URL:")
-    print("  http://localhost:8080/leek_bbs/index")
+    print("  http://localhost:8080/leek_bbs/skipPage/index")
 
 
 def main() -> int:

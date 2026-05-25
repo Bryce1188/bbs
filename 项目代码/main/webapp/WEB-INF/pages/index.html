@@ -654,6 +654,7 @@
         </a>
         <nav class="bbs-nav-items">
             <a href="/leek_bbs/skipPage/index">首页</a>
+            <a href="/leek_bbs/skipPage/daodu">全部帖子</a>
             <a href="/leek_bbs/skipPage/ranking_list">排行</a>
             <template v-if="currentUser">
                 <div class="bbs-user-menu">
@@ -669,7 +670,7 @@
                     </div>
                     <div class="bbs-user-panel" :class="{open: userMenuOpen}" @click.stop>
                         <a href="/leek_bbs/skipPage/spacecp" @click="closeUserMenu">设置</a>
-                        <a href="/leek_bbs/skipPage/daodu#my_post" @click="closeUserMenu">我的帖子</a>
+                        <a href="/leek_bbs/skipPage/my-post" @click="closeUserMenu">我的帖子</a>
                         <a href="/leek_bbs/skipPage/my-collect" @click="closeUserMenu">我的收藏</a>
                         <a href="/leek_bbs/skipPage/spacecp#care" @click="closeUserMenu">我的关注</a>
                         <a href="javascript:;" @click="logoutUser">退出登录</a>
