@@ -475,13 +475,13 @@ body > .container-fluid {
 .m-hover-bg:hover,
 .m-active {
     border-left: 0 !important;
-    background: #111111 !important;
-    color: #ffffff !important;
+    background: #f3f4f6 !important;
+    color: #111827 !important;
 }
 
 .m-hover-bg:hover a,
 .m-active a {
-    color: #ffffff !important;
+    color: #111827 !important;
 }
 
 h5 > a,
