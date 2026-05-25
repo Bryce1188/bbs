@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lindong.domain.User;
 import com.lindong.service.IUserService;
+import com.lindong.utils.SpringContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -26,9 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Controller
 @ServerEndpoint(value = "/websocket/{userId}")
 public class WebSocketServer {
-
-    @Resource
-    private IUserService userService;
     /**
      * 在线人数
      */
@@ -198,6 +195,10 @@ public class WebSocketServer {
             list.add(uid);
         }
         if (list.size() == 0){
+            return new ArrayList<>();
+        }
+        IUserService userService = SpringContextHolder.getBean(IUserService.class);
+        if (userService == null) {
             return new ArrayList<>();
         }
         List<User> users = userService.listUser(list);

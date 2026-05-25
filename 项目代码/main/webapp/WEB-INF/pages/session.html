@@ -97,9 +97,11 @@
 </div>
 <script src="/leek_bbs/statics/layui/layui.js"></script>
 <script src="/leek_bbs/statics/vue/vue.js"></script>
+<script src="/leek_bbs/statics/vue/axios.min.js"></script>
 <script>Vue.config.productionTip = false</script>
 <script>
     let tId;
+    let loginUid;
     let messageList=[];
     layui.define(['layer','util'],function (exports) {
        let util = layui.util,
@@ -136,19 +138,35 @@
                 }
             },
             created(){
-                let msg;
-                if (tId != 0){
-                    msg = getCacheMsg();
-                }
-                console.log(msg);
-                if (msg != null){
-                    this.messageList = msg.filter(item => {
-                        return item.tarUser.userId == tId || item.srcUser.userId == tId;
+                loginUid = parent.window.getUserId ? parent.window.getUserId() : null;
+                if (tId != null && loginUid != null){
+                    axios.post('/leek_bbs/bbs/privateMsg/listSession',{
+                        userId: loginUid,
+                        peerId: tId
+                    }).then((response)=>{
+                        let list = (response.data && response.data.data) ? response.data.data : [];
+                        this.messageList = list.map(function (item) {
+                            return {
+                                id: item.id,
+                                srcUser: {userId: item.srcUserId},
+                                tarUser: {userId: item.tarUserId},
+                                img: item.img || item.srcPicture,
+                                time: item.time,
+                                content: item.content
+                            };
+                        });
+                        return axios.post('/leek_bbs/bbs/privateMsg/markSessionRead',{
+                            userId: loginUid,
+                            peerId: tId
+                        });
+                    }).finally(()=>{
+                        this.isShowMessage = true;
+                        layui.closeLay();
                     });
-                    //console.log(this.messageList);
+                }else{
+                    this.isShowMessage = true;
+                    layui.closeLay();
                 }
-                this.isShowMessage = true;
-                layui.closeLay();
             },
             updated(){
                 loadBottom();
@@ -167,16 +185,6 @@
     //将消息添加到页面
     function sendMessage(data,loginUserId) {
         chatSession.messageList.push(data);
-        let msg = getCacheMsg();
-        let msgList;
-        if (msg != null){
-            msgList = msg;
-        }else {
-            msgList = [];
-        }
-        msgList.push(data);
-        //localStorage.setItem("msgData-"+tId,JSON.stringify(msgList));
-        localStorage.setItem("msgData",JSON.stringify(msgList));
         if (data.srcUser.userId != loginUserId){
             let player = document.getElementById("audioPlay");
             player.play();
@@ -189,13 +197,6 @@
         ele.scrollTop = ele.scrollHeight;
     }
     
-    function getCacheMsg() {
-        //console.log(tId)
-        //let msgData = JSON.parse(localStorage.getItem("msgData-"+tId));
-        let msgData = JSON.parse(localStorage.getItem("msgData"));
-        return msgData;
-    }
-
 </script>
 </body>
 </html>

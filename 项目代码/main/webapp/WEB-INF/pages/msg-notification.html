@@ -115,7 +115,7 @@
         <div class="row" style="margin-top: 20px;">
             <div class="col-sm-2" style="padding-bottom:20px;border: 1px solid #e5e5e5;background-color: #fff;">
                 <div class="row" style="border-bottom: 1px solid #e5e5e5;"><h4>通知</h4></div>
-<!--                <div class="row m-hover-bg m-active" id="userBtn"><h5><a href="javascript:;">私人消息</a></h5></div>-->
+                <div class="row m-hover-bg m-active" id="userBtn"><h5><a href="javascript:;">私聊消息</a></h5></div>
                 <div class="row m-hover-bg" id="postsBtn"><h5><a href="javascript:;">我的帖子</a></h5></div>
 <!--                <div class="row m-hover-bg" id="friendApply"><h5><a href="javascript:;">好友申请</a></h5></div>-->
                 <div class="row m-hover-bg" id="plateBtn"><h5><a href="javascript:;">系统提醒</a></h5></div>
@@ -126,18 +126,18 @@
                         <ul style="padding: 0 15px;width: 112%;" v-if="privateMsgList.length > 0">
                             <li v-for="item in privateMsgList">
                                 <div class="row" style="margin-left: 8px;">
-                                    <div class="col-sm-1"><input type="checkbox" :checked="collectIds.indexOf(item.time)!=-1" @click="isCheck(item.time)"></div>
-                                    <div class="col-sm-1"><a href="javascript:;"><img :src="'/leek_bbs/'+item.img" class="img-circle mn-img-size" alt=""></a></div>
+                                    <div class="col-sm-1"><input type="checkbox" :checked="collectIds.indexOf(item.id)!=-1" @click="isCheck(item.id)"></div>
+                                    <div class="col-sm-1"><a :href="'/leek_bbs/skipPage/personal?id='+item.srcUserId"><img :src="'/leek_bbs/'+(item.picture || item.img)" class="img-circle mn-img-size" alt=""></a></div>
                                     <div class="col-sm-7" style="margin-left: 15px;">
                                         <span style="font-size:12px;opacity: .5">{{item.time | formDate}}</span>
                                         <h5>
-                                            <span><a :href="'/leek_bbs/skipPage/personal?id='+item.user_id">{{item.srcUser.username}}</a>&nbsp;&nbsp;</span>
+                                            <span><a :href="'/leek_bbs/skipPage/personal?id='+item.srcUserId">{{item.anotherName || item.username}}</a>&nbsp;&nbsp;</span>
                                             <span>发来一条消息</span>&nbsp;&nbsp;
                                             <span style="font-size: 12px" v-html="item.content">
                                             </span>
                                         </h5>
                                     </div>
-                                    <div class="col-sm-2"><a href="javascript:;" style="display:block;float:right;margin-right:-55px;line-height: 54px;" @click="deleteCollects(item.srcUser.userId)">删除</a></div>
+                                    <div class="col-sm-2"><a href="javascript:;" style="display:block;float:right;margin-right:-55px;line-height: 54px;" @click="deleteCollects(item.id)">删除</a></div>
                                 </div>
                             </li>
                         </ul>
@@ -219,7 +219,7 @@
                     <div>
                         <el-pagination
                                 background
-                                @current-change="getNewestReply"
+                                @current-change="handlePageChange"
                                 :current-page.sync="pageNo"
                                 :page-size="pageSize"
                                 layout="prev, pager, next, jumper"
@@ -271,9 +271,43 @@
             collectIds:[],  //存放选中id
             isCheckAll:false,
             isCheckBtn:false,
+            currentPrivatePage:1,
             //isStatus:true
         },
         methods:{
+            handlePageChange(pageNo){
+                this.pageNo = pageNo;
+                if (this.isShowPrivate){
+                    this.getPrivateList(pageNo);
+                }else if (this.isShowPost){
+                    this.getNewestReply();
+                }else if (this.isShowApply){
+                    this.getFriendApply();
+                }else if (this.isShowSys){
+                    this.getSysWarn();
+                }
+            },
+            getPrivateList(pageNo){
+                if (!userInfo || !userInfo.id){
+                    return;
+                }
+                this.currentPrivatePage = pageNo || 1;
+                this.pageNo = this.currentPrivatePage;
+                axios.post('/leek_bbs/bbs/privateMsg/listInbox',{
+                    userId:userInfo.id,
+                    pageNo:this.currentPrivatePage,
+                    pageSize:this.pageSize
+                }).then(response => {
+                    let data = response.data || {};
+                    this.privateMsgList = data.lists || [];
+                    this.total = data.total || 0;
+                    this.changMethod();
+                    return axios.post('/leek_bbs/bbs/privateMsg/markAllRead',{userId:userInfo.id});
+                }).catch(error => {
+                    ui.alert("获取私聊消息失败",2000,true);
+                    console.log(error);
+                })
+            },
             getNewestReply(){
                axios.post('/leek_bbs/bbs/notification/selectNewestReply',{
                    uid:userInfo.id,
@@ -339,7 +373,7 @@
                         })
                     }else if (this.isShowPrivate){  //私聊消息
                         this.privateMsgList.forEach(item => {
-                            this.collectIds.push(item.time);
+                            this.collectIds.push(item.id);
                         })
                     }else{      //系统提醒
                         this.sysWarn.forEach(item => {
@@ -371,18 +405,17 @@
                             }else if (_this.isShowApply) {
                                 _this.deleteApply();
                             }else if (_this.isShowPrivate) {
-                                //let arr = _this.privateMsgList;
-                                let arr = JSON.parse(localStorage.getItem(`msgData`));
-                                for (let i=0;i<arr.length;i++) {
-                                    for (let j=0;j<_this.collectIds.length;j++){
-                                        if (arr[i].time==_this.collectIds[j]){
-                                           arr.splice(i,1);
-                                        }
-                                    }
-                                }
-                                localStorage.setItem(`msgData`,JSON.stringify(arr));
-                                ui.success("删除成功",2000,true);
-                                getPrivateMsg();
+                                axios.post('/leek_bbs/bbs/privateMsg/deleteByIds',{
+                                    userId:userInfo.id,
+                                    ids:_this.collectIds
+                                }).then(() => {
+                                    ui.success("删除成功",2000,true);
+                                    _this.collectIds = [];
+                                    _this.getPrivateList(_this.currentPrivatePage);
+                                }).catch(error => {
+                                    ui.error("删除失败",2000,true);
+                                    console.log(error);
+                                });
                             }else {
                                 _this.deleteSysWarn();
                             }
@@ -483,19 +516,7 @@
     function getPrivateMsg() {
         if (userInfo != null){
             msgApp.isShowInform = true;
-            let msg = JSON.parse(localStorage.getItem(`msgData`));
-            if (msg != null && msg != ''){
-                msgApp.privateMsgList = msg.filter(item => {
-                    return item.status != null
-                });
-                console.log("00000000"+msgApp.privateMsgList.length);
-                //msgApp.privateMsgList = JSON.parse(msg);
-                msgApp.total = msgApp.privateMsgList.length;
-                msgApp.changMethod();
-            }else {
-                msgApp.total = 0;
-                msgApp.changMethod();
-            }
+            msgApp.getPrivateList(1);
         } else {
             layui.login();
         }

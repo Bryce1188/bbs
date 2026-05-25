@@ -128,19 +128,15 @@ Vue.component('head_menu_comp', {
                 this.unreadCount = 0;
                 return;
             }
-            try {
-                var list = JSON.parse(localStorage.getItem("msgData") || "[]");
-                var currentId = this.currentUser.id;
-                var unread = 0;
-                list.forEach(function (item) {
-                    if (item && item.status === 0 && item.tarUser && item.tarUser.userId === currentId) {
-                        unread++;
-                    }
+            var that = this;
+            axios.post(APP_CTX + "/bbs/privateMsg/unreadCount",{userId:this.currentUser.id})
+                .then(function (response) {
+                    var data = response.data || {};
+                    that.unreadCount = data.count || 0;
+                })
+                .catch(function () {
+                    that.unreadCount = 0;
                 });
-                this.unreadCount = unread;
-            } catch (e) {
-                this.unreadCount = 0;
-            }
         },
         toggleMenu(){
             this.holdMenu();

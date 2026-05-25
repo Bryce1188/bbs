@@ -875,16 +875,27 @@
                let str = layedit.getContent(editIndex);
                if (str != null && str != ''){
                    let date = new Date();
-                   ws.send(JSON.stringify({
+                   let payload = {
                        "type": "1",
                        "tarUser": {"userId":tarUser.id},
                        "srcUser": {"userId":userInfo.id},
                        "img":userInfo.picture,
                        "time":date.getTime(),
                        "content": str
-                   }));
-                   //该方法layedit接口中未定义,修改layedit.js文件自己添加的方法
-                   layedit.clearContent(editIndex);
+                   };
+                   axios.post('/leek_bbs/bbs/privateMsg/send',{
+                       srcUserId:userInfo.id,
+                       tarUserId:tarUser.id,
+                       content:str,
+                       img:userInfo.picture,
+                       time:date.getTime()
+                   }).then(function () {
+                       ws.send(JSON.stringify(payload));
+                       //该方法layedit接口中未定义,修改layedit.js文件自己添加的方法
+                       layedit.clearContent(editIndex);
+                   }).catch(function () {
+                       layer.msg('消息保存失败，请稍后重试',{icon:5,time:1800});
+                   });
                } else {
                    layer.msg('消息内容不能为空',{icon:0,time:1200});
                }
