@@ -9,6 +9,7 @@ document.write('' +
     '<script src="/leek_bbs/statics/layui/layui.js"></script>\n' +
     '<script src="/leek_bbs/statics/vue/vue.js"></script>\n' +
     '<script src="/leek_bbs/statics/vue/axios.min.js"></script>\n' +
+    '<script src="/leek_bbs/statics/component/pagination_guard.js?v=20260525a"></script>\n' +
     '<script>Vue.config.productionTip = false</script>\n' +
     '');
 
