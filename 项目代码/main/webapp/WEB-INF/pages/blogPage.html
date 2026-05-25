@@ -319,6 +319,10 @@
                                 <i class="layui-icon layui-icon-flag"></i>
                                 <span>举报</span>
                             </a>
+                            <a class="btn btn-default btn-sm" @click="goAppealPage(PostsInfo.id,1)" title="申诉该主题">
+                                <i class="layui-icon layui-icon-note"></i>
+                                <span>申诉</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -384,7 +388,10 @@
                     <div class="p-pt">
                         <div class="row" style="margin: 10px;">
                             <span><a href="javascript:;" @click="citePostReply(item)"><img src="/leek_bbs/statics/images/folder_new.gif" style="vertical-align: sub;">&nbsp;回复</a></span>
-                            <span style="float: right;"><a href="javascript:;" @click="goReportPage(item.pid,2)">举报</a></span>
+                            <span style="float: right;">
+                                <a href="javascript:;" @click="goAppealPage(item.pid,2)" style="margin-right: 10px;">申诉</a>
+                                <a href="javascript:;" @click="goReportPage(item.pid,2)">举报</a>
+                            </span>
                         </div>
 
                     </div>
@@ -754,6 +761,17 @@
                     reportType = 1;
                 }
                 window.location.href = '/leek_bbs/skipPage/post-report?pid=' + postId + '&type=' + reportType;
+            },
+            goAppealPage(pid,type){
+                var postId = parseInt(pid, 10);
+                if (isNaN(postId)) {
+                    postId = parseInt(this.theme_id, 10);
+                }
+                var targetType = parseInt(type, 10);
+                if (isNaN(targetType)) {
+                    targetType = 1;
+                }
+                window.location.href = '/leek_bbs/skipPage/post-appeal?pid=' + postId + '&type=' + targetType;
             },
             addUserAttention(aid,picture){
                 console.log(aid+"====="+picture);

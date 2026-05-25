@@ -30,11 +30,15 @@ public class PostReportManageController {
         Integer count = postReportService.getCount(params);
         List<PostReport> data = postReportService.paging(params);
         for (PostReport report : data) {
-            Integer id = Integer.parseInt(report.getRp_type());
-            if (id == 1){
-                report.setPost(postReportService.getPost(id));
-            }else{
-                report.setPostDetails((PostDetails)postReportService.getObjectById(id));
+            Integer rpType = Integer.parseInt(report.getRp_type());
+            Integer targetId = report.getPid();
+            if (targetId == null) {
+                continue;
+            }
+            if (rpType == 1 || rpType == 11){
+                report.setPost(postReportService.getPost(targetId));
+            }else if (rpType == 2 || rpType == 12){
+                report.setPostDetails((PostDetails)postReportService.getObjectById(targetId));
             }
         }
         Map map = new HashMap();
