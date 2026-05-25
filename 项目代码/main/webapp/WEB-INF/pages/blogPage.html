@@ -315,6 +315,10 @@
                                 <i class="layui-icon layui-icon-share"></i>
                                 <span>分享&nbsp;{{PostsInfo.share_count}}</span>
                             </a>
+                            <a class="btn btn-default btn-sm" @click="goReportPage(PostsInfo.id,1)" title="举报该主题">
+                                <i class="layui-icon layui-icon-flag"></i>
+                                <span>举报</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -380,7 +384,7 @@
                     <div class="p-pt">
                         <div class="row" style="margin: 10px;">
                             <span><a href="javascript:;" @click="citePostReply(item)"><img src="/leek_bbs/statics/images/folder_new.gif" style="vertical-align: sub;">&nbsp;回复</a></span>
-<!--                            <span style="float: right;"><a href="javascript:;" @click="reportPosts(item.pd_uid,item.pid,2)" >举报</a></span>-->
+                            <span style="float: right;"><a href="javascript:;" @click="goReportPage(item.pid,2)">举报</a></span>
                         </div>
 
                     </div>
@@ -739,6 +743,17 @@
                 } else {
                     layui.login();
                 }
+            },
+            goReportPage(pid,type){
+                var postId = parseInt(pid, 10);
+                if (isNaN(postId)) {
+                    postId = parseInt(this.theme_id, 10);
+                }
+                var reportType = parseInt(type, 10);
+                if (isNaN(reportType)) {
+                    reportType = 1;
+                }
+                window.location.href = '/leek_bbs/skipPage/post-report?pid=' + postId + '&type=' + reportType;
             },
             addUserAttention(aid,picture){
                 console.log(aid+"====="+picture);
