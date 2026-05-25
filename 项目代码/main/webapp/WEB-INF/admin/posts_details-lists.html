@@ -64,7 +64,7 @@
 
                     <!-- 自定义右侧操作按钮 -->
                     <div id="cellphoneBar" >
-                        <a style="margin-left: 2px;" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        <a class="bbs-action-btn bbs-danger-action" lay-event="del">删除</a>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
         </div>
     </div>
 </div>
-<script src="/leek_bbs/statics/component/common_import.js"></script>
+<script src="/leek_bbs/statics/component/common_import.js?v=20260526a"></script>
 <script>
     let tableLoad;
 
@@ -119,6 +119,9 @@
             }
             , done: function (res, curr, count) {
                 //console.log(res);
+                if (window.applyAdminActionButtonStyles) {
+                    window.applyAdminActionButtonStyles();
+                }
             }
             //,totalRow:true	//开启合并行,进行计算
             , text: {

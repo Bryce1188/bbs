@@ -10,6 +10,8 @@ document.write('' +
     '<script src="/leek_bbs/statics/vue/vue.js"></script>\n' +
     '<script src="/leek_bbs/statics/vue/axios.min.js"></script>\n' +
     '<script src="/leek_bbs/statics/component/pagination_guard.js?v=20260525a"></script>\n' +
+    '<link rel="stylesheet" href="/leek_bbs/statics/css/admin-action-buttons.css?v=20260526a">\n' +
+    '<script src="/leek_bbs/statics/component/admin_action_buttons.js?v=20260526a"></script>\n' +
     '<script>Vue.config.productionTip = false</script>\n' +
     '');
 

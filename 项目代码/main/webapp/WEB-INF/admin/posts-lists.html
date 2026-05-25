@@ -124,7 +124,7 @@
         </div>
     </div>
 </div>
-<script src="/leek_bbs/statics/component/common_import.js"></script>
+<script src="/leek_bbs/statics/component/common_import.js?v=20260526a"></script>
 <script>
     let tableLoad;
     let listPlate;
@@ -177,6 +177,9 @@
                 , limitName: 'pageSize' //每页数据量的参数名，默认：limit
             }
             , done: function (res, curr, count) {
+                if (window.applyAdminActionButtonStyles) {
+                    window.applyAdminActionButtonStyles();
+                }
             }
             //,totalRow:true	//开启合并行,进行计算
             , text: {
@@ -244,15 +247,12 @@
                 }
                 , {fixed: 'right', title: '操作', width: 205, //toolbar: '#cellphoneBar',
                     templet: function(d){
-                        let str1;
-                        let str2 = `<a class="layui-btn layui-btn-xs" style="background-color: rgb(188, 23, 32);" lay-event="removal">移动</a>
-                        <a style="margin-left: 2px;" class="layui-btn layui-btn-xs" lay-event="look">查看</a>
-                        <a style="margin-left: 2px;" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>`;
-                        if (d.post_status==6) {
-                            str1 = `<a class="layui-btn layui-btn-xs" style="margin-left:6px;margin-right:7px;background-color: rgb(188, 23, 32);" lay-event="audit">审核</a>`
-                        }else{
-                            str1 = `<a class="layui-btn layui-btn-xs layui-btn-disabled" style="color: #fff;background-color: #009688;" lay-event="audit">已审核</a>`
-                        }
+                        let auditText = statusText(d.post_status);
+                        let auditColor = auditStatusColor(d.post_status);
+                        let str2 = `<a class="bbs-action-btn bbs-neutral-action" lay-event="removal">移动</a>
+                        <a class="bbs-action-btn bbs-neutral-action" lay-event="look">查看</a>
+                        <a class="bbs-action-btn bbs-danger-action" lay-event="del">删除</a>`;
+                        let str1 = `<a class="bbs-action-btn bbs-status-action" lay-event="audit" data-default-text="${auditText}" data-default-color="${auditColor}" data-hover-text="修改">${auditText}</a>`;
                         return str1 + str2
                     }
                 }	//toolbar可使用默认提供按钮,也可自定义按钮
@@ -470,6 +470,32 @@
         }
         
         //状态处理方法
+        function statusText(status) {
+            if (status == '1') {
+                return '通过';
+            }else if (status == '2'){
+                return '通过';
+            }else if (status == '3'){
+                return '通过';
+            }else if (status == '4'){
+                return '通过';
+            }else if (status == '5'){
+                return '通过';
+            }else if (status == '6'){
+                return '等待';
+            }
+            return '打回';
+        }
+
+        function auditStatusColor(status) {
+            if (status == '6') {
+                return '#FFB800';
+            }else if (status == '0') {
+                return '#d93025';
+            }
+            return '#009688';
+        }
+
         function statusDispose(status) {
             let str;
             if (status == '1') {

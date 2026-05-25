@@ -96,8 +96,8 @@
                     <div id="cellphoneBar" >
                         <!--<a class="layui-btn layui-btn-xs" style="background-color: rgb(188, 23, 32);" lay-event="removal">迁移</a>-->
                         <!--<a style="margin-left: 2px;" class="layui-btn layui-btn-xs" style="background-color: rgb(188, 23, 32);" lay-event="dispose">处理</a>-->
-                        <a style="margin-left: 2px;" class="layui-btn layui-btn-xs" lay-event="dispose">查看并处理</a>
-                        <a style="margin-left: 2px;" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        <a class="bbs-action-btn bbs-danger-action" lay-event="dispose">查看并处理</a>
+                        <a class="bbs-action-btn bbs-danger-action" lay-event="del">删除</a>
                     </div>
                 </div>
             </div>
@@ -110,7 +110,7 @@
         </div>
     </div>
 </div>
-<script src="/leek_bbs/statics/component/common_import.js"></script>
+<script src="/leek_bbs/statics/component/common_import.js?v=20260526a"></script>
 <script>
     let tableLoad;
 
@@ -153,6 +153,9 @@
             ,where: {}
             , done: function (res, curr, count) {
                 //console.log(res);
+                if (window.applyAdminActionButtonStyles) {
+                    window.applyAdminActionButtonStyles();
+                }
             }
             //,totalRow:true	//开启合并行,进行计算
             , text: {

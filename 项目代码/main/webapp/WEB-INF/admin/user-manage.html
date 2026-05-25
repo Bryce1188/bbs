@@ -88,9 +88,20 @@
                     <!-- 自定义操作按钮 -->
                     <div id="cellphoneBar" >
                   <!--      <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
-                        <a class="layui-btn layui-btn-xs stateCut" style="background-color: rgb(188, 23, 32);" lay-event="userStateCut" >禁用</a>
-                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="resetPassword" >重置密码</a>
-                        <a class="layui-btn layui-btn-xs" lay-event="addRole" >添加角色</a>
+                        {{# var currentAdmin = getCurrentAdminInfo(); }}
+                        {{# var isCurrentAdmin = currentAdmin ? String(currentAdmin.id) === String(d.id) : false; }}
+                        {{# if (isCurrentAdmin) { }}
+                        {{# if (d.user_status == 1) { }}
+                        <a class="bbs-action-btn bbs-danger-action-disabled" lay-event="selfStateCut" >禁用</a>
+                        {{# } else { }}
+                        <a class="bbs-action-btn bbs-danger-action stateCut" lay-event="userStateCut" >激活</a>
+                        {{# } }}
+                        {{# } else if (d.user_status == 1) { }}
+                        <a class="bbs-action-btn bbs-danger-action stateCut" lay-event="userStateCut" >禁用</a>
+                        {{# } else { }}
+                        <a class="bbs-action-btn bbs-danger-action stateCut" lay-event="userStateCut" >激活</a>
+                        {{# } }}
+                        <a class="bbs-action-btn bbs-neutral-action" lay-event="resetPassword" >重置密码</a>
                     </div>
                 </div>
             </div>
@@ -104,7 +115,7 @@
 
     </div>
 </div>
-<script src="/leek_bbs/statics/component/common_import.js"></script>
+<script src="/leek_bbs/statics/component/common_import.js?v=20260526a"></script>
 
 <script>
     var tableLoad;
@@ -116,6 +127,8 @@
         var element = layui.element;
         var laydate = layui.laydate;
         var form = layui.form;
+        var $ = layui.$;
+        bindActionButtonEvents($);
 
         //日期时间范围
         laydate.render({
@@ -157,6 +170,7 @@
                     //console.log(curr);	//当前页
                     //console.log(count);	//数据总条数
                     pageCurr = curr;
+                    applyActionButtonStyles();
                 }
                 //,totalRow:true	//开启合并行,进行计算
 
@@ -201,12 +215,8 @@
                     ,{field:'profession',title:'职业'}
                     ,{field:'user_status',title:'用户状态',templet:function (d) {
                         if (d.user_status==1){
-                            $(".stateCut").addClass("layui-btn-danger")
-                            $(".stateCut").html("禁用")
                             return "正常"
                         }else{
-                            $(".stateCut").removeClass("layui-btn-danger")
-                            $(".stateCut").html("激活")
                             return "<span style='color: red'>禁止</span>"
                         }
                     }}
@@ -218,7 +228,7 @@
 
 
         //表格重载
-        var $ = layui.$, active = {
+        var active = {
             search: function(){
                 var userName = $('#userName').val();
                 var phone = $('#phone').val();
@@ -322,11 +332,18 @@
                 //用户状态切换
                 var userState;
                 if (data.user_status==1){
+                    var currentAdmin = getCurrentAdminInfo();
+                    if (currentAdmin && String(currentAdmin.id) === String(data.id)) {
+                        showTopMessage("不能禁用当前登录账号");
+                        return;
+                    }
                     userState = 0;
                 }else {
                     userState=1;
                 }
                 updateUserState(data.id,userState);
+            }else if(obj.event==='selfStateCut'){
+                showTopMessage("不能禁用当前登录账号");
             }else if(obj.event ==='resetPassword'){
                 layer.confirm('确定重置此用户的密码吗', function(index){
                     axios.get("/leek_bbs/stair/userManage/resetPassword",{
@@ -563,11 +580,91 @@
             if(data.code=="500020") {
                 ui.success("用户状态修改成功",1500,true)
                 tableLoad.reload();
+            }else if (data.code=="500038") {
+                showTopMessage(data.msg || "不能禁用当前登录账号");
             }else{
                 ui.error(data.msg,1500,true)
             };
             })
         }
+
+    function showTopMessage(message) {
+        if (typeof layer !== "undefined" && layer.msg) {
+            layer.msg(message, {
+                icon: 5,
+                time: 1500,
+                shade: 0,
+                zIndex: 2147483647
+            });
+        } else {
+            alert(message);
+        }
+    }
+
+
+    function getCurrentAdminInfo() {
+        var adminInfo = localStorage.getItem("adminInfo");
+        if (!adminInfo) {
+            return null;
+        }
+        try {
+            return JSON.parse(adminInfo);
+        } catch (e) {
+            return null;
+        }
+    }
+
+
+    function applyDangerDefault($button) {
+        $button.css({
+            "background-color": "#fff",
+            "border": "1px solid #d9d9d9",
+            "color": "#d93025"
+        });
+    }
+
+    function applyDangerHover($button) {
+        $button.css({
+            "background-color": "#d93025",
+            "border": "1px solid #d93025",
+            "color": "#fff"
+        });
+    }
+
+    function applyDisabledDanger($button) {
+        $button.css({
+            "background-color": "#fff",
+            "border": "1px solid #d9d9d9",
+            "color": "#999",
+            "cursor": "not-allowed"
+        });
+    }
+
+    function applyActionButtonStyles() {
+        layui.$(".bbs-danger-action").each(function () {
+            applyDangerDefault(layui.$(this));
+        });
+        layui.$(".bbs-danger-action-disabled").each(function () {
+            applyDisabledDanger(layui.$(this));
+        });
+    }
+
+    function bindActionButtonEvents($) {
+        $(document)
+            .off("mouseenter.bbsDangerAction mouseleave.bbsDangerAction", ".bbs-danger-action")
+            .on("mouseenter.bbsDangerAction", ".bbs-danger-action", function () {
+                applyDangerHover($(this));
+            })
+            .on("mouseleave.bbsDangerAction", ".bbs-danger-action", function () {
+                applyDangerDefault($(this));
+            });
+
+        $(document)
+            .off("mouseenter.bbsDangerDisabled mouseleave.bbsDangerDisabled", ".bbs-danger-action-disabled")
+            .on("mouseenter.bbsDangerDisabled mouseleave.bbsDangerDisabled", ".bbs-danger-action-disabled", function () {
+                applyDisabledDanger($(this));
+            });
+    }
 
 
     function getRoles(){

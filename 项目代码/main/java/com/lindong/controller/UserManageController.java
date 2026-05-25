@@ -10,6 +10,8 @@ import com.lindong.service.IUserManageService;
 import com.lindong.service.impl.UserService;
 import com.lindong.utils.IPUtils;
 ///import com.lindong.utils.shiro.MD5;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,8 +46,23 @@ public class UserManageController {
     @Log(operation = "用户信息修改")
     @ResponseBody
     public ApiResult updateUserState(@RequestParam("userState") Integer userState, @RequestParam("userId") Integer userId) {
+        if (Integer.valueOf(0).equals(userState) && isCurrentUser(userId)) {
+            throw new CustomException(ResultCode.SELF_DISABLE_FORBIDDEN);
+        }
         userManageService.updateUserState(userState,userId);
         return ApiResult.of(ResultCode.SUCCESS);
+    }
+
+    private boolean isCurrentUser(Integer userId) {
+        if (userId == null) {
+            return false;
+        }
+        Subject subject = SecurityUtils.getSubject();
+        if (subject == null || subject.getPrincipal() == null) {
+            return false;
+        }
+        User currentUser = userService.findByName(subject.getPrincipal().toString());
+        return currentUser != null && userId.equals(currentUser.getId());
     }
     @RequestMapping("/addUser")
     @Log(operation = "添加用户")

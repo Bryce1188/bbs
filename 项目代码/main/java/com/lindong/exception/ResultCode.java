@@ -62,6 +62,7 @@ public enum ResultCode {
     DATA_ERROR("500035","数据更新失败"),
     SAVE_FAILED("500036","添加失败"),
     AUTHORITY_ERROR("500037","您无权限做该操作"),
+    SELF_DISABLE_FORBIDDEN("500038","不能禁用当前登录账号"),
 
     //好友
     AGREE_ERROR("600033","好友添加失败"),
