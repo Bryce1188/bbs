@@ -828,6 +828,41 @@ textarea {
     padding: 0 12px !important;
 }
 
+#rankApp .rank-user-card {
+    display: grid !important;
+    grid-template-columns: 34px 56px minmax(0, 1fr) !important;
+    align-items: center !important;
+    column-gap: 14px !important;
+    min-height: 58px !important;
+}
+
+#rankApp .rank-user-meta {
+    min-width: 0 !important;
+}
+
+#rankApp .rank-user-name {
+    margin: 0 !important;
+    color: #111111 !important;
+    font-size: 17px !important;
+    line-height: 1.3 !important;
+    font-weight: 900 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#rankApp .rank-user-extra {
+    margin: 4px 0 0 !important;
+    color: #5d677a !important;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+}
+
+#rankApp .rank-user-extra em {
+    font-style: normal;
+    font-weight: 800;
+}
+
 #rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > .numberOn,
 #rankApp .layui-tab-content .m-border-bottom > .col-sm-8 > .number {
     grid-column: 1 !important;
@@ -960,6 +995,40 @@ textarea {
     font-size: 28px !important;
     line-height: 1.4 !important;
     font-weight: 850 !important;
+}
+
+#collectApp .col-sm-2 h4,
+#careApp .col-sm-2 h4,
+#msgApp .col-sm-2 h4,
+#rankApp .col-sm-2 h4 {
+    font-size: 34px !important;
+    line-height: 1.2 !important;
+}
+
+#collectApp .col-sm-2 a,
+#careApp .col-sm-2 a,
+#msgApp .col-sm-2 a,
+#rankApp .col-sm-2 a {
+    font-size: 18px !important;
+    line-height: 1.5 !important;
+    font-weight: 800 !important;
+}
+
+#collectApp .layui-tab-title li,
+#careApp .layui-tab-title li,
+#msgApp .layui-tab-title li,
+#rankApp .layui-tab-title li {
+    font-size: 18px !important;
+}
+
+#collectApp .layui-tab h3,
+#careApp .layui-tab h3,
+#msgApp .layui-tab h3,
+#searchApp h3,
+#signApp h3 {
+    font-size: 34px !important;
+    line-height: 1.3 !important;
+    font-weight: 900 !important;
 }
 
 #collectApp .layui-tab > div > ul li,
