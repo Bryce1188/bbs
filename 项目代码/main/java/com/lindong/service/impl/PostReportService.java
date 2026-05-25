@@ -114,4 +114,43 @@ public class PostReportService implements IPostReportService {
     public Object getObjectByName(String name) {
         return reportDao.getObjectByName(name);
     }
+
+    @Override
+    public boolean canAppeal(Map<String, Object> params) {
+        if (params == null) {
+            return false;
+        }
+        Object uidObj = params.get("uid");
+        Object pidObj = params.get("pid");
+        Object rpTypeObj = params.get("rp_type");
+        if (uidObj == null || pidObj == null || rpTypeObj == null) {
+            return false;
+        }
+        Integer uid = Integer.parseInt(uidObj.toString());
+        Integer pid = Integer.parseInt(pidObj.toString());
+        Integer rpType = Integer.parseInt(rpTypeObj.toString());
+        Integer baseType;
+        if (rpType == 11) {
+            baseType = 1;
+        } else if (rpType == 12) {
+            baseType = 2;
+        } else if (rpType == 1 || rpType == 2) {
+            baseType = rpType;
+        } else {
+            return false;
+        }
+
+        int reportCount = reportDao.countBaseReport(pid, baseType);
+        if (reportCount <= 0) {
+            return false;
+        }
+
+        Integer ownerId;
+        if (baseType == 1) {
+            ownerId = reportDao.getPostOwnerId(pid);
+        } else {
+            ownerId = reportDao.getPostDetailsOwnerId(pid);
+        }
+        return ownerId != null && ownerId.equals(uid);
+    }
 }

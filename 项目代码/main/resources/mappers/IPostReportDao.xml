@@ -135,4 +135,19 @@
         </trim>
     </insert>
 
+    <!-- 查询指定内容是否有举报记录(主题:1,回帖:2) -->
+    <select id="countBaseReport" resultType="int">
+        select count(*) from post_report where pid=#{pid} and rp_type=#{rpType}
+    </select>
+
+    <!-- 查询主题作者uid -->
+    <select id="getPostOwnerId" parameterType="int" resultType="int">
+        select user_id from post where id=#{pid} limit 1
+    </select>
+
+    <!-- 查询回帖作者uid -->
+    <select id="getPostDetailsOwnerId" parameterType="int" resultType="int">
+        select pd_uid from post_details where pid=#{pid} limit 1
+    </select>
+
 </mapper>

@@ -40,4 +40,9 @@ public interface IPostReportService extends IBaseService{
      */
     boolean disposeReport(Map<String,Object> params);
 
+    /**
+     * 申诉前校验：内容已被举报且当前用户是被举报内容的作者
+     */
+    boolean canAppeal(Map<String,Object> params);
+
 }

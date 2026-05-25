@@ -125,6 +125,7 @@
 <script>
     (function () {
         var currentAppealType = "";
+        var canSubmitAppeal = false;
         var params = new URLSearchParams(window.location.search);
         var pid = parseInt(params.get("pid"), 10);
         var targetType = parseInt(params.get("type"), 10);
@@ -152,6 +153,30 @@
             }
         }
 
+        function checkAppealPermission(user) {
+            if (!user || !user.id || isNaN(pid) || pid <= 0) {
+                canSubmitAppeal = false;
+                $("#submitAppeal").prop("disabled", true).addClass("layui-btn-disabled");
+                return;
+            }
+            axios.post("/leek_bbs/bbs/postReport/canAppeal", {
+                uid: user.id,
+                pid: pid,
+                rp_type: appealType
+            }).then(function (response) {
+                var data = response.data || {};
+                canSubmitAppeal = data.canAppeal === true;
+                if (!canSubmitAppeal) {
+                    $("#submitAppeal").prop("disabled", true).addClass("layui-btn-disabled");
+                    toast(data.msg || "该内容未被举报，或您不是被举报人，不能申诉");
+                }
+            }).catch(function () {
+                canSubmitAppeal = false;
+                $("#submitAppeal").prop("disabled", true).addClass("layui-btn-disabled");
+                toast("申诉资格校验失败，请稍后重试");
+            });
+        }
+
         $("#appealGrid").on("click", ".appeal-item", function () {
             $("#appealGrid .appeal-item").removeClass("active");
             $(this).addClass("active");
@@ -175,6 +200,10 @@
             }
             if (!content) {
                 toast("请填写申诉说明");
+                return;
+            }
+            if (!canSubmitAppeal) {
+                toast("该内容未被举报，或您不是被举报人，不能申诉");
                 return;
             }
             axios.post("/leek_bbs/bbs/postReport/executeReport", {
@@ -206,6 +235,8 @@
         $("#goBack").on("click", function () {
             window.history.back();
         });
+
+        checkAppealPermission(getCurrentUser());
     })();
 </script>
 </body>
