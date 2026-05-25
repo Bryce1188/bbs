@@ -32,6 +32,20 @@ function getAppContextPath() {
 }
 var APP_CTX = getAppContextPath();
 
+function ensureAuthModalStyles() {
+    var styleId = "bbs-auth-modal-style";
+    if (document.getElementById(styleId)) {
+        return;
+    }
+    var link = document.createElement("link");
+    link.id = styleId;
+    link.rel = "stylesheet";
+    link.href = APP_CTX + "/statics/css/auth_modal.css?v=20260525a";
+    document.head.appendChild(link);
+}
+
+ensureAuthModalStyles();
+
 Vue.component('head_menu_comp', {
     props:['is_login'],
     template: `<header class="bbs-topbar">
@@ -261,6 +275,10 @@ layui.define(['layer','form','util'],function (exports) {
             skin: 'bbs-auth-layer',
             title: '用户注册',
             content: `<div class="bbs-auth-modal bbs-auth-modal-register">
+            <div class="bbs-auth-modal-header">
+                <h3>创建你的账号</h3>
+                <p>加入论坛后即可发布帖子、参与互动和私信聊天。</p>
+            </div>
             <form class="layui-form bbs-auth-form" lay-filter="registerForm">
                 <div class="bbs-auth-field">
                     <label class="layui-form-label">昵称</label>
@@ -294,11 +312,13 @@ layui.define(['layer','form','util'],function (exports) {
                 </div>
                 <div class="bbs-auth-field bbs-auth-captcha-row">
                     <label class="layui-form-label">验证码</label>
-                    <div class="layui-input-inline bbs-auth-captcha-input">
-                        <input type="text" name="imgCode" lay-verify="required" autocomplete="off" placeholder="输入验证码" class="layui-input">
-                    </div>
-                    <div class="layui-input-inline bbs-auth-captcha-img-wrap">
-                        <img id="captchaPic" class="captchaPic" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
+                    <div class="bbs-auth-captcha-body">
+                        <div class="layui-input-inline bbs-auth-captcha-input">
+                            <input type="text" name="imgCode" lay-verify="required" autocomplete="off" placeholder="输入验证码" class="layui-input">
+                        </div>
+                        <div class="layui-input-inline bbs-auth-captcha-img-wrap">
+                            <img id="captchaPic" class="captchaPic" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
+                        </div>
                     </div>
                 </div>
                 <div class="bbs-auth-helper-row">
@@ -318,7 +338,7 @@ layui.define(['layer','form','util'],function (exports) {
             maxmin: false,
             resize: false,
             scrollbar: false,
-            area: ['560px', '640px']
+            area: ['560px', '680px']
         });
 
     };
@@ -452,6 +472,10 @@ layui.define(['layer','form','util'],function (exports) {
             skin: 'bbs-auth-layer',
             title: '用户登录',
             content: `<div class="bbs-auth-modal bbs-auth-modal-login">
+            <div class="bbs-auth-modal-header">
+                <h3>欢迎回来</h3>
+                <p>登录后继续查看消息、发帖和管理你的个人资料。</p>
+            </div>
             <form class="layui-form bbs-auth-form" lay-filter="loginForm">
                 <div class="bbs-auth-field">
                     <label class="layui-form-label">用户名</label>
@@ -467,11 +491,13 @@ layui.define(['layer','form','util'],function (exports) {
                 </div>
                 <div class="bbs-auth-field bbs-auth-captcha-row">
                     <label class="layui-form-label">验证码</label>
-                    <div class="layui-input-inline bbs-auth-captcha-input">
-                        <input type="text" name="imgCode" lay-verify="required" autocomplete="off" placeholder="输入验证码" class="layui-input">
-                    </div>
-                    <div class="layui-input-inline bbs-auth-captcha-img-wrap">
-                        <img id="captchaPic" class="captchaPic" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
+                    <div class="bbs-auth-captcha-body">
+                        <div class="layui-input-inline bbs-auth-captcha-input">
+                            <input type="text" name="imgCode" lay-verify="required" autocomplete="off" placeholder="输入验证码" class="layui-input">
+                        </div>
+                        <div class="layui-input-inline bbs-auth-captcha-img-wrap">
+                            <img id="captchaPic" class="captchaPic" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
+                        </div>
                     </div>
                 </div>
                 <div class="bbs-auth-switch-row">
@@ -493,7 +519,7 @@ layui.define(['layer','form','util'],function (exports) {
             maxmin: false,
             resize: false,
             scrollbar: false,
-            area: ['560px', '500px'],
+            area: ['560px', '560px'],
             success: function () {
                 setTimeout(() => {
                     refreshCaptchaImage();
@@ -516,6 +542,10 @@ layui.define(['layer','form','util'],function (exports) {
             skin: 'bbs-auth-layer',
             title: '找回密码',
             content: `<div class="bbs-auth-modal bbs-auth-modal-pwd">
+            <div class="bbs-auth-modal-header">
+                <h3>重置密码</h3>
+                <p>输入账号并验证邮箱后，立即设置新的登录密码。</p>
+            </div>
             <form class="layui-form bbs-auth-form" lay-filter="alterPwdForm">
                 <div class="bbs-auth-field">
                     <label class="layui-form-label">用户名</label>
@@ -537,11 +567,13 @@ layui.define(['layer','form','util'],function (exports) {
                 </div>
                 <div class="bbs-auth-field bbs-auth-captcha-row">
                     <label class="layui-form-label">邮箱验证码</label>
-                    <div class="layui-input-inline bbs-auth-captcha-input">
-                        <input type="text" name="emailCode" placeholder="输入邮箱验证码" lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
-                    <div id="sendVerify" class="layui-input-inline bbs-auth-send-wrap">
-                        <button id="sendCode" class="btn btn-default btn-primary" type="button">发送验证码</button>
+                    <div class="bbs-auth-captcha-body">
+                        <div class="layui-input-inline bbs-auth-captcha-input">
+                            <input type="text" name="emailCode" placeholder="输入邮箱验证码" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                        <div id="sendVerify" class="layui-input-inline bbs-auth-send-wrap">
+                            <button id="sendCode" class="btn btn-default btn-primary" type="button">发送验证码</button>
+                        </div>
                     </div>
                 </div>
                 <div class="bbs-auth-error-row">
@@ -557,7 +589,7 @@ layui.define(['layer','form','util'],function (exports) {
             maxmin: false,
             resize: false,
             scrollbar: false,
-            area: ['560px', '500px']
+            area: ['560px', '560px']
         })
     }
 
