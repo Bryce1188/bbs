@@ -126,6 +126,73 @@ a:link,a:hover,a:active{
 .layui-layer .layui-input:hover{
     border:1px solid #03a9f4 !important;
 }
+.layui-layer-page .layui-layer-title{
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #111827 !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+}
+#Lay-login,
+#Lay-register,
+#Lay-pwd{
+    background: #ffffff !important;
+    color: #111827 !important;
+}
+#Lay-login .layui-form-label,
+#Lay-register .layui-form-label,
+#Lay-pwd .layui-form-label{
+    color: #4b5563 !important;
+    font-size: 15px !important;
+}
+#Lay-login .layui-input,
+#Lay-register .layui-input,
+#Lay-pwd .layui-input{
+    background: #ffffff !important;
+    border: 1px solid #d8dee8 !important;
+    border-radius: 8px !important;
+    color: #111827 !important;
+    height: 40px !important;
+}
+#Lay-login .layui-input:focus,
+#Lay-register .layui-input:focus,
+#Lay-pwd .layui-input:focus{
+    border-color: #111827 !important;
+    box-shadow: 0 0 0 3px rgba(17,24,39,.08) !important;
+}
+#Lay-login .layui-input:hover,
+#Lay-register .layui-input:hover,
+#Lay-pwd .layui-input:hover{
+    border-color: #111827 !important;
+}
+#Lay-login .btn-bg,
+#Lay-register .btn-bg,
+#Lay-pwd .btn-bg,
+#Lay-login .layui-form .layui-btn-fluid,
+#Lay-register .layui-form .layui-btn-fluid,
+#Lay-pwd .layui-form .layui-btn-fluid{
+    background: #111827 !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+    height: 44px !important;
+}
+#Lay-login a,
+#Lay-register a,
+#Lay-pwd a{
+    color: #111827 !important;
+}
+#Lay-login .layui-form-checkbox[lay-skin=primary] span,
+#Lay-register .layui-form-checkbox[lay-skin=primary] span,
+#Lay-pwd .layui-form-checkbox[lay-skin=primary] span{
+    color: #4b5563 !important;
+}
+#Lay-login .captchaPic,
+#Lay-register .captchaPic{
+    border: 1px solid #d8dee8;
+    border-radius: 6px;
+}
 .navbar-right a{
     color: #fff;
 }
@@ -454,7 +521,7 @@ footer .row > p >span{
     font-weight: 400 !important;
     gap: 10px !important;
     line-height: 1 !important;
-    max-width: 190px !important;
+    max-width: 230px !important;
     min-height: 44px !important;
     padding: 8px 12px !important;
     text-decoration: none !important;
@@ -467,10 +534,14 @@ footer .row > p >span{
     width: 28px !important;
 }
 .bbs-topbar #d-photo.bbs-user-trigger span{
-    display: inline-block !important;
-    max-width: 104px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 20px !important;
+    max-width: 150px !important;
+    min-height: 22px !important;
+    overflow: visible !important;
+    padding: 1px 0 2px !important;
+    text-overflow: clip !important;
     white-space: nowrap !important;
 }
 .bbs-topbar .bbs-mail-link{
