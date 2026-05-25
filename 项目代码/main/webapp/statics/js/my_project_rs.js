@@ -64,9 +64,8 @@ layui.define(['element','jquery'], function(exports){
     }*/
     //移除原先已经激活的属性
     function changerClass() {
-        $(".col-sm-2").find(".row").each(function () {
-            $(this).removeClass("m-active");
-        });
+        $("#userBtn,#postsBtn,#plateBtn,#careBtn,#applyBtn").removeClass("m-active");
+        $(".col-sm-2 .row.m-active, .rank-sidebar .row.m-active").removeClass("m-active");
     }
 
 });

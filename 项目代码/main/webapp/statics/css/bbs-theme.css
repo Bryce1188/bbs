@@ -472,10 +472,14 @@ body > .container-fluid {
     line-height: 48px !important;
 }
 
-.m-hover-bg:hover,
-.m-active {
+.m-hover-bg:hover {
     border-left: 0 !important;
     background: #f3f4f6 !important;
+    color: #111827 !important;
+}
+.m-active {
+    border-left: 2px solid #ff6f3d !important;
+    background: #ffffff !important;
     color: #111827 !important;
 }
 
