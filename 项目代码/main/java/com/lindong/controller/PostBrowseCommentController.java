@@ -161,7 +161,15 @@ public class PostBrowseCommentController {
     @RequestMapping(value = "/addAttention",method =RequestMethod.POST)
     @ResponseBody
     public ApiResult addAttention(@RequestBody Map map){
-        postBrowseService.insertAttention((Integer)map.get("uid"), (Integer)map.get("aid"));
+        Integer uid = (Integer) map.get("uid");
+        Integer aid = (Integer) map.get("aid");
+        if (uid == null || aid == null){
+            throw new CustomException(ResultCode.DATA_ERROR);
+        }
+        if (uid.equals(aid)){
+            throw new CustomException(ResultCode.AUTHORITY_ERROR);
+        }
+        postBrowseService.insertAttention(uid, aid);
         return ApiResult.of(ResultCode.SUCCESS);
     }
 

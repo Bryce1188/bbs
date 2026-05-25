@@ -66,6 +66,177 @@
             float: right;
             margin-right: 38px;
         }
+        .rank-user-card{
+            align-items: center;
+            display: flex;
+            gap: 10px;
+        }
+        .rank-avatar{
+            height: 48px;
+            margin-left: 4px;
+            object-fit: cover;
+            width: 48px;
+        }
+        .rank-user-meta{
+            min-width: 0;
+        }
+        .rank-user-name{
+            font-weight: bold;
+            margin: 0;
+        }
+        .rank-user-extra{
+            color: #7f8da3;
+            font-size: 13px;
+            margin: 2px 0 0;
+        }
+        .bbs-nav{
+            align-items: center;
+            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.92);
+            border: 1px solid #e8e8e8;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 14px 22px;
+        }
+        .bbs-brand{
+            align-items: center;
+            color: #141922;
+            display: inline-flex;
+            font-size: 18px;
+            font-weight: 700;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .bbs-brand-mark{
+            border: 1px solid rgba(20,25,34,.35);
+            border-radius: 13px;
+            font-size: 22px;
+            line-height: 1;
+            padding: 6px 10px;
+        }
+        .bbs-nav-items{
+            align-items: center;
+            display: flex;
+            font-size: 16px;
+            font-weight: 600;
+            gap: 16px;
+        }
+        .bbs-nav-items > a{
+            color: #182033;
+            text-decoration: none;
+        }
+        .bbs-auth-link{
+            color: #587a9f !important;
+            font-weight: 500;
+        }
+        .bbs-user-menu{
+            position: relative;
+        }
+        .bbs-user-access{
+            align-items: center;
+            display: inline-flex;
+            gap: 10px;
+        }
+        .bbs-user-trigger{
+            align-items: center;
+            color: #0f1726;
+            cursor: pointer;
+            display: inline-flex;
+            font-weight: 700;
+            gap: 8px;
+        }
+        .bbs-user-trigger img{
+            border-radius: 50%;
+            height: 34px;
+            object-fit: cover;
+            width: 34px;
+        }
+        .bbs-mail-link{
+            align-items: center;
+            border: 1px solid #d8dee8;
+            border-radius: 14px;
+            color: #141922;
+            display: inline-flex;
+            height: 44px;
+            justify-content: center;
+            position: relative;
+            width: 44px;
+        }
+        .bbs-mail-link svg{
+            fill: none;
+            height: 21px;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 2;
+            width: 21px;
+        }
+        .bbs-mail-badge{
+            align-items: center;
+            background: #ff3b30;
+            border: 2px solid #fff;
+            border-radius: 999px;
+            color: #fff;
+            display: inline-flex;
+            font-size: 11px;
+            font-weight: 700;
+            height: 18px;
+            justify-content: center;
+            min-width: 18px;
+            padding: 0 5px;
+            position: absolute;
+            right: -6px;
+            top: -6px;
+        }
+        .bbs-user-panel{
+            background: #fff;
+            border: 1px solid #e7ecf3;
+            border-radius: 14px;
+            box-shadow: 0 14px 34px rgba(17,24,39,.16);
+            display: none;
+            min-width: 150px;
+            padding: 8px;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            z-index: 30;
+        }
+        .bbs-user-panel.open{
+            display: block;
+        }
+        .bbs-user-panel a{
+            border-radius: 10px;
+            color: #1f2937;
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 10px;
+            text-decoration: none;
+        }
+        .bbs-user-panel a:hover{
+            background: #f4f7fb;
+            color: #111827;
+        }
+        .bbs-button{
+            align-items: center;
+            background: #141922;
+            border: 1px solid #141922;
+            border-radius: 12px;
+            color: #fff !important;
+            display: inline-flex;
+            font-size: 14px;
+            font-weight: 700;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 18px;
+            text-decoration: none;
+        }
+        .bbs-button:hover{
+            background: #0f131c;
+            border-color: #0f131c;
+        }
         footer{
             top: 580px;
             width: 100%;
@@ -82,10 +253,11 @@
     <!-- 导航结束 -->
     <!-- 中间主体部分 -->
     <div class="container" id="rankApp" v-cloak="">
+        
         <div class="row">
             <span style="opacity: .8;">
-                <a href="index.html"><span class="glyphicon glyphicon-home"></span></a>&nbsp;>&nbsp;
-                <a href="index.html">排行</a>&nbsp;>&nbsp;
+                <a href="/leek_bbs/skipPage/index"><span class="glyphicon glyphicon-home"></span></a>&nbsp;>&nbsp;
+                <a href="/leek_bbs/skipPage/ranking_list">排行</a>&nbsp;>&nbsp;
                 <span>用户排行</span>
             </span>
            <!-- <span style="float: right;"><a href="javascript:;">我的收藏</a></span>-->
@@ -109,14 +281,18 @@
                         <div class="layui-tab-item layui-show">
                             <div class="layui-row m-border-bottom" v-for="(integral,index) in integrals" style="padding-top: 15px;padding-bottom: 1px;border-bottom: 1px solid #e5e5e5; ">
                                 <div class="col-sm-8">
-                                    <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                    <a :href="'/leek_bbs/skipPage/personal?id='+integral.id" :title="'进入'+integral.another_name+'空间'"><img :src="'/leek_bbs/'+integral.picture" class="img-circle" style="width: 48px;height: 48px;margin-left: 5px;"></a>
-                                    <p style="font-weight: bold;padding-left:80px;margin-top: -50px">{{integral.another_name}}</p>
-                                    <p style="padding-left: 80px;font-size: 13px;color: #7f8da3;margin-top: -10px">积分数:<em>{{integral.integral.total_integral}}</em></p>
+                                    <div class="rank-user-card">
+                                        <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
+                                        <a :href="personalUrl(integral.id)" :title="'进入'+integral.another_name+'空间'"><img :src="'/leek_bbs/'+integral.picture" class="img-circle rank-avatar"></a>
+                                        <div class="rank-user-meta">
+                                            <p class="rank-user-name">{{integral.another_name}}</p>
+                                            <p class="rank-user-extra">积分数:<em>{{integral.integral.total_integral}}</em></p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="'/leek_bbs/skipPage/personal?userId='+integral.id ">去串个门</a></li>
+                                        <li><a :href="personalUrl(integral.id)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -128,14 +304,18 @@
                         <div class="layui-tab-item">
                             <div class="layui-row m-border-bottom" v-for="(essay,index) in essays"style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
                                 <div class="col-sm-8">
-                                    <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px"><em>{{index+1>9?index+1:(index+1)}}</em></span>
-                                    <a :href="'/leek_bbs/skipPage/personal?id='+essay.id" :title="'进入'+essay.another_name+'空间'"><img :src="'/leek_bbs/'+essay.picture" class="img-circle" style="width: 48px;height: 48px;margin-left: 5px;"></a>
-                                    <p style="font-weight: bold;padding-left:80px;margin-top: -50px">{{essay.another_name}}</p>
-                                    <p style="padding-left: 80px;font-size: 13px;color: #7f8da3;margin-top: -10px">发帖数:<em>{{essay.posts}}</em></p>
+                                    <div class="rank-user-card">
+                                        <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px"><em>{{index+1>9?index+1:(index+1)}}</em></span>
+                                        <a :href="personalUrl(essay.id)" :title="'进入'+essay.another_name+'空间'"><img :src="'/leek_bbs/'+essay.picture" class="img-circle rank-avatar"></a>
+                                        <div class="rank-user-meta">
+                                            <p class="rank-user-name">{{essay.another_name}}</p>
+                                            <p class="rank-user-extra">发帖数:<em>{{essay.posts}}</em></p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="'/leek_bbs/skipPage/personal?id='+essay.id">去串个门</a></li>
+                                        <li><a :href="personalUrl(essay.id)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -147,14 +327,18 @@
                         <div class="layui-tab-item">
                             <div class="layui-row m-border-bottom" v-for="(log,index) in logs" style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
                                 <div class="col-sm-8">
-                                    <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                    <a :href="'/leek_bbs/skipPage/personal?id='+log.id" :title="'进入'+log.another_name+'空间'"><img :src="'/leek_bbs/'+log.picture" class="img-circle" style="width: 48px;height: 48px;margin-left: 5px;"></a>
-                                    <p style="font-weight: bold;padding-left:80px;margin-top: -50px">{{log.another_name}}</p>
-                                    <p style="padding-left: 80px;font-size: 13px;color: #7f8da3;margin-top: -10px">日志数:<em>{{log.log}}</em></p>
+                                    <div class="rank-user-card">
+                                        <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
+                                        <a :href="personalUrl(log.id)" :title="'进入'+log.another_name+'空间'"><img :src="'/leek_bbs/'+log.picture" class="img-circle rank-avatar"></a>
+                                        <div class="rank-user-meta">
+                                            <p class="rank-user-name">{{log.another_name}}</p>
+                                            <p class="rank-user-extra">日志数:<em>{{log.log}}</em></p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="'/leek_bbs/skipPage/personal?id='+log.id">去串个门</a></li>
+                                        <li><a :href="personalUrl(log.id)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -166,14 +350,18 @@
                         <div class="layui-tab-item">
                             <div class="layui-row m-border-bottom" v-for="(experience,index) in experiences" style="padding-top:15px;padding-bottom: 5px;border-bottom: 1px solid #e5e5e5; ">
                                 <div class="col-sm-8">
-                                    <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                    <a :href="'/leek_bbs/skipPage/personal?id='+experience.id" :title="'进入'+experience.another_name+'空间'"><img :src="'/leek_bbs/'+experience.picture" class="img-circle" style="width: 48px;height: 48px;margin-left: 5px;"></a>
-                                    <p style="font-weight: bold;padding-left:80px;margin-top: -50px">{{experience.another_name}}</p>
-                                    <p style="padding-left: 80px;font-size: 13px;color: #7f8da3;margin-top: -10px">经验数:<em>{{experience.total_experience}}</em></p>
+                                    <div class="rank-user-card">
+                                        <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
+                                        <a :href="personalUrl(experience.id)" :title="'进入'+experience.another_name+'空间'"><img :src="'/leek_bbs/'+experience.picture" class="img-circle rank-avatar"></a>
+                                        <div class="rank-user-meta">
+                                            <p class="rank-user-name">{{experience.another_name}}</p>
+                                            <p class="rank-user-extra">经验数:<em>{{experience.total_experience}}</em></p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <ul style="font-size: 12px;float: right">
-                                        <li><a :href="'/leek_bbs/skipPage/personal?id='+experience.id">去串个门</a></li>
+                                        <li><a :href="personalUrl(experience.id)">去串个门</a></li>
                                         <!--<li><a href="javascript;">打个招呼</a></li>-->
                                         <!--<li><a href="javascript;">发送消息</a></li>-->
                                         <!--<li><a href="javascript;">加为好友</a></li>-->
@@ -466,8 +654,108 @@
             times:[],
             pageSize:10,
             pageNo:1,
+            currentUser:null,
+            userMenuOpen:false,
+            unreadCount:0
         },
         methods: {
+            personalUrl: function (userId) {
+                var pathName = window.location.pathname || "";
+                var first = pathName.split("/")[1] || "leek_bbs";
+                return "/" + first + "/skipPage/personal?id=" + userId;
+            },
+            getAvatar: function () {
+                if (!this.currentUser || !this.currentUser.picture) {
+                    return "/leek_bbs/statics/images/head_portrait/comiis_nologin.jpg";
+                }
+                return "/leek_bbs/" + this.currentUser.picture;
+            },
+            getCurrentUserFromCache: function () {
+                try {
+                    var cache = localStorage.getItem("initUser");
+                    if (cache) {
+                        var parsed = JSON.parse(cache);
+                        if (parsed && parsed.userInfo) {
+                            return parsed.userInfo;
+                        }
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+                return null;
+            },
+            syncCurrentUser: function () {
+                this.currentUser = this.getCurrentUserFromCache();
+                this.refreshUnreadCount();
+            },
+            refreshUnreadCount: function () {
+                if (!this.currentUser || !this.currentUser.id) {
+                    this.unreadCount = 0;
+                    return;
+                }
+                try {
+                    var list = JSON.parse(localStorage.getItem("msgData") || "[]");
+                    var currentId = this.currentUser.id;
+                    var unread = 0;
+                    list.forEach(function (item) {
+                        if (item && item.status === 0 && item.tarUser && item.tarUser.userId === currentId) {
+                            unread++;
+                        }
+                    });
+                    this.unreadCount = unread;
+                } catch (e) {
+                    this.unreadCount = 0;
+                }
+            },
+            openLogin: function () {
+                if (typeof window.showLoginLayer === "function") {
+                    window.showLoginLayer();
+                } else if (layui && layui.login) {
+                    layui.login();
+                }
+            },
+            openRegister: function () {
+                if (typeof window.showRegisterLayer === "function") {
+                    window.showRegisterLayer();
+                } else if (layui && layui.register) {
+                    layui.register();
+                }
+            },
+            toggleUserMenu: function () {
+                this.userMenuOpen = !this.userMenuOpen;
+            },
+            closeUserMenu: function () {
+                this.userMenuOpen = false;
+            },
+            logoutUser: function () {
+                this.closeUserMenu();
+                localStorage.removeItem("initUser");
+                this.currentUser = null;
+                if (typeof userInfo !== "undefined") {
+                    userInfo = null;
+                }
+                try {
+                    if (typeof closeWebsocketForLogout === "function") {
+                        closeWebsocketForLogout();
+                    } else if (typeof ws !== "undefined" && ws && ws.close) {
+                        ws.onclose = null;
+                        ws.close();
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+                if (layui && layui.layer) {
+                    layui.layer.closeAll();
+                }
+            },
+            handlePublishEntry: function () {
+                var current = this.getCurrentUserFromCache();
+                if (!current) {
+                    this.openLogin();
+                    return;
+                }
+                window.location.href = "/leek_bbs/skipPage/sendArticle";
+            },
             integral() {
                 axios.post("/leek_bbs/bbs/rank/query",{
                     pageSize: this.pageSize,
@@ -590,10 +878,30 @@
             }
         },
         created(){
+            this.syncCurrentUser();
             this.integral();
             this.reply();
             this.theme()
 
+        },
+        mounted: function () {
+            var that = this;
+            this._closeUserMenuHandler = function () {
+                that.closeUserMenu();
+                that.syncCurrentUser();
+            };
+            document.addEventListener("click", this._closeUserMenuHandler);
+            this._refreshUnreadTimer = setInterval(function () {
+                that.refreshUnreadCount();
+            }, 3000);
+        },
+        beforeDestroy: function () {
+            if (this._closeUserMenuHandler) {
+                document.removeEventListener("click", this._closeUserMenuHandler);
+            }
+            if (this._refreshUnreadTimer) {
+                clearInterval(this._refreshUnreadTimer);
+            }
         },
         filters: {
             format(value) {

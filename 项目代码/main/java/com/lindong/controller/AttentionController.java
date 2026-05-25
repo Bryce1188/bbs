@@ -3,6 +3,7 @@ package com.lindong.controller;
 import com.lindong.domain.Post;
 import com.lindong.domain.User;
 import com.lindong.exception.ApiResult;
+import com.lindong.exception.CustomException;
 import com.lindong.exception.ResultCode;
 import com.lindong.service.IAttentionService;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class AttentionController {
     public ApiResult deleteCare(@RequestBody Map map){
         // 取消关注
         System.out.println(map.get("uid") +"======"+ map.get("aid"));
+        if (map.get("uid") != null && map.get("aid") != null && map.get("uid").toString().equals(map.get("aid").toString())){
+            throw new CustomException(ResultCode.AUTHORITY_ERROR);
+        }
         attentionService.deleteAttention((Integer)map.get("uid"),(Integer)map.get("aid"));
         return ApiResult.of(ResultCode.SUCCESS);
     }
@@ -49,6 +53,9 @@ public class AttentionController {
     @RequestMapping(value = "/selectCare",method = RequestMethod.POST)
     @ResponseBody
     public ApiResult selectCare(@RequestBody Map map){
+        if (map.get("uid") != null && map.get("aid") != null && map.get("uid").toString().equals(map.get("aid").toString())){
+            throw new CustomException(ResultCode.AUTHORITY_ERROR);
+        }
         attentionService.selectCare(map);
         return ApiResult.of(ResultCode.SUCCESS);
     }

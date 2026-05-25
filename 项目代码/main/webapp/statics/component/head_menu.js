@@ -22,100 +22,74 @@ function closeWebsocketForLogout() {
         ws = null;
     }
 }
+function getAppContextPath() {
+    var pathname = window.location.pathname || "";
+    var first = pathname.split("/")[1];
+    if (!first) {
+        return "/leek_bbs";
+    }
+    return "/" + first;
+}
+var APP_CTX = getAppContextPath();
 
 Vue.component('head_menu_comp', {
     props:['is_login'],
-    template: `<div class="row">
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid nav-margin-left">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand bbs-brand" href="/leek_bbs/skipPage/index">
-                        <span class="bbs-brand-mark">BBS</span>
-                        <span class="bbs-brand-name">Leek</span>
-                    </a>
+    template: `<header class="bbs-topbar">
+        <div class="bbs-topbar-inner">
+            <a class="bbs-brand" :href="ctx + '/skipPage/index'">
+                <span class="bbs-brand-mark">BBS</span>
+                <span class="bbs-brand-name">校园论坛</span>
+            </a>
+            <nav class="bbs-topnav">
+                <a :href="ctx + '/skipPage/index'">首页</a>
+                <a :href="ctx + '/skipPage/ranking_list'">排行</a>
+                <a :href="ctx + '/skipPage/daodu'">导读</a>
+                <a href="javascript:;" @click="openDynamic">动态</a>
+                <div class="bbs-search-wrap">
+                    <input type="text" id="searchParam" placeholder="搜索..." @keyup.enter="getSearchParam">
                 </div>
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li :class="{active:isActiveMenu(menuList.forum)}"><a href="/leek_bbs/skipPage/index"> 论坛</a></li>
-                        <li :class="{active:isActiveMenu(menuList.read)}"><a href="/leek_bbs/skipPage/daodu">导读</a></li>
-                        <li :class="{active:isActiveMenu(menuList.dynamic)}"><a href="javascript:;" @click="openDynamic">动态</a></li>
-<!--                        <li :class="{active:isActiveMenu(menuList.ranking)}"><a href="/leek_bbs/skipPage/ranking_list">排行榜</a></li>-->
-                        <!--<li :class="{active:isActiveMenu(menuList.aboutUs)}"><a href="#">关于我们</a></li>-->
-                    </ul>
-                    <div class="form-group navbar-left navbar-form" style="line-height: 32px;">
-                        <input type="text" class="form-control" style="height: 30px;" id="searchParam" placeholder="搜索..." @keyup.enter="getSearchParam" >
-                      </div>
-                    <div class="navbar-right">
-                        <div v-if="isLoginShow">
-                            <span><a href="javascript:;" @click="loginBtn()">登录</a></span>
-                            <span>|</span>&nbsp;
-                            <span><a href="javascript:;" @click="registerBtn()">立即注册</a></span>
-                        </div>
-                        <div :class="[{dropdown:true},{open:isOpenActive}]" v-show="isUserShow" @mouseenter="isOpenActive=true" @mouseleave="isOpenActive=false">
-                              <div class="dropdown-toggle" style="height: 42px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">    
-                               <a id="d-photo" href="javascript:;" ></a>
-                               <a class="bbs-mail-link" href="/leek_bbs/skipPage/msg-notification" title="消息">
-                                   <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
-                                   <span class="badge" style="display:none;">0</span>
-                               </a>
-                             </div>
-                            <div class="dropdown-menu" data-stopPropagation="true">
-                                <div class="row" style="margin-left:8px;padding: 10px 0;width:220px;border-bottom: 1px solid #ddd;" >
-                                    <div class="col-sm-3"><a id="c-photo" ></a></div>
-                                    <div class="col-sm-9">      
-                                       <div style="padding: 5px 3px;">
-                                            <a href="/leek_bbs/skipPage/spacecp">设置</a>
-                                       </div>
-                                       <div style="padding: 5px 3px;">
-                                             <a href="javascript:;" @click="logout">退出</a>
-                                       </div>
-<!--                                       <div style="padding: 5px 3px;" id="u-ig"></div>-->
-                                    </div>
-                                </div>
-                                <div class="row" style="margin-left:8px;padding: 10px 0;width:220px;" >
-<!--                                    <div class="col-sm-4"><div style="padding: 3px 0px;"><a href="/leek_bbs/skipPage/chat_system">我的好友</a></div></div>-->
-                                    <div class="col-sm-4">      
-                                       <div style="padding: 3px 0px;"><a href="/leek_bbs/skipPage/daodu#my_post">我的帖子</a></div>  
-                                    </div>
-                                    <div class="col-sm-4"><div style="padding: 3px 0px;"><a href="/leek_bbs/skipPage/my-collect">我的收藏</a></div></div>
-                                   <!-- <div class="col-sm-4"><div style="padding: 3px 0px;"><a href="javascript:;">我的消息</a></div></div>-->
-                                </div>
-                                <div class="row" style="margin-left:8px;padding-bottom: 10px;width:220px;border-bottom: 1px solid #ddd;" >
-                                  
-                                    <div class="col-sm-4">      
-                                       <div style="padding: 3px 0px;"><a href="/leek_bbs/skipPage/spacecp#care">我的关注</a></div>  
-                                    </div>
-                                    <div class="col-sm-4"><div style="padding: 3px 0px;"><a href="/leek_bbs/skipPage/msg-notification">我的消息</a></div></div>
-                                </div>
-                            
-                            </div>
-                      </div>
+                <div v-if="isLoginShow" class="bbs-auth-wrap">
+                    <a href="javascript:;" class="bbs-auth-link" @click="loginBtn()">登录</a>
+                    <a href="javascript:;" class="bbs-auth-link" @click="registerBtn()">立即注册</a>
+                </div>
+                <div v-show="isUserShow" class="bbs-user-menu">
+                    <div class="bbs-user-access">
+                        <a id="d-photo" class="bbs-user-trigger" href="javascript:;" @click.stop="toggleMenu"></a>
+                        <a class="bbs-mail-link" :href="ctx + '/skipPage/msg-notification'" title="我的消息">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+                            <span class="badge" style="display:none;">0</span>
+                        </a>
                     </div>
-
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container -->
-            <audio id="audioPlay" src="/leek_bbs/statics/mp3/QQ_xiaoxi.mp3" hidden></audio>
-        </nav><!-- /nav -->
-    </div>`,
+                    <div class="bbs-user-panel" :class="{open:isOpenActive}" data-stopPropagation>
+                        <a :href="ctx + '/skipPage/spacecp'">设置</a>
+                        <a :href="ctx + '/skipPage/daodu#my_post'">我的帖子</a>
+                        <a :href="ctx + '/skipPage/my-collect'">我的收藏</a>
+                        <a :href="ctx + '/skipPage/spacecp#care'">我的关注</a>
+                        <a href="javascript:;" @click="logout">退出登录</a>
+                    </div>
+                </div>
+                <a class="bbs-publish-btn" href="javascript:;" @click.prevent="handlePublishEntry">发布帖子</a>
+            </nav>
+        </div>
+        <a id="c-photo" style="display:none;"></a>
+        <audio id="audioPlay" :src="ctx + '/statics/mp3/QQ_xiaoxi.mp3'" hidden></audio>
+    </header>`,
     data:function () {
         return {
             isOpenActive:false,
             isLoginShow:this.is_login,
             isUserShow:false,
+            ctx:APP_CTX,
             menuList:{forum:"index",read:"read",dynamic:"dynamic",ranking:"rank",aboutUs:"about"}
         }
 
     },
     methods: {
+        toggleMenu(){
+            this.isOpenActive = !this.isOpenActive;
+        },
         getSearchParam() {
-            window.location.href="/leek_bbs/skipPage/searchPost?searchParam="+$("#searchParam").val();
+            window.location.href=this.ctx+"/skipPage/searchPost?searchParam="+$("#searchParam").val();
         },
         isActiveMenu(path){
             if (getUrlIndexOf(path)){
@@ -131,7 +105,7 @@ Vue.component('head_menu_comp', {
         },
         openDynamic(){
           if (userInfo != null){
-              window.location.href = "/leek_bbs/skipPage/dynamic";
+              window.location.href = this.ctx + "/skipPage/dynamic";
           } else {
               layui.login();
           }
@@ -139,6 +113,13 @@ Vue.component('head_menu_comp', {
         loginSubmit(){
             this.isLoginShow = false;
             this.isUserShow = true;
+        },
+        handlePublishEntry(){
+            if (userInfo != null){
+                window.location.href = this.ctx + "/skipPage/sendArticle";
+            }else {
+                layui.login();
+            }
         },
         logout(){
             localStorage.removeItem("initUser");
@@ -169,6 +150,11 @@ var head_menu = new Vue({
 //阻止点击事件传递
 $(document).on("click", "[data-stopPropagation]", function(e) {
     e.stopPropagation();
+});
+$(document).on("click", function() {
+    if (head_menu && head_menu.$refs && head_menu.$refs.fo) {
+        head_menu.$refs.fo.isOpenActive = false;
+    }
 });
 
 layui.define(['layer','form','util'],function (exports) {
@@ -223,7 +209,7 @@ layui.define(['layer','form','util'],function (exports) {
                             <input type="text" name="imgCode"style="height: 40px;" placeholder="输入验证码" lay-verify="required" autocomplete="off" class="layui-input">     
                         </div>
                         <div class="layui-input-inline" style="margin-left:35px;width: 100px;">   
-                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="/leek_bbs/bbs/user/verifyCode" alt="验证码">
+                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
                         </div>
                     </div>       
                 </div>
@@ -281,7 +267,7 @@ layui.define(['layer','form','util'],function (exports) {
             $imgs = $("img.captchaPic");
         }
         $imgs.each(function () {
-            $(this).attr('src', '/leek_bbs/bbs/user/verifyCode?img=' + ts + '&r=' + Math.random());
+            $(this).attr('src', APP_CTX + '/bbs/user/verifyCode?img=' + ts + '&r=' + Math.random());
         });
     }
 
@@ -304,11 +290,11 @@ layui.define(['layer','form','util'],function (exports) {
         if (data.field.password != data.field.pwd) {
             layer.msg('两次密码不一致', {icon: 5,time: 2000});
         }else {
-            axios.post("/leek_bbs/bbs/user/register",user)
+            axios.post(APP_CTX + "/bbs/user/register",user)
                 .then(result => {
                     var resdata = result.data;
                     if (resdata.code == "500020") {     //用户注册成功
-                        layer.msg('<img src="/leek_bbs/statics/yu-ui/images/ui-success.png">&emsp;用户注册成功', {
+                        layer.msg('<img src="' + APP_CTX + '/statics/yu-ui/images/ui-success.png">&emsp;用户注册成功', {
                             time: 2000 //2秒关闭（如果不配置，默认是3秒）
                         }, function(){
                             layer.closeAll();
@@ -321,7 +307,7 @@ layui.define(['layer','form','util'],function (exports) {
                     }else if (resdata.code == "300022"){    //用户存在
                         $("#errorRes").text(resdata.msg);
                     } else {   //用户注册失败
-                        layer.msg('<img src="/leek_bbs/statics/yu-ui/images/ui-error.png">&emsp;'+resdata.msg, {
+                        layer.msg('<img src="' + APP_CTX + '/statics/yu-ui/images/ui-error.png">&emsp;'+resdata.msg, {
                             time: 3000 //2秒关闭（如果不配置，默认是3秒）
                         });
                     }
@@ -339,7 +325,7 @@ layui.define(['layer','form','util'],function (exports) {
         //ui.success('提示内容',时间,是否有遮蔽层);
         $.ajax({
             type: "post",
-            url: "/leek_bbs/bbs/user/login",
+            url: APP_CTX + "/bbs/user/login",
             data:{
                 "username":data.field.username,
                 "password":data.field.password,
@@ -407,7 +393,7 @@ layui.define(['layer','form','util'],function (exports) {
                             <input type="text" style="height: 40px;" name="imgCode" placeholder="输入验证码" height="40px;" lay-verify="required" autocomplete="off" class="layui-input">     
                         </div>
                         <div class="layui-input-inline" style="margin-left:35px;width: 100px;">   
-                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="/leek_bbs/bbs/user/verifyCode" alt="验证码">
+                            <img id="captchaPic" class="captchaPic" style="width: 90px;height: 38px;" src="${APP_CTX}/bbs/user/verifyCode" alt="验证码">
                         </div>
                     </div>       
                 </div>
@@ -545,10 +531,10 @@ layui.define(['layer','form','util'],function (exports) {
                 layer.msg('两次密码不一致', {icon: 5,time: 2000});
                 $("#classPwd").focus();
             }else {
-                axios.post('/leek_bbs/bbs/user/alterUserInfo',data.field).then(response => {
+                axios.post(APP_CTX + '/bbs/user/alterUserInfo',data.field).then(response => {
                     let resData = response.data;
                     if (resData.code == "500020") {
-                        layer.msg(`<img src="/leek_bbs/statics/yu-ui/images/ui-success.png">&emsp;密码修改成功`, {
+                        layer.msg(`<img src="${APP_CTX}/statics/yu-ui/images/ui-success.png">&emsp;密码修改成功`, {
                             time: 3000 //2秒关闭（如果不配置，默认是3秒）
                         },function () {
                             layer.closeAll();
@@ -573,7 +559,7 @@ layui.define(['layer','form','util'],function (exports) {
 
     //倒计时
     function countDown(username) {
-        axios.get(`/leek_bbs/bbs/user/sendEmail?username=${username}`).then(response => {
+        axios.get(`${APP_CTX}/bbs/user/sendEmail?username=${username}`).then(response => {
             let data = response.data;
             if (data.msg == "success"){
                 let endTime = new Date().getTime()+60*1000 //假设为结束日期
@@ -586,7 +572,7 @@ layui.define(['layer','form','util'],function (exports) {
                         layui.$(`#sendVerify`).html(`<button id="sendCode" class="btn btn-default btn-primary">发送验证码</button>`);
                     }
                 });
-                layer.msg(`<img src="/leek_bbs/statics/yu-ui/images/ui-success.png">&emsp;验证码发送成功,请到邮箱注意查看!`, {
+                layer.msg(`<img src="${APP_CTX}/statics/yu-ui/images/ui-success.png">&emsp;验证码发送成功,请到邮箱注意查看!`, {
                     time: 3000 //2秒关闭（如果不配置，默认是3秒）
                 });
                 count ++;
@@ -612,7 +598,7 @@ layui.define(['layer','form','util'],function (exports) {
 function getUserInformation(username){
     if (localStorage.getItem("initUser") == null){
         if (username != null && username != ''){
-            axios.get('/leek_bbs/bbs/user/getUserInfo?username='+username)
+            axios.get(APP_CTX + '/bbs/user/getUserInfo?username='+username)
                 .then(function (result) {
                     let data = result.data;
                     if (data != null){
@@ -621,10 +607,10 @@ function getUserInformation(username){
                         window.location.reload();
                         let map = JSON.parse(window.localStorage.getItem("initUser"));
                         userInfo = map.userInfo;
-                        let str = `<img src="/leek_bbs/${userInfo.picture}" style="margin-top: -8px;width:40px;height:40px;" style="border-radius: 12px;">
+                        let str = `<img src="${APP_CTX}/${userInfo.picture}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
                                     &nbsp;&nbsp;<span>${userInfo.another_name}</span>`;
                         $("#d-photo").html(str);
-                        $("#c-photo").html(`<img src="/leek_bbs/${userInfo.picture}" width="40px" class="img-circle" height="40px" alt="头像">`);
+                        $("#c-photo").html(`<img src="${APP_CTX}/${userInfo.picture}" width="40px" class="img-circle" height="40px" alt="头像">`);
                         $("#u-ig").html(`<span>积分:&nbsp;${map.total_integral}</span>&nbsp;<span>用户组:&nbsp;${map.grade.name}</span>`);
                         setTimeout(function () {
                             websocketLinkStart(userInfo);
@@ -642,12 +628,12 @@ function getUserInformation(username){
         let map = JSON.parse(window.localStorage.getItem("initUser"));
         userInfo = map.userInfo;
         console.log(map);
-        $('#d-photo').attr('href',`/leek_bbs/skipPage/personal?id=${userInfo.id}`);
+        $('#d-photo').attr('href',`${APP_CTX}/skipPage/personal?id=${userInfo.id}`);
         // $('#c-photo').attr('href',`/leek_bbs/skipPage/personal?id=${userInfo.id}`);
-        let str = `<img src="/leek_bbs/${userInfo.picture}" style="margin-top: -8px;width:40px;height:40px;" style="border-radius: 12px;">
+        let str = `<img src="${APP_CTX}/${userInfo.picture}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
                                 &nbsp;&nbsp;<span>${userInfo.another_name}</span>`;
         $("#d-photo").html(str);
-        $("#c-photo").html(`<img src="/leek_bbs/${userInfo.picture}" class="img-circle" width="40px" height="40px" alt="头像">`);
+        $("#c-photo").html(`<img src="${APP_CTX}/${userInfo.picture}" class="img-circle" width="40px" height="40px" alt="头像">`);
         $("#u-ig").html(`<span>积分:&nbsp;${map.total_integral}</span>&nbsp;<span>用户组:&nbsp;${map.grade.name}</span>`);
         websocketLinkStart(userInfo)
     }
@@ -668,7 +654,7 @@ function websocketLinkStart(userInfo) {
     if(WebSocket){
         //ws = new WebSocket("ws://jxz.free.qydev.com:8080/websocket/"+userInfo.id);
         //本地连接
-         ws = new WebSocket("ws://localhost:8080/leek_bbs/websocket/"+userInfo.id);
+         ws = new WebSocket("ws://localhost:8080" + APP_CTX + "/websocket/"+userInfo.id);
     }else {
         alert("您的浏览器不支持Websocket!");
     }
@@ -690,7 +676,7 @@ function websocketLinkStart(userInfo) {
         let loginUserId = userInfo.id;
         if ($("#chatSession-W")[0] == null){
             if (data.tarUser.userId == userInfo.id){
-                $(".badge").css("display","").text(1);
+                var unreadCount = 1;
                 //let privateMsg = JSON.parse(window.localStorage.getItem(`privateMsg-${userInfo.id}`));
                 let privateMsg = JSON.parse(window.localStorage.getItem(`msgData`));
                 if (privateMsg == null){
@@ -706,7 +692,11 @@ function websocketLinkStart(userInfo) {
                     content:data.content,
                     status:0
                 });
+                unreadCount = privateMsg.filter(function (msg) {
+                    return msg && msg.status === 0 && msg.tarUser && msg.tarUser.userId == userInfo.id;
+                }).length;
                 window.localStorage.setItem(`msgData`,JSON.stringify(privateMsg));
+                $(".badge").css("display","").text(unreadCount > 99 ? "99+" : unreadCount);
                 let player = document.getElementById("audioPlay");
                 player.play();
             }

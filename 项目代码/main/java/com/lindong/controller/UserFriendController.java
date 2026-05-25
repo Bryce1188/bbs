@@ -44,6 +44,9 @@ public class UserFriendController {
     @ResponseBody
     public UserFriend checkIsFriend(@RequestBody Map map){
         System.out.println("我的Id"+map.get("userId")+"好友id:"+map.get("friendId"));
+        if (map.get("userId") != null && map.get("friendId") != null && map.get("userId").toString().equals(map.get("friendId").toString())){
+            return null;
+        }
         UserFriend lists = userFriendService.checkIsFriend(map);
         return lists;
     }
@@ -51,6 +54,9 @@ public class UserFriendController {
     @RequestMapping("/addFriends")
     @ResponseBody
     public Integer addFriends(@RequestBody Map map){
+        if (map.get("userId") != null && map.get("friendId") != null && map.get("userId").toString().equals(map.get("friendId").toString())){
+            throw new com.lindong.exception.CustomException(ResultCode.AUTHORITY_ERROR);
+        }
         Integer count  =userFriendService.addFriends(map);
         return count;
 
@@ -67,6 +73,9 @@ public class UserFriendController {
     @RequestMapping("/checkRequestFriend")
     @ResponseBody
     public ApiResult checkRequestFriend(@RequestBody Map map){
+        if (map.get("userId") != null && map.get("friendId") != null && map.get("userId").toString().equals(map.get("friendId").toString())){
+            throw new com.lindong.exception.CustomException(ResultCode.AUTHORITY_ERROR);
+        }
         userFriendService.checkRequestFriend(map);
         return ApiResult.of(ResultCode.SUCCESS);
     }

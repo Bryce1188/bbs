@@ -19,6 +19,7 @@ public enum ResultCode {
     USER_ALTER_ERROR("300034","用户信息保存失败"),
     SEND_FAIL("300035","验证码发送失败"),
     PASSWORD_FAILED("300036","原密码不正确"),
+    PASSWORD_REPEAT("300037","新密码不得与旧密码相同"),
 
     //签到
     SIGN_ERROR("400011","用户签到失败"),

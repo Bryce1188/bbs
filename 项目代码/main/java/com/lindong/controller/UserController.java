@@ -167,6 +167,9 @@ public class UserController {
                 User user = userService.getPwdSalt((String)map.get("username"));
                 ///String Pwd = MD5.getMd5String(oldPwd,user.getSalt());
                 if (oldPwd.equals(user.getPassword())){
+                    if (oldPwd.equals(map.get("password"))){
+                        throw new CustomException(ResultCode.PASSWORD_REPEAT);
+                    }
                     map.put("id",user.getId());
                     map.put("password",(String)map.get("password"));///MD5.getMd5String((String)map.get("password"),user.getSalt()));
                     userService.updateUser(map);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>论坛</title>
+    <title>首页</title>
     <link rel="icon" href="/leek_bbs/statics/images/favicon.ico">
     <link rel="stylesheet" href="/leek_bbs/statics/yu-ui/js_css/yu.css">
     <link rel="stylesheet" href="/leek_bbs/statics/layui/css/layui.css">
@@ -97,6 +97,11 @@
         .bbs-user-menu {
             position: relative;
         }
+        .bbs-user-access {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         .bbs-user-trigger {
             display: inline-flex;
@@ -118,6 +123,43 @@
             border-radius: 50%;
             object-fit: cover;
             border: 1px solid #dddddd;
+        }
+        .bbs-mail-link {
+            align-items: center;
+            border: 1px solid var(--bbs-border);
+            border-radius: 14px;
+            color: #141922;
+            display: inline-flex;
+            height: 44px;
+            justify-content: center;
+            position: relative;
+            width: 44px;
+        }
+        .bbs-mail-link svg {
+            fill: none;
+            height: 21px;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 2;
+            width: 21px;
+        }
+        .bbs-mail-badge {
+            align-items: center;
+            background: #ff3b30;
+            border: 2px solid #fff;
+            border-radius: 999px;
+            color: #fff;
+            display: inline-flex;
+            font-size: 11px;
+            font-weight: 700;
+            height: 18px;
+            justify-content: center;
+            min-width: 18px;
+            padding: 0 5px;
+            position: absolute;
+            right: -6px;
+            top: -6px;
         }
 
         .bbs-user-panel {
@@ -611,20 +653,25 @@
             <span>校园论坛</span>
         </a>
         <nav class="bbs-nav-items">
-            <a href="/leek_bbs/skipPage/index">论坛</a>
+            <a href="/leek_bbs/skipPage/index">首页</a>
             <a href="/leek_bbs/skipPage/ranking_list">排行</a>
             <template v-if="currentUser">
-                <a href="/leek_bbs/skipPage/my-collect">我的收藏</a>
-                <a href="/leek_bbs/skipPage/personal">个人中心</a>
                 <div class="bbs-user-menu">
-                    <span class="bbs-user-trigger" @click.stop="toggleUserMenu">
-                        <img :src="getAvatar()" :alt="currentUser.username || 'user'">
-                        <span>{{currentUser.another_name || currentUser.username}}</span>
-                    </span>
+                    <div class="bbs-user-access">
+                        <span class="bbs-user-trigger" @click.stop="toggleUserMenu">
+                            <img :src="getAvatar()" :alt="currentUser.username || 'user'">
+                            <span>{{currentUser.another_name || currentUser.username}}</span>
+                        </span>
+                        <a class="bbs-mail-link" href="/leek_bbs/skipPage/msg-notification" title="我的消息">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+                            <span class="bbs-mail-badge" v-if="unreadCount > 0">{{unreadCount > 99 ? '99+' : unreadCount}}</span>
+                        </a>
+                    </div>
                     <div class="bbs-user-panel" :class="{open: userMenuOpen}" @click.stop>
                         <a href="/leek_bbs/skipPage/spacecp" @click="closeUserMenu">设置</a>
                         <a href="/leek_bbs/skipPage/daodu#my_post" @click="closeUserMenu">我的帖子</a>
-                        <a href="/leek_bbs/skipPage/msg-notification" @click="closeUserMenu">我的消息</a>
+                        <a href="/leek_bbs/skipPage/my-collect" @click="closeUserMenu">我的收藏</a>
+                        <a href="/leek_bbs/skipPage/spacecp#care" @click="closeUserMenu">我的关注</a>
                         <a href="javascript:;" @click="logoutUser">退出登录</a>
                     </div>
                 </div>
@@ -659,7 +706,6 @@
             <div>
                 <h2>论坛板块</h2>
             </div>
-            <p>板块数据来自原来的 <span>/bbs/plate/findAll</span> 接口，帖子数量会继续使用数据库里的实时字段。</p>
         </div>
 
         <div class="bbs-layout">
@@ -768,32 +814,7 @@
             </aside>
         </div>
 
-        <section class="bbs-cta">
-            <div>
-                <h2>有新想法就发出来</h2>
-                <p>发布后对应板块帖数会按原业务逻辑自动增加，首页刷新后会展示最新数据。</p>
-            </div>
-            <div class="bbs-hero-actions">
-                <a class="bbs-button" href="javascript:;" @click.prevent="handlePublishEntry">发布帖子</a>
-                <a class="bbs-button bbs-button-light" href="/leek_bbs/skipPage/searchPost">搜索帖子</a>
-            </div>
-        </section>
     </main>
-
-    <footer class="bbs-footer">
-        <div>
-            <strong>校园论坛</strong>
-            <span>Copyright 2026 BBS</span>
-        </div>
-        <div>
-            <strong>快捷入口</strong>
-            <a href="/leek_bbs/skipPage/index">论坛首页</a>
-            &nbsp;/&nbsp;
-            <a href="/leek_bbs/skipPage/ranking_list">排行榜</a>
-            &nbsp;/&nbsp;
-            <a href="javascript:;" @click.prevent="handlePublishEntry">发布帖子</a>
-        </div>
-    </footer>
 </div>
 
 <script src="/leek_bbs/statics/component/head_menu.js"></script>
@@ -817,9 +838,16 @@
             postEssences: [],
             users: [],
             currentUser: null,
-            userMenuOpen: false
+            userMenuOpen: false,
+            unreadCount: 0
         },
         methods: {
+            scrollToPlates: function () {
+                var target = document.getElementById("plates");
+                if (target && target.scrollIntoView) {
+                    target.scrollIntoView({behavior: "smooth", block: "start"});
+                }
+            },
             getAvatar: function () {
                 if (!this.currentUser || !this.currentUser.picture) {
                     return "/leek_bbs/statics/images/head_portrait/comiis_nologin.jpg";
@@ -846,6 +874,26 @@
             },
             syncCurrentUser: function () {
                 this.currentUser = this.getCurrentUserFromCache();
+                this.refreshUnreadCount();
+            },
+            refreshUnreadCount: function () {
+                if (!this.currentUser || !this.currentUser.id) {
+                    this.unreadCount = 0;
+                    return;
+                }
+                try {
+                    var list = JSON.parse(localStorage.getItem("msgData") || "[]");
+                    var currentId = this.currentUser.id;
+                    var unread = 0;
+                    list.forEach(function (item) {
+                        if (item && item.status === 0 && item.tarUser && item.tarUser.userId === currentId) {
+                            unread++;
+                        }
+                    });
+                    this.unreadCount = unread;
+                } catch (e) {
+                    this.unreadCount = 0;
+                }
             },
             openLogin: function () {
                 if (typeof window.showLoginLayer === "function") {
@@ -992,12 +1040,19 @@
             var that = this;
             this._closeUserMenuHandler = function () {
                 that.closeUserMenu();
+                that.refreshUnreadCount();
             };
             document.addEventListener("click", this._closeUserMenuHandler);
+            this._refreshUnreadTimer = setInterval(function () {
+                that.refreshUnreadCount();
+            }, 3000);
         },
         beforeDestroy: function () {
             if (this._closeUserMenuHandler) {
                 document.removeEventListener("click", this._closeUserMenuHandler);
+            }
+            if (this._refreshUnreadTimer) {
+                clearInterval(this._refreshUnreadTimer);
             }
         }
     });

@@ -68,17 +68,22 @@
         .layui-tab .row{
             margin-left: 5px;
         }
-        .layui-unselect .layui-form-select{
-            margin-left: -50px;
+        .profile-area-picker{
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .layui-select-title > input{
-            width:145px !important;
+        .profile-area-picker .layui-input-inline{
+            left: 0 !important;
+            margin-left: 0 !important;
+            width: 185px !important;
         }
-        .layui-form-select .layui-edge {
-            right: 70px;
+        .profile-area-picker .layui-form-select .layui-edge{
+            right: 12px;
         }
-        .layui-anim.layui-anim-upbit{
-            min-width: 168px;
+        .profile-area-picker .layui-anim.layui-anim-upbit{
+            min-width: 185px;
         }
         .layui-layedit{
             width: 510px;
@@ -103,6 +108,161 @@
             background: #fde3e4;
             border: 1px solid #ca0c16;
         }
+        .col-sm-2 .m-hover-bg > h5 > a,
+        .col-sm-2 .m-active > h5 > a{
+            color: #1f2937 !important;
+        }
+        .col-sm-2 .m-hover-bg:hover > h5 > a{
+            color: #ff6f3d !important;
+        }
+        .bbs-nav{
+            align-items: center;
+            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.92);
+            border: 1px solid #e8e8e8;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 14px 22px;
+        }
+        .bbs-brand{
+            align-items: center;
+            color: #141922;
+            display: inline-flex;
+            font-size: 18px;
+            font-weight: 700;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .bbs-brand-mark{
+            border: 1px solid rgba(20,25,34,.35);
+            border-radius: 13px;
+            font-size: 22px;
+            line-height: 1;
+            padding: 6px 10px;
+        }
+        .bbs-nav-items{
+            align-items: center;
+            display: flex;
+            font-size: 16px;
+            font-weight: 600;
+            gap: 16px;
+        }
+        .bbs-nav-items > a{
+            color: #182033;
+            text-decoration: none;
+        }
+        .bbs-auth-link{
+            color: #587a9f !important;
+            font-weight: 500;
+        }
+        .bbs-user-menu{
+            position: relative;
+        }
+        .bbs-user-access{
+            align-items: center;
+            display: inline-flex;
+            gap: 10px;
+        }
+        .bbs-user-trigger{
+            align-items: center;
+            color: #0f1726;
+            cursor: pointer;
+            display: inline-flex;
+            font-weight: 700;
+            gap: 8px;
+        }
+        .bbs-user-trigger img{
+            border-radius: 50%;
+            height: 34px;
+            object-fit: cover;
+            width: 34px;
+        }
+        .bbs-mail-link{
+            align-items: center;
+            border: 1px solid #d8dee8;
+            border-radius: 14px;
+            color: #141922;
+            display: inline-flex;
+            height: 44px;
+            justify-content: center;
+            position: relative;
+            width: 44px;
+        }
+        .bbs-mail-link svg{
+            fill: none;
+            height: 21px;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 2;
+            width: 21px;
+        }
+        .bbs-mail-badge{
+            align-items: center;
+            background: #ff3b30;
+            border: 2px solid #fff;
+            border-radius: 999px;
+            color: #fff;
+            display: inline-flex;
+            font-size: 11px;
+            font-weight: 700;
+            height: 18px;
+            justify-content: center;
+            min-width: 18px;
+            padding: 0 5px;
+            position: absolute;
+            right: -6px;
+            top: -6px;
+        }
+        .bbs-user-panel{
+            background: #fff;
+            border: 1px solid #e7ecf3;
+            border-radius: 14px;
+            box-shadow: 0 14px 34px rgba(17,24,39,.16);
+            display: none;
+            min-width: 150px;
+            padding: 8px;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            z-index: 30;
+        }
+        .bbs-user-panel.open{
+            display: block;
+        }
+        .bbs-user-panel a{
+            border-radius: 10px;
+            color: #1f2937;
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 10px;
+            text-decoration: none;
+        }
+        .bbs-user-panel a:hover{
+            background: #f4f7fb;
+            color: #111827;
+        }
+        .bbs-button{
+            align-items: center;
+            background: #141922;
+            border: 1px solid #141922;
+            border-radius: 12px;
+            color: #fff !important;
+            display: inline-flex;
+            font-size: 14px;
+            font-weight: 700;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 18px;
+            text-decoration: none;
+        }
+        .bbs-button:hover{
+            background: #0f131c;
+            border-color: #0f131c;
+        }
         .s-margin{
             float: right;
             margin-right: 5px;
@@ -124,6 +284,7 @@
     <!-- 导航结束 -->
     <!-- 中间主体部分 -->
     <div class="container" id="careApp" style="display: none;">
+        
         <div class="row">
             <span style="opacity: .8;">
                 <a href="/leek_bbs/skipPage/index"><span class="glyphicon glyphicon-home"></span></a>&nbsp;>&nbsp;
@@ -196,20 +357,20 @@
                                         </div>
                                     </div>
 
-                                    <div class="layui-form-item" id="area-picker">
+                                    <div class="layui-form-item profile-area-picker" id="area-picker">
                                         <div class="layui-form-label">居住地址</div>
-                                        <div class="layui-input-inline" style="width: 200px;">
-                                            <select name="province" class="province-selector" data-value="江苏省" lay-filter="province-1">
+                                        <div class="layui-input-inline">
+                                            <select name="province" class="province-selector" data-value="" lay-filter="province-1" lay-search>
                                                 <option value="">请选择省</option>
                                             </select>
                                         </div>
-                                        <div class="layui-input-inline" style="left:-40px;width: 200px;">
-                                            <select name="city" class="city-selector" data-value="常州市" lay-filter="city-1">
+                                        <div class="layui-input-inline">
+                                            <select name="city" class="city-selector" data-value="" lay-filter="city-1" lay-search>
                                                 <option value="">请选择市</option>
                                             </select>
                                         </div>
-                                        <div class="layui-input-inline" style="left:-80px;width: 200px;">
-                                            <select name="county" class="county-selector" data-value="武进区" lay-filter="county-1">
+                                        <div class="layui-input-inline">
+                                            <select name="county" class="county-selector" data-value="" lay-filter="county-1" lay-search>
                                                 <option value="">请选择区</option>
                                             </select>
                                         </div>
@@ -390,9 +551,104 @@
             careList:[],
             pageNo:1,
             pageSize:8,
-            total:10
+            total:10,
+            currentUser:null,
+            userMenuOpen:false,
+            unreadCount:0
         },
         methods:{
+            getAvatar: function () {
+                if (!this.currentUser || !this.currentUser.picture) {
+                    return "/leek_bbs/statics/images/head_portrait/comiis_nologin.jpg";
+                }
+                return "/leek_bbs/" + this.currentUser.picture;
+            },
+            getCurrentUserFromCache: function () {
+                try {
+                    var cache = localStorage.getItem("initUser");
+                    if (cache) {
+                        var parsed = JSON.parse(cache);
+                        if (parsed && parsed.userInfo) {
+                            return parsed.userInfo;
+                        }
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+                return null;
+            },
+            syncCurrentUser: function () {
+                this.currentUser = this.getCurrentUserFromCache();
+                this.refreshUnreadCount();
+            },
+            refreshUnreadCount: function () {
+                if (!this.currentUser || !this.currentUser.id) {
+                    this.unreadCount = 0;
+                    return;
+                }
+                try {
+                    var list = JSON.parse(localStorage.getItem("msgData") || "[]");
+                    var currentId = this.currentUser.id;
+                    var unread = 0;
+                    list.forEach(function (item) {
+                        if (item && item.status === 0 && item.tarUser && item.tarUser.userId === currentId) {
+                            unread++;
+                        }
+                    });
+                    this.unreadCount = unread;
+                } catch (e) {
+                    this.unreadCount = 0;
+                }
+            },
+            openLogin: function () {
+                if (typeof window.showLoginLayer === "function") {
+                    window.showLoginLayer();
+                } else if (layui && layui.login) {
+                    layui.login();
+                }
+            },
+            openRegister: function () {
+                if (typeof window.showRegisterLayer === "function") {
+                    window.showRegisterLayer();
+                } else if (layui && layui.register) {
+                    layui.register();
+                }
+            },
+            toggleUserMenu: function () {
+                this.userMenuOpen = !this.userMenuOpen;
+            },
+            closeUserMenu: function () {
+                this.userMenuOpen = false;
+            },
+            logoutUser: function () {
+                this.closeUserMenu();
+                localStorage.removeItem("initUser");
+                this.currentUser = null;
+                if (typeof userInfo !== "undefined") {
+                    userInfo = null;
+                }
+                try {
+                    if (typeof closeWebsocketForLogout === "function") {
+                        closeWebsocketForLogout();
+                    } else if (typeof ws !== "undefined" && ws && ws.close) {
+                        ws.onclose = null;
+                        ws.close();
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+                if (layui && layui.layer) {
+                    layui.layer.closeAll();
+                }
+            },
+            handlePublishEntry: function () {
+                var current = this.getCurrentUserFromCache();
+                if (!current) {
+                    this.openLogin();
+                    return;
+                }
+                window.location.href = "/leek_bbs/skipPage/sendArticle";
+            },
             fetchData(){
                 axios.post(`/leek_bbs/bbs/care/listCare`,{
                     uid:userInfo.id,
@@ -408,6 +664,7 @@
                 })
             },
             deleteCare(aid){
+                const vm = this;
                 ui.confirm('是否确定取消关注?',function (z) {
                     if (z) {
                         axios.post('/leek_bbs/bbs/care/deleteCare',{
@@ -417,7 +674,7 @@
                             const res = response.data;
                             if (res.code == "500020") {
                                 ui.success("取消关注成功",2000,true);
-                                this.fetchData();
+                                vm.fetchData();
                             }else {
                                 ui.error(res.msg,2000,true);
                             }
@@ -428,6 +685,28 @@
                     }
                 });
 
+            }
+        },
+        created: function () {
+            this.syncCurrentUser();
+        },
+        mounted: function () {
+            const vm = this;
+            this._closeUserMenuHandler = function () {
+                vm.closeUserMenu();
+                vm.syncCurrentUser();
+            };
+            document.addEventListener("click", this._closeUserMenuHandler);
+            this._refreshUnreadTimer = setInterval(function () {
+                vm.refreshUnreadCount();
+            }, 3000);
+        },
+        beforeDestroy: function () {
+            if (this._closeUserMenuHandler) {
+                document.removeEventListener("click", this._closeUserMenuHandler);
+            }
+            if (this._refreshUnreadTimer) {
+                clearInterval(this._refreshUnreadTimer);
             }
         }
     });
@@ -448,6 +727,68 @@
 
         //创建编辑器
         let edIndex;
+        function parseAddressParts(rawAddress) {
+            if (!rawAddress) {
+                return {province: "江苏省", city: "常州市", county: "武进区"};
+            }
+            let text = rawAddress.replace(/\s+/g, "");
+            let province = "";
+            let city = "";
+            let county = "";
+            let provinceMatch = text.match(/^(.*?(省|自治区|行政区|特别行政区|市))/);
+            if (provinceMatch) {
+                province = provinceMatch[1];
+                text = text.substring(province.length);
+            }
+            let cityMatch = text.match(/^(.*?(市|州|地区|盟))/);
+            if (cityMatch) {
+                city = cityMatch[1];
+                text = text.substring(city.length);
+            }
+            let countyMatch = text.match(/^(.*?(区|县|市|旗))/);
+            if (countyMatch) {
+                county = countyMatch[1];
+            }
+            return {
+                province: province || "江苏省",
+                city: city || "常州市",
+                county: county || "武进区"
+            };
+        }
+
+        function applyAddressPickerDefaults(rawAddress) {
+            let part = parseAddressParts(rawAddress);
+            $(".province-selector").attr("data-value", part.province);
+            $(".city-selector").attr("data-value", part.city);
+            $(".county-selector").attr("data-value", part.county);
+            address = part.province + part.city + part.county;
+            $("#addressInp").val(address);
+        }
+
+        function renderAreaPicker() {
+            layarea.render({
+                elem: '#area-picker',
+                change: function (res) {
+                    address = (res.province || "") + (res.city || "") + (res.county || "");
+                    $("#addressInp").val(address);
+                }
+            });
+            form.render("select");
+        }
+
+        try {
+            let cache = localStorage.getItem("initUser");
+            if (cache) {
+                let map = JSON.parse(cache);
+                if (map && map.userInfo && map.userInfo.address) {
+                    address = map.userInfo.address;
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        applyAddressPickerDefaults(address);
+        renderAreaPicker();
 
         setTimeout(() => {
             if (userInfo != null) {
@@ -461,6 +802,8 @@
                 $(".nickname").val(userInfo.another_name);
                 $(".user-username").text(userInfo.username);
                 $(".user-email").text(userInfo.email);
+                applyAddressPickerDefaults(userInfo.address || address);
+                renderAreaPicker();
                 $("#addressInp").val(address);
                 $("#bardian-edit").val(userInfo.personalized_sign);
                 if (getUrlName("care")) {
@@ -496,6 +839,8 @@
                 //ui.notice("两次密码不一致",2000,true);
                 ui.error("两次密码不一致",2000,true);
                 $("#classPwd").focus();
+            }else if (data.field.oldPwd === data.field.password) {
+                ui.error("新密码不得与旧密码相同",2000,true);
             }else {
                 saveUserInfo(data.field,0);
                 /*axios.post('/leek_bbs/bbs/user/alterUserInfo',data.field).then(response => {
@@ -535,17 +880,6 @@
             saveUserInfo(object,3);
             console.log(layedit.getContent(edIndex));
         });
-        //省级联动
-        layarea.render({
-            elem: '#area-picker',
-            change: function (res) {
-                //选择结果
-                address = res.province+res.city+res.county;
-                $("#addressInp").val(address);
-            }
-        });
-
-
         //头像拖拽上传
         upload.render({
             elem: '#pictureUpload'
