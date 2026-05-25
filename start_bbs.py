@@ -36,6 +36,7 @@ TOMCAT_HOME = TOOLS / "apache-tomcat-9.0.105"
 TOMCAT_WEBAPPS = TOMCAT_HOME / "webapps"
 TOMCAT_BIN = TOMCAT_HOME / "bin"
 TOMCAT_STARTUP = TOMCAT_BIN / "startup.bat"
+PERSIST_UPLOAD_DIR = ROOT / "uploadfiles"
 
 MAVEN_CMD = TOOLS / "apache-maven-3.9.9" / "bin" / "mvn.cmd"
 JDK8_HOME = Path(r"C:\Program Files\Eclipse Adoptium\jdk-8.0.492.9-hotspot")
@@ -205,6 +206,34 @@ def deploy_wars() -> None:
     print("  - Deployed bbs.war and leek_bbs.war")
 
 
+def ensure_persistent_uploads() -> None:
+    print("[5.2/7] Ensuring persistent uploads...")
+    PERSIST_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    copied = 0
+    legacy_dirs = [
+        TOMCAT_WEBAPPS / "leek_bbs" / "uploadfiles",
+        TOMCAT_WEBAPPS / "bbs" / "uploadfiles",
+    ]
+    for src_root in legacy_dirs:
+        if not src_root.exists():
+            continue
+        for src in src_root.rglob("*"):
+            if not src.is_file():
+                continue
+            rel = src.relative_to(src_root)
+            dst = PERSIST_UPLOAD_DIR / rel
+            if dst.exists():
+                continue
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            copied += 1
+    print(f"  - Upload dir: {PERSIST_UPLOAD_DIR}")
+    if copied > 0:
+        print(f"  - Migrated legacy files: {copied}")
+    else:
+        print("  - No legacy upload files to migrate")
+
+
 def ensure_tomcat() -> None:
     print("[6/7] Checking Tomcat...")
     if not TOMCAT_STARTUP.exists():
@@ -270,6 +299,7 @@ def main() -> int:
         apply_schema_patch()
         build_war(rebuild=args.rebuild)
         deploy_wars()
+        ensure_persistent_uploads()
         clear_stale_cache()
         ensure_tomcat()
         health_check()

@@ -19,6 +19,8 @@
 	<!-- 配置创建spring容器要扫描的包 -->
 	<context:component-scan base-package="com.lindong.controller"></context:component-scan>
 	<context:component-scan base-package="com.lindong.websocket"></context:component-scan>
+	<!-- 允许读取系统属性，如 ${user.home} -->
+	<context:property-placeholder location="classpath:db.properties" ignore-unresolvable="true" system-properties-mode="OVERRIDE"/>
 
 	<!-- 配置视图解析器 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -33,6 +35,8 @@
 	<mvc:resources mapping="/WEB-INF/pages/**" location="/WEB-INF/pages/"></mvc:resources>
 	<mvc:resources mapping="/WEB-INF/admin/**" location="/WEB-INF/admin/"></mvc:resources>
 	<mvc:resources mapping="/statics/**" location="/statics/"></mvc:resources>
+	<!-- 用户上传头像/图片固定映射到桌面仓库目录，避免热部署后丢失 -->
+	<mvc:resources mapping="/uploadfiles/**" location="file:/C:/Users/Ywt/Desktop/bbs/uploadfiles/"></mvc:resources>
 
 	<!-- 文件上传 -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

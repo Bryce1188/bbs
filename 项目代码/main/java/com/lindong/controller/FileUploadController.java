@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -22,6 +21,17 @@ public class FileUploadController {
 //  文件上传
     @Resource
     private IUserService userService;
+
+    private static final String UPLOAD_DIR = "uploadfiles";
+
+    private File resolveUploadRoot() {
+        String configuredPath = System.getProperty("bbs.upload.dir");
+        if (configuredPath != null && configuredPath.trim().length() > 0) {
+            return new File(configuredPath);
+        }
+        String userHome = System.getProperty("user.home");
+        return new File(userHome + File.separator + "Desktop" + File.separator + "bbs" + File.separator + UPLOAD_DIR);
+    }
 
     //单文件上传
     @RequestMapping(value = "/fileupload",method = RequestMethod.POST)
@@ -32,8 +42,8 @@ public class FileUploadController {
         /*SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSS");
         String res = sdf.format(new Date());*/
 
-        // uploads文件夹位置
-        String rootPath = request.getSession().getServletContext().getRealPath("uploadfiles/");
+        // 使用固定磁盘目录，避免 Tomcat 重新部署后图片丢失
+        File rootDir = resolveUploadRoot();
         // 原始名称
         String originalFileName = file.getOriginalFilename();
         //uuid
@@ -46,7 +56,7 @@ public class FileUploadController {
         File dateDirs = new File(date.get(Calendar.YEAR) + File.separator + (date.get(Calendar.MONTH) + 1));
         System.out.println("datedirs:" + dateDirs);
         // 新文件
-        File newFile = new File(rootPath + File.separator + dateDirs + File.separator + newFileName);
+        File newFile = new File(rootDir, dateDirs + File.separator + newFileName);
         System.out.println("newFile:" + newFile);
         // 判断目标文件所在目录是否存在
         if (!newFile.getParentFile().exists()) {
@@ -61,7 +71,7 @@ public class FileUploadController {
         System.out.println("==============fileUrl:" + fileUrl);
         Map map = new HashMap();
         String id = request.getParameter("id");
-        map.put("picture","uploadfiles/"+fileUrl);
+        map.put("picture",UPLOAD_DIR + "/" + fileUrl);
         if (id != null){
             map.put("id",id);
             userService.updateUser(map);
@@ -86,8 +96,8 @@ public class FileUploadController {
         Map<String, Object> result = new HashMap<>();
         String imgUrls[] = new String[files.size()];
         // 文件存放的路径
-        String filePath = request.getSession().getServletContext().getRealPath("uploadfiles/");
-        System.out.println(filePath);
+        File rootDir = resolveUploadRoot();
+        System.out.println(rootDir.getAbsolutePath());
         if (files != null && files.size() > 0) {
             for (int i = 0; i < files.size(); i++) {
                 MultipartFile file = files.get(i);
@@ -103,7 +113,7 @@ public class FileUploadController {
                 File dateDirs = new File(date.get(Calendar.YEAR) + File.separator + (date.get(Calendar.MONTH) + 1));
                 System.out.println("datedirs:" + dateDirs);
                 // 新文件
-                File newFile = new File(filePath + File.separator + dateDirs + File.separator + newFileName);
+                File newFile = new File(rootDir, dateDirs + File.separator + newFileName);
                 System.out.println("newFile:" + newFile);
                 // 判断目标文件所在目录是否存在
                 if (!newFile.getParentFile().exists()) {
