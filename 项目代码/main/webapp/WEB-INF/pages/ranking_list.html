@@ -165,10 +165,18 @@
         .rank-action:active,
         .rank-action:focus{
             color: #fff !important;
+            outline: none !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
         .rank-action:hover{
-            background: #0f131c;
-            border-color: #0f131c;
+            background: #141922;
+            border-color: #141922;
+            color: #fff !important;
+        }
+        .rank-action:active{
+            background: #141922 !important;
+            border-color: #141922 !important;
             color: #fff !important;
         }
         .bbs-nav{
@@ -464,11 +472,11 @@
 
                                 </div>
                                 <div class="col-sm-2">
-                                    <a href="javascript;" style="color: #999;font-size: 13px">{{reply.plate_name}}</a>
+                                    <a :href="postPlateUrl(reply)" style="color: #999;font-size: 13px">{{reply.plate_name}}</a>
                                 </div>
                                 <div class="col-sm-2">
                                     <ul>
-                                        <li><a href="javascript;" style="font-size: 10px;color: #0C0C0C">{{reply.post_author}}</a></li>
+                                        <li><a :href="postAuthorUrl(reply)" style="font-size: 10px;color: #0C0C0C">{{reply.post_author}}</a></li>
                                         <li  style="font-size: 7px;color:#999">{{reply.publish_time|format}}</li>
                                     </ul>
                                 </div>
@@ -503,11 +511,11 @@
 
                                 </div>
                                 <div class="col-sm-2">
-                                    <a href="javascript;" style="color: #999;font-size: 13px">{{browse.plate_name}}</a>
+                                    <a :href="postPlateUrl(browse)" style="color: #999;font-size: 13px">{{browse.plate_name}}</a>
                                 </div>
                                 <div class="col-sm-2">
                                     <ul>
-                                        <li><a href="javascript;" style="font-size: 10px;color: #0C0C0C">{{browse.post_author}}</a></li>
+                                        <li><a :href="postAuthorUrl(browse)" style="font-size: 10px;color: #0C0C0C">{{browse.post_author}}</a></li>
                                         <li  style="font-size: 7px;color:#999">{{browse.publish_time|format}}</li>
                                     </ul>
                                 </div>
@@ -542,11 +550,11 @@
 
                                 </div>
                                 <div class="col-sm-2">
-                                    <a href="javascript;" style="color: #999;font-size: 13px">{{share.plate_name}}</a>
+                                    <a :href="postPlateUrl(share)" style="color: #999;font-size: 13px">{{share.plate_name}}</a>
                                 </div>
                                 <div class="col-sm-2">
                                     <ul>
-                                        <li><a href="javascript;" style="font-size: 10px;color: #0C0C0C">{{share.post_author}}</a></li>
+                                        <li><a :href="postAuthorUrl(share)" style="font-size: 10px;color: #0C0C0C">{{share.post_author}}</a></li>
                                         <li  style="font-size: 7px;color:#999">{{share.publish_time|format}}</li>
                                     </ul>
                                 </div>
@@ -581,11 +589,11 @@
 
                                 </div>
                                 <div class="col-sm-2">
-                                    <a href="javascript;" style="color: #999;font-size: 13px">{{collect.plate_name}}</a>
+                                    <a :href="postPlateUrl(collect)" style="color: #999;font-size: 13px">{{collect.plate_name}}</a>
                                 </div>
                                 <div class="col-sm-2">
                                     <ul>
-                                        <li><a href="javascript;" style="font-size: 10px;color: #0C0C0C">{{collect.post_author}}</a></li>
+                                        <li><a :href="postAuthorUrl(collect)" style="font-size: 10px;color: #0C0C0C">{{collect.post_author}}</a></li>
                                         <li  style="font-size: 7px;color:#999">{{collect.publish_time|format}}</li>
                                     </ul>
                                 </div>
@@ -620,11 +628,11 @@
 
                                 </div>
                                 <div class="col-sm-2">
-                                    <a href="javascript;" style="color: #999;font-size: 13px">{{heat.plate_name}}</a>
+                                    <a :href="postPlateUrl(heat)" style="color: #999;font-size: 13px">{{heat.plate_name}}</a>
                                 </div>
                                 <div class="col-sm-2">
                                     <ul>
-                                        <li><a href="javascript;" style="font-size: 10px;color: #0C0C0C">{{heat.post_author}}</a></li>
+                                        <li><a :href="postAuthorUrl(heat)" style="font-size: 10px;color: #0C0C0C">{{heat.post_author}}</a></li>
                                         <li  style="font-size: 7px;color:#999">{{heat.publish_time|format}}</li>
                                     </ul>
                                 </div>
@@ -648,7 +656,7 @@
                                 <span style="margin-left: 34px;">板块</span><span style="float: right;margin-right: 38px;">发帖</span>
                             </div>
                             <div class="row m-border-bottom" v-for="(theme,index) in themes">
-                                <span class="m-left">  <span :class="(index <= 2) ? 'numberOn':'number'"  style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>&emsp;<a :href="'/leek_bbs/skipPage/model?pl_type='+theme.id">{{theme.plate_name}}</a></span>
+                                <span class="m-left">  <span :class="(index <= 2) ? 'numberOn':'number'"  style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>&emsp;<a :href="plateUrlByNameAndId(theme.id, theme.plate_name)">{{theme.plate_name}}</a></span>
                                 <span class="m-right">{{theme.theme}}</span>
                             </div>
                             <p style="margin-top:5px;font-size: 12px;font-family: Arial;color: #7f8da3">排行榜显示前10位数据</p>
@@ -658,7 +666,7 @@
                                 <span style="margin-left: 34px;">板块</span><span style="float: right;margin-right: 38px;">发帖</span>
                             </div>
                             <div class="row m-border-bottom" v-for="(posts,index) in postes">
-                                <span class="m-left">  <span :class="(index <= 2) ? 'numberOn':'number'"  style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>&emsp;<a :href="'/leek_bbs/skipPage/model?pl_type='+posts.id">{{posts.plate_name}}</a></span>
+                                <span class="m-left">  <span :class="(index <= 2) ? 'numberOn':'number'"  style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>&emsp;<a :href="plateUrlByNameAndId(posts.id, posts.plate_name)">{{posts.plate_name}}</a></span>
                                 <span class="m-right">{{posts.posts}}</span>
                             </div>
                             <p style="margin-top:5px;font-size: 12px;font-family: Arial;color: #7f8da3">排行榜显示前10位数据</p>
@@ -668,7 +676,7 @@
                                 <span style="margin-left: 34px;">板块</span><span style="float: right;margin-right: 38px;">发帖</span>
                             </div>
                             <div class="row m-border-bottom" v-for="(time,index) in times">
-                                <span class="m-left">  <span :class="(index <= 2) ? 'numberOn':'number'"  style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>&emsp;<a :href="'/leek_bbs/skipPage/model?pl_type='+time.id">{{time.plate_name}}</a></span>
+                                <span class="m-left">  <span :class="(index <= 2) ? 'numberOn':'number'"  style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>&emsp;<a :href="plateUrlByNameAndId(time.id, time.plate_name)">{{time.plate_name}}</a></span>
                                 <span class="m-right">{{time.todayTotalTheme}}</span>
                             </div>
                             <p style="margin-top:5px;font-size: 12px;font-family: Arial;color: #7f8da3">排行榜显示前10位数据</p>
@@ -714,9 +722,55 @@
             pageNo:1,
             currentUser:null,
             userMenuOpen:false,
-            unreadCount:0
+            unreadCount:0,
+            plateMap:{},
+            userIdMap:{}
         },
         methods: {
+            loadPlateMap: function () {
+                var that = this;
+                axios.post("/leek_bbs/bbs/plate/findAll").then(function (response) {
+                    var data = response.data && response.data.data ? response.data.data : response.data;
+                    if (Array.isArray(data)) {
+                        data.forEach(function (item) {
+                            if (item && item.plate_name && item.id) {
+                                that.plateMap[item.plate_name] = item.id;
+                            }
+                        });
+                    }
+                });
+            },
+            ensureUserIdByName: function (userName) {
+                var that = this;
+                if (!userName || that.userIdMap[userName]) {
+                    return;
+                }
+                axios.post("/leek_bbs/bbs/user/getUserInfo", "username=" + encodeURIComponent(userName), {
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"}
+                }).then(function (response) {
+                    var data = response.data || {};
+                    if (data.userInfo && data.userInfo.id) {
+                        that.userIdMap[userName] = data.userInfo.id;
+                    }
+                });
+            },
+            absorbPostRows: function (rows) {
+                var that = this;
+                if (!Array.isArray(rows)) {
+                    return;
+                }
+                rows.forEach(function (item) {
+                    if (!item) {
+                        return;
+                    }
+                    if (item.post_author && item.user_id) {
+                        that.userIdMap[item.post_author] = item.user_id;
+                    }
+                    if (item.post_author && !that.userIdMap[item.post_author]) {
+                        that.ensureUserIdByName(item.post_author);
+                    }
+                });
+            },
             resolveUserId: function (user) {
                 if (!user) {
                     return null;
@@ -753,6 +807,35 @@
                 var pathName = window.location.pathname || "";
                 var first = pathName.split("/")[1] || "leek_bbs";
                 return "/" + first + "/skipPage/personal?id=" + userId;
+            },
+            plateUrlByNameAndId: function (plateId, plateName) {
+                var pid = parseInt(plateId, 10);
+                if (isNaN(pid) && plateName && this.plateMap[plateName]) {
+                    pid = parseInt(this.plateMap[plateName], 10);
+                }
+                if (isNaN(pid)) {
+                    return "javascript:;";
+                }
+                return "/leek_bbs/skipPage/model?pl_type=" + pid;
+            },
+            postPlateUrl: function (row) {
+                if (!row) {
+                    return "javascript:;";
+                }
+                return this.plateUrlByNameAndId(row.plate_id || row.plateId, row.plate_name);
+            },
+            postAuthorUrl: function (row) {
+                if (!row || !row.post_author) {
+                    return "javascript:;";
+                }
+                if (row.user_id || row.userId) {
+                    return this.personalUrl(row.user_id || row.userId);
+                }
+                if (this.userIdMap[row.post_author]) {
+                    return this.personalUrl(this.userIdMap[row.post_author]);
+                }
+                this.ensureUserIdByName(row.post_author);
+                return "javascript:;";
             },
             getAvatar: function () {
                 if (!this.currentUser || !this.currentUser.picture) {
@@ -884,6 +967,7 @@
                     .then(response => {
                         var data = response.data;
                         this.replys = data;
+                        this.absorbPostRows(data);
                         console.log(data);
                     });
             },
@@ -895,6 +979,7 @@
                     .then(response => {
                         var data = response.data;
                         this.browses = data;
+                        this.absorbPostRows(data);
                     });
             },
             getShare(){
@@ -905,6 +990,7 @@
                     .then(response => {
                         var data = response.data;
                         this.shares = data;
+                        this.absorbPostRows(data);
                     });
             },
             getCollect(){
@@ -915,6 +1001,7 @@
                     .then(response => {
                         var data = response.data;
                         this.collects = data;
+                        this.absorbPostRows(data);
                     });
             },
             getHeat(){
@@ -925,6 +1012,7 @@
                     .then(response => {
                         var data = response.data;
                         this.heats = data;
+                        this.absorbPostRows(data);
                     });
             },
             theme(){
@@ -959,6 +1047,7 @@
         },
         created(){
             this.syncCurrentUser();
+            this.loadPlateMap();
             this.integral();
             this.reply();
             this.theme()

@@ -193,7 +193,7 @@
 				</div>
 <!--				板块区-->
 				<div class="layui-col-sm1 font-site">
-					<a href="#" style="padding-top: 1px;" class="wid">{{item.plate.plate_name}}</a>
+					<a :href="plateUrl(item)" style="padding-top: 1px;" class="wid">{{item.plate.plate_name}}</a>
 				</div>
 <!--				作者区-->
 				<div class="layui-col-sm1 font-site " style="line-height: 11px">
@@ -235,7 +235,7 @@
 <!--						</div>-->
 <!--						&lt;!&ndash;资料卡片结束&ndash;&gt;-->
 <!--					</div>-->
-					<span class="wid">{{item.post_author}}</span>
+					<a :href="userUrlById(item.user_id)" class="wid">{{item.post_author}}</a>
 					<p style="padding-top: 4px;"  class="wid"><em>{{changePublishTime(item.publish_time)}}</em></p>
 				</div>
 
@@ -247,10 +247,10 @@
 				</div>
 <!--				互动区-->
 				<div class="layui-col-sm1 font-site" style="line-height: 11px">
-					<a href="#"  class="wid" >{{item.last_reply}}</a>
+					<a :href="userUrlByName(item.last_reply)" class="wid" >{{item.last_reply}}</a>
 					<p style="padding-top: 4px;" class="wid"><em>{{changePublishTime(item.last_reply_time)}}</em></p>
 				</div>
-				<div class="layui-col-sm1 font-site" v-if="chooseSelect === 'MyPost'" style="line-height: 11px">
+				<div class="layui-col-sm1 font-site" v-if="canDeletePost(item)" style="line-height: 11px">
 					<button class="btn btn-danger btn-xs" @click="deletePost(item.id)">
 						<span class="glyphicon glyphicon-trash"></span> 删除
 					</button>
@@ -306,16 +306,76 @@
                 leadUserInfo:{},
                 gradeInfo:{},//等级信息
                 plateId: '', //所选版块id
-                condition:'全部'
+                condition:'全部',
+                plateMap:{},
+                userIdMap:{}
             },
             methods:{
+                loadPlateMap(){
+                    var that = this;
+                    $.ajax({
+                        type: "post",
+                        url: "/leek_bbs/bbs/plate/findAll",
+                        dataType:"json",
+                        success: function(response) {
+                            var data = response && response.data ? response.data : response;
+                            if (Array.isArray(data)) {
+                                data.forEach(function (item) {
+                                    if (item && item.plate_name && item.id) {
+                                        that.plateMap[item.plate_name] = item.id;
+                                    }
+                                });
+                            }
+                        },
+                        error: function(error){
+                            console.log("加载板块映射失败"+error);
+                        }
+                    });
+                },
+                ensureUserIdByName(userName){
+                    var that = this;
+                    if (!userName || that.userIdMap[userName]) {
+                        return;
+                    }
+                    $.ajax({
+                        type:"post",
+                        url: "/leek_bbs/bbs/user/getUserInfo",
+                        data:{ username:userName },
+                        dataType: "json",
+                        success:function (response) {
+                            if (response && response.userInfo && response.userInfo.id) {
+                                that.userIdMap[userName] = response.userInfo.id;
+                            }
+                        },
+                        error: function(error){
+                            console.log("加载用户ID失败"+error);
+                        }
+                    });
+                },
                 checkLogin(){
                   if (userInfo!=null){
                       this.login_userId=userInfo.id;
                       this.checkLoginStatus =true;
 				  }
 				},
+                canDeletePost(item){
+                    if (!item || !item.user_id || !this.login_userId) {
+                        return false;
+                    }
+                    return Number(item.user_id) === Number(this.login_userId);
+                },
 				deletePost(postId) {
+                    var target = null;
+                    for (var i = 0; i < this.postInfo.length; i++) {
+                        if (Number(this.postInfo[i].id) === Number(postId)) {
+                            target = this.postInfo[i];
+                            break;
+                        }
+                    }
+                    if (!this.canDeletePost(target)) {
+                        layer.msg("无权限删除该帖子", {icon: 2, time: 1500});
+                        return;
+                    }
 					let that = this;
 					layer.confirm('确定删除该帖子吗？', {icon: 3, title: '提示'}, function(index){
 						axios.post('/leek_bbs/stair/postsManage/deletePosts', [postId])
@@ -378,6 +438,10 @@
                 // 将页码，及每页显示的条数以参数传递提交给后台
                 getPostData(chooseSelect,tag){
                     var that = this;
+                    if (chooseSelect === "MyPost" && !that.login_userId) {
+                        layer.msg("请先登录", {icon: 2, time: 1200});
+                        return;
+                    }
                     if(tag!=null){
                         that.currentPage = 1;
                     }
@@ -397,11 +461,27 @@
                         dataType:"json",
                         success: function(response) {
                             // console.log(response);
-                            that.postInfo = response.list;		//将数据给postInfo
+                            var list = Array.isArray(response.list) ? response.list : [];
+                            if (chooseSelect === "MyPost" && that.login_userId) {
+                                list = list.filter(function (item) {
+                                    return item && Number(item.user_id) === Number(that.login_userId);
+                                });
+                            }
+                            that.postInfo = list;		//将数据给postInfo
                             // console.log(that.postInfo)
                             // 将数据的长度赋值给totalCount
-                            that.totalCount=response.total,	//将数据总条数赋值给totalCount
-                                that.chooseSelect = chooseSelect; //将选择的查看方式重置
+                            that.totalCount = (chooseSelect === "MyPost") ? list.length : response.total,	//将数据总条数赋值给totalCount
+                            that.chooseSelect = chooseSelect; //将选择的查看方式重置
+                            if (Array.isArray(that.postInfo)) {
+                                that.postInfo.forEach(function (item) {
+                                    if (item && item.post_author && item.user_id) {
+                                        that.userIdMap[item.post_author] = item.user_id;
+                                    }
+                                    if (item && item.last_reply) {
+                                        that.ensureUserIdByName(item.last_reply);
+                                    }
+                                });
+                            }
                             //console.log(that.totalCount)
                         },
                         error: function(error){
@@ -431,6 +511,42 @@
                       this.currentPage=val
                       // 切换页码时，要获取每页显示的条数
                       this.getData(this.PageSize,(val)*(this.PageSize))*/
+                },
+                plateUrl(item){
+                    if (!item) {
+                        return "javascript:;";
+                    }
+                    var plateId = item.plate_id || (item.plate && item.plate.id);
+                    if (!plateId && item.plate && item.plate.plate_name) {
+                        plateId = this.plateMap[item.plate.plate_name];
+                    }
+                    if (!plateId) {
+                        return "javascript:;";
+                    }
+                    return "/leek_bbs/skipPage/model?pl_type=" + plateId;
+                },
+                userUrlById(userId){
+                    if (!userId) {
+                        return "javascript:;";
+                    }
+                    return "/leek_bbs/skipPage/personal?id=" + userId;
+                },
+                userUrlByName(userName){
+                    if (!userName) {
+                        return "javascript:;";
+                    }
+                    if (this.userIdMap[userName]) {
+                        return "/leek_bbs/skipPage/personal?id=" + this.userIdMap[userName];
+                    }
+                    for (var i = 0; i < this.postInfo.length; i++) {
+                        if (this.postInfo[i].post_author === userName && this.postInfo[i].user_id) {
+                            return "/leek_bbs/skipPage/personal?id=" + this.postInfo[i].user_id;
+                        }
+                    }
+                    if (typeof userInfo !== "undefined" && userInfo && userInfo.another_name === userName) {
+                        return "/leek_bbs/skipPage/personal?id=" + userInfo.id;
+                    }
+                    return "javascript:;";
                 },
                 /*时间转换方法*/
                 changePublishTime(dateTimeStamp){
@@ -476,8 +592,9 @@
                 }
             },
             mounted:function () {
-                this.getPostData(this.chooseSelect);
+                this.loadPlateMap();
                 this.checkLogin();
+                this.getPostData(this.chooseSelect);
                 if (getUrlName("my_post")) {
                     this.getPostData("MyPost",1);
                     $("#myPost").addClass('btn-bg-2');

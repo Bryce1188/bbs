@@ -429,11 +429,11 @@ footer .row > p >span{
 .bbs-topbar .bbs-topnav > a{
     color: #111111 !important;
     font-size: 16px !important;
-    font-weight: 600 !important;
+    font-weight: 400 !important;
 }
 .bbs-topbar .bbs-auth-link{
     color: #111111 !important;
-    font-weight: 600 !important;
+    font-weight: 400 !important;
 }
 .bbs-topbar .bbs-user-menu{
     position: relative !important;
@@ -451,7 +451,7 @@ footer .row > p >span{
     color: #111111 !important;
     display: inline-flex !important;
     font-size: 14px !important;
-    font-weight: 600 !important;
+    font-weight: 400 !important;
     gap: 10px !important;
     line-height: 1 !important;
     max-width: 190px !important;
@@ -537,7 +537,7 @@ footer .row > p >span{
     color: #111111 !important;
     display: block !important;
     font-size: 14px !important;
-    font-weight: 600 !important;
+    font-weight: 400 !important;
     padding: 10px 12px !important;
 }
 .bbs-topbar .bbs-user-panel a:hover{
@@ -551,7 +551,7 @@ footer .row > p >span{
     color: #ffffff !important;
     display: inline-flex !important;
     font-size: 15px !important;
-    font-weight: 600 !important;
+    font-weight: 400 !important;
     justify-content: center !important;
     min-height: 44px !important;
     padding: 0 22px !important;
