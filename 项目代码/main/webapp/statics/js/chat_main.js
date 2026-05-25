@@ -1,6 +1,40 @@
 
 //控制消息闪烁,新消息是否提示
 var timeClear;
+var autoPeerOpened = false;
+
+function getQueryParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURIComponent(r[2]);
+    return null;
+}
+
+function openPeerSessionById(peerId) {
+    if (!peerId || !userInfo || autoPeerOpened) {
+        return;
+    }
+    axios.post('/leek_bbs/bbs/userInfo/getUserInfoById', {
+        userId: parseInt(peerId, 10),
+        pageNo: 1,
+        pageSize: 1
+    }).then(function (response) {
+        var data = response.data || {};
+        var u = data.userInfo || data.user || null;
+        if (!u || !u.id) {
+            return;
+        }
+        autoPeerOpened = true;
+        openSessionW({
+            id: u.id,
+            username: u.username,
+            another_name: u.another_name || u.username,
+            picture: u.picture || 'statics/images/head_portrait/comiis_nologin.jpg'
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
 
 layui.define(['element','layer','jquery','layedit'], function(exports){
     var layer = layui.layer,
@@ -10,7 +44,13 @@ layui.define(['element','layer','jquery','layedit'], function(exports){
 
     setTimeout(function () {
         if (userInfo != null) {
-            openWindow()
+            openWindow();
+            var peerId = getQueryParam("peerId");
+            if (peerId) {
+                setTimeout(function () {
+                    openPeerSessionById(peerId);
+                }, 650);
+            }
         }else {
             layui.login();
         }
@@ -333,27 +373,37 @@ layui.define(['element','layer','jquery','layedit'], function(exports){
 
     //发送消息
     $(document).on('click','#sendBtn',function () {
-        if (online_status) {     //用户在线
             //获取发送内容
             var str = layedit.getContent(editIndex);
             if (str != null && str != ''){
-            var date = new Date();
-            //console.log(userInfo);
-            ws.send(JSON.stringify({
-                "type": "1",
-                "tarUser": {"userId":tarUser.id},
-                "srcUser": {"userId":userInfo.id},
-                "img":userInfo.picture,
-                "time":date.getTime(),
-                "content": str
-            }));
-            //该方法layedit接口中未定义,修改layedit.js文件自己添加的方法
-            layedit.clearContent(editIndex);
-        }
-        }else {      //不在线
-            layer.msg('该用户不在线,请上线后再私聊!',{icon:5,time:1500})
-        }
-
+                var date = new Date();
+                var payload = {
+                    "type": "1",
+                    "tarUser": {"userId":tarUser.id},
+                    "srcUser": {"userId":userInfo.id},
+                    "img":userInfo.picture,
+                    "time":date.getTime(),
+                    "content": str
+                };
+                axios.post('/leek_bbs/bbs/privateMsg/send',{
+                    srcUserId:userInfo.id,
+                    tarUserId:tarUser.id,
+                    content:str,
+                    img:userInfo.picture,
+                    time:date.getTime()
+                }).then(function (response) {
+                    var data = response.data || {};
+                    if (data.code === "500020") {
+                        ws.send(JSON.stringify(payload));
+                        //该方法layedit接口中未定义,修改layedit.js文件自己添加的方法
+                        layedit.clearContent(editIndex);
+                    } else {
+                        layer.msg(data.msg || '发送失败，请稍后重试',{icon:5,time:2000});
+                    }
+                }).catch(function () {
+                    layer.msg('消息保存失败，请稍后重试',{icon:5,time:1800});
+                });
+            }
     });
 
 

@@ -1,8 +1,13 @@
 package com.lindong.controller;
 
+import com.lindong.domain.User;
+import com.lindong.exception.CustomException;
 import com.lindong.exception.ApiResult;
 import com.lindong.exception.ResultCode;
 import com.lindong.service.IPrivateMsgService;
+import com.lindong.service.IUserService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,20 +27,31 @@ public class PrivateMsgController {
 
     @Resource
     private IPrivateMsgService privateMsgService;
+    @Resource
+    private IUserService userService;
 
     @RequestMapping(value = "/listInbox", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> listInbox(@RequestBody Map<String, Object> params) {
-        Integer userId = toInt(params.get("userId"));
+    public Map<String, Object> listInbox(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
         Integer pageNo = toInt(params.get("pageNo"));
         Integer pageSize = toInt(params.get("pageSize"));
         return privateMsgService.listInbox(userId, pageNo, pageSize);
     }
 
+    @RequestMapping(value = "/listConversations", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> listConversations(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
+        Integer pageNo = toInt(params.get("pageNo"));
+        Integer pageSize = toInt(params.get("pageSize"));
+        return privateMsgService.listConversations(userId, pageNo, pageSize);
+    }
+
     @RequestMapping(value = "/listSession", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> listSession(@RequestBody Map<String, Object> params) {
-        Integer userId = toInt(params.get("userId"));
+    public Map<String, Object> listSession(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
         Integer peerId = toInt(params.get("peerId"));
         Map<String, Object> result = new HashMap<>();
         result.put("data", privateMsgService.listSession(userId, peerId));
@@ -43,7 +60,9 @@ public class PrivateMsgController {
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult send(@RequestBody Map<String, Object> msg) {
+    public ApiResult send(@RequestBody Map<String, Object> msg, HttpServletRequest request) {
+        Integer actingUserId = resolveActingUserId(msg, request);
+        msg.put("srcUserId", actingUserId);
         if (msg.get("time") == null) {
             msg.put("time", System.currentTimeMillis());
         }
@@ -53,8 +72,8 @@ public class PrivateMsgController {
 
     @RequestMapping(value = "/unreadCount", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> unreadCount(@RequestBody Map<String, Object> params) {
-        Integer userId = toInt(params.get("userId"));
+    public Map<String, Object> unreadCount(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
         Map<String, Object> result = new HashMap<>();
         result.put("count", privateMsgService.unreadCount(userId));
         return result;
@@ -62,28 +81,81 @@ public class PrivateMsgController {
 
     @RequestMapping(value = "/markSessionRead", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult markSessionRead(@RequestBody Map<String, Object> params) {
-        Integer userId = toInt(params.get("userId"));
+    public ApiResult markSessionRead(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
         Integer peerId = toInt(params.get("peerId"));
         privateMsgService.markSessionRead(userId, peerId);
         return ApiResult.of(ResultCode.SUCCESS);
     }
 
+    @RequestMapping(value = "/markConversationUnread", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult markConversationUnread(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
+        Integer peerId = toInt(params.get("peerId"));
+        privateMsgService.markConversationUnread(userId, peerId);
+        return ApiResult.of(ResultCode.SUCCESS);
+    }
+
+    @RequestMapping(value = "/hideConversation", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult hideConversation(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
+        Integer peerId = toInt(params.get("peerId"));
+        privateMsgService.hideConversation(userId, peerId);
+        return ApiResult.of(ResultCode.SUCCESS);
+    }
+
     @RequestMapping(value = "/markAllRead", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult markAllRead(@RequestBody Map<String, Object> params) {
-        Integer userId = toInt(params.get("userId"));
+    public ApiResult markAllRead(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
         privateMsgService.markAllRead(userId);
         return ApiResult.of(ResultCode.SUCCESS);
     }
 
     @RequestMapping(value = "/deleteByIds", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult deleteByIds(@RequestBody Map<String, Object> params) {
-        Integer userId = toInt(params.get("userId"));
+    public ApiResult deleteByIds(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        Integer userId = resolveActingUserId(params, request);
         List<Long> ids = toLongList(params.get("ids"));
         privateMsgService.deleteForUser(userId, ids);
         return ApiResult.of(ResultCode.SUCCESS);
+    }
+
+    private Integer resolveActingUserId(Map<String, Object> params, HttpServletRequest request) {
+        User loginUser = getLoginUser(request);
+        if (loginUser == null || loginUser.getId() == null) {
+            throw new CustomException(ResultCode.AUTHORITY_ERROR);
+        }
+        Integer requestUserId = toInt(params.get("userId"));
+        if (isAdmin() && requestUserId != null) {
+            return requestUserId;
+        }
+        return loginUser.getId();
+    }
+
+    private User getLoginUser(HttpServletRequest request) {
+        String username = null;
+        Subject subject = SecurityUtils.getSubject();
+        if (subject != null && subject.getPrincipal() != null) {
+            username = String.valueOf(subject.getPrincipal());
+        }
+        if ((username == null || username.trim().isEmpty()) && request != null) {
+            Object sessionName = request.getSession().getAttribute("username");
+            if (sessionName != null) {
+                username = String.valueOf(sessionName);
+            }
+        }
+        if (username == null || username.trim().isEmpty()) {
+            return null;
+        }
+        return userService.findByName(username.trim());
+    }
+
+    private boolean isAdmin() {
+        Subject subject = SecurityUtils.getSubject();
+        return subject != null && subject.isAuthenticated() && subject.hasRole("admin");
     }
 
     private Integer toInt(Object val) {

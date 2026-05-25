@@ -1,6 +1,7 @@
 package com.lindong.service.impl;
 
 import com.lindong.dao.IAttentionDao;
+import com.lindong.dao.IUserFriendDao;
 import com.lindong.domain.Post;
 import com.lindong.exception.CustomException;
 import com.lindong.exception.ResultCode;
@@ -16,6 +17,8 @@ public class AttentionService implements IAttentionService {
 
     @Autowired
     private IAttentionDao attentionDao;
+    @Autowired
+    private IUserFriendDao userFriendDao;
 
     @Override
     public List<Object> paging(Map<String, Object> param) {
@@ -46,6 +49,12 @@ public class AttentionService implements IAttentionService {
         int i = attentionDao.deleteAttention(uid, aid);
         if (i == 0){
             throw new CustomException(ResultCode.UNFOLLOW_FAILED);
+        }
+        if (uid != null && aid != null) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("userId", uid);
+            map.put("friendId", aid);
+            userFriendDao.deleteFridends(map);
         }
         return true;
     }

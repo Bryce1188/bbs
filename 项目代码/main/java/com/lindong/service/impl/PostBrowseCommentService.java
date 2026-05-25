@@ -2,6 +2,7 @@ package com.lindong.service.impl;
 
 import com.lindong.dao.IPostBrowseCommentDao;
 import com.lindong.dao.IPostReportDao;
+import com.lindong.dao.IUserFriendDao;
 import com.lindong.domain.Grade;
 import com.lindong.domain.Post;
 import com.lindong.domain.PostDetails;
@@ -19,6 +20,8 @@ public class PostBrowseCommentService implements IPostBrowseCommentService {
 
     @Autowired
     private IPostBrowseCommentDao postDao;
+    @Autowired
+    private IUserFriendDao userFriendDao;
 
     @Override
     public List<Post> selectNewestPosts(Map<String, String> params) {
@@ -102,6 +105,10 @@ public class PostBrowseCommentService implements IPostBrowseCommentService {
         if (i == 0){
             throw new CustomException(ResultCode.CARE_ERROR);
         }
+        // 回关后自动成为好友，聊天限制立即解除
+        if (postDao.selectAttention(aid, uid) > 0) {
+            ensureMutualFriend(uid, aid);
+        }
         return true;
     }
 
@@ -145,5 +152,23 @@ public class PostBrowseCommentService implements IPostBrowseCommentService {
         List<Post> data = postDao.getSearchDatas(map);
         map.put("searchPosts",data);
         return map;
+    }
+
+    private void ensureMutualFriend(Integer userA, Integer userB) {
+        ensureSingleFriend(userA, userB);
+        ensureSingleFriend(userB, userA);
+    }
+
+    private void ensureSingleFriend(Integer userId, Integer friendId) {
+        if (userId == null || friendId == null || userId.equals(friendId)) {
+            return;
+        }
+        if (userFriendDao.countFriendDirectional(userId, friendId) > 0) {
+            return;
+        }
+        int updated = userFriendDao.activateFriendRelation(userId, friendId);
+        if (updated == 0) {
+            userFriendDao.insertAutoFriendRelation(userId, friendId);
+        }
     }
 }

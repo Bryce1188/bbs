@@ -125,7 +125,10 @@
 <script>
     (function () {
         var currentAppealType = "";
+<<<<<<< HEAD
         var canSubmitAppeal = false;
+=======
+>>>>>>> 65bc6cf (更新聊天功能 修复，但加好友和发送消息还有bug)
         var params = new URLSearchParams(window.location.search);
         var pid = parseInt(params.get("pid"), 10);
         var targetType = parseInt(params.get("type"), 10);
@@ -153,6 +156,7 @@
             }
         }
 
+<<<<<<< HEAD
         function checkAppealPermission(user) {
             if (!user || !user.id || isNaN(pid) || pid <= 0) {
                 canSubmitAppeal = false;
@@ -177,6 +181,8 @@
             });
         }
 
+=======
+>>>>>>> 65bc6cf (更新聊天功能 修复，但加好友和发送消息还有bug)
         $("#appealGrid").on("click", ".appeal-item", function () {
             $("#appealGrid .appeal-item").removeClass("active");
             $(this).addClass("active");
@@ -202,10 +208,13 @@
                 toast("请填写申诉说明");
                 return;
             }
+<<<<<<< HEAD
             if (!canSubmitAppeal) {
                 toast("该内容未被举报，或您不是被举报人，不能申诉");
                 return;
             }
+=======
+>>>>>>> 65bc6cf (更新聊天功能 修复，但加好友和发送消息还有bug)
             axios.post("/leek_bbs/bbs/postReport/executeReport", {
                 uid: user.id,
                 pid: pid,
@@ -235,8 +244,11 @@
         $("#goBack").on("click", function () {
             window.history.back();
         });
+<<<<<<< HEAD
 
         checkAppealPermission(getCurrentUser());
+=======
+>>>>>>> 65bc6cf (更新聊天功能 修复，但加好友和发送消息还有bug)
     })();
 </script>
 </body>

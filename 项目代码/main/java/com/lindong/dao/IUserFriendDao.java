@@ -28,6 +28,12 @@ public interface IUserFriendDao extends IBaseDao {
     /*检查是否有此好友请求*/
     Integer checkRequestFriend(Map map);
 
+    int countFriendDirectional(@Param("userId") Integer userId, @Param("friendId") Integer friendId);
+
+    int activateFriendRelation(@Param("userId") Integer userId, @Param("friendId") Integer friendId);
+
+    int insertAutoFriendRelation(@Param("userId") Integer userId, @Param("friendId") Integer friendId);
+
     /**
      * 更新好友状态
      * @param params

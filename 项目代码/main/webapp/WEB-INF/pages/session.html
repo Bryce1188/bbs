@@ -12,6 +12,17 @@
             height: 250px;
             overflow-x: hidden;
             overflow-y: auto;
+            scrollbar-gutter: stable;
+        }
+        .m-message::-webkit-scrollbar{
+            width: 8px;
+        }
+        .m-message::-webkit-scrollbar-thumb{
+            background: rgba(17,24,39,.28);
+            border-radius: 6px;
+        }
+        .m-message::-webkit-scrollbar-track{
+            background: rgba(229,231,235,.55);
         }
         .text {
             display: inline-block;

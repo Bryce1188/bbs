@@ -54,5 +54,34 @@
         select * from friend_group where user_id = #{userId}
     </select>
 
+    <select id="countFriendDirectional" resultType="int">
+        select count(*)
+        from user_friend
+        where user_id = #{userId}
+          and friend_id = #{friendId}
+          and status = '1'
+    </select>
+
+    <update id="activateFriendRelation">
+        update user_friend
+        set status = '1',
+            group_id = ifnull(group_id, (select fg.group_id from friend_group fg where fg.user_id = #{userId} order by fg.group_id asc limit 1)),
+            postscript = ifnull(postscript, '系统自动建联')
+        where user_id = #{userId}
+          and friend_id = #{friendId}
+    </update>
+
+    <insert id="insertAutoFriendRelation">
+        insert into user_friend(user_id, friend_id, group_id, status, apply_time, postscript)
+        values (
+            #{userId},
+            #{friendId},
+            (select fg.group_id from friend_group fg where fg.user_id = #{userId} order by fg.group_id asc limit 1),
+            '1',
+            now(),
+            '系统自动建联'
+        )
+    </insert>
+
 
 </mapper>

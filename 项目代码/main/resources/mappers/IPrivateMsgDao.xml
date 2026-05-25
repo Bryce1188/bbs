@@ -31,6 +31,69 @@
           and pm.tar_deleted = 0
     </select>
 
+    <select id="listConversations" parameterType="map" resultType="map">
+        select
+            c.peer_id as peerId,
+            u.username,
+            u.another_name as anotherName,
+            u.picture,
+            m.id as lastMsgId,
+            m.content as lastContent,
+            m.msg_time as lastTime,
+            case when m.src_user_id = #{userId} then 1 else 0 end as fromSelf,
+            ifnull(unread.unreadCount, 0) as unreadCount
+        from (
+            select distinct
+                case when pm.src_user_id = #{userId} then pm.tar_user_id else pm.src_user_id end as peer_id
+            from private_msg pm
+            where (pm.src_user_id = #{userId} and pm.src_deleted = 0)
+               or (pm.tar_user_id = #{userId} and pm.tar_deleted = 0)
+        ) c
+        join private_msg m
+            on (
+                (
+                    (m.src_user_id = #{userId} and m.tar_user_id = c.peer_id and m.src_deleted = 0)
+                    or
+                    (m.src_user_id = c.peer_id and m.tar_user_id = #{userId} and m.tar_deleted = 0)
+                )
+                and not exists (
+                    select 1
+                    from private_msg nx
+                    where (
+                        (nx.src_user_id = #{userId} and nx.tar_user_id = c.peer_id and nx.src_deleted = 0)
+                        or
+                        (nx.src_user_id = c.peer_id and nx.tar_user_id = #{userId} and nx.tar_deleted = 0)
+                    )
+                    and (
+                        nx.msg_time > m.msg_time
+                        or (nx.msg_time = m.msg_time and nx.id > m.id)
+                    )
+                )
+            )
+        left join user u on u.id = c.peer_id
+        left join (
+            select src_user_id as peer_id, count(*) as unreadCount
+            from private_msg
+            where tar_user_id = #{userId}
+              and tar_deleted = 0
+              and is_read = 0
+            group by src_user_id
+        ) unread on unread.peer_id = c.peer_id
+        order by m.msg_time desc, m.id desc
+        limit #{index}, #{pageSize}
+    </select>
+
+    <select id="countConversations" parameterType="map" resultType="int">
+        select count(1)
+        from (
+            select distinct
+                case when pm.src_user_id = #{userId} then pm.tar_user_id else pm.src_user_id end as peer_id
+            from private_msg pm
+            where (pm.src_user_id = #{userId} and pm.src_deleted = 0)
+               or (pm.tar_user_id = #{userId} and pm.tar_deleted = 0)
+        ) t
+    </select>
+
     <select id="listSession" parameterType="map" resultType="map">
         select
             pm.id,
@@ -87,6 +150,13 @@
         )
     </insert>
 
+    <select id="countDirectionalMessages" resultType="int">
+        select count(*)
+        from private_msg
+        where src_user_id = #{srcUserId}
+          and tar_user_id = #{tarUserId}
+    </select>
+
     <update id="markSessionRead" parameterType="map">
         update private_msg
         set is_read = 1
@@ -111,6 +181,36 @@
           and is_read = 0
           and tar_deleted = 0
     </select>
+
+    <update id="markConversationUnread" parameterType="map">
+        update private_msg
+        set is_read = 0
+        where id = (
+            select id from (
+                select pm.id
+                from private_msg pm
+                where pm.src_user_id = #{peerId}
+                  and pm.tar_user_id = #{userId}
+                  and pm.tar_deleted = 0
+                order by pm.msg_time desc, pm.id desc
+                limit 1
+            ) x
+        )
+    </update>
+
+    <update id="hideConversationAsReceiver" parameterType="map">
+        update private_msg
+        set tar_deleted = 1
+        where tar_user_id = #{userId}
+          and src_user_id = #{peerId}
+    </update>
+
+    <update id="hideConversationAsSender" parameterType="map">
+        update private_msg
+        set src_deleted = 1
+        where src_user_id = #{userId}
+          and tar_user_id = #{peerId}
+    </update>
 
     <update id="deleteAsReceiver" parameterType="map">
         update private_msg
@@ -148,4 +248,3 @@
         select null
     </select>
 </mapper>
-

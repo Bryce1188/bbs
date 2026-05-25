@@ -66,6 +66,7 @@ public enum ResultCode {
     //好友
     AGREE_ERROR("600033","好友添加失败"),
     FRIEND_APPLY_FILED("600001","您已发送过申请,请不要重复提交"),
+    CHAT_WAIT_REPLY("600102","你已经发过一条啦，等对方回复后再继续聊天"),
 
     //系统未知异常 0x100
     UNKNOWN_ERROR("0x10001", "系统发生了一个未知错误");
