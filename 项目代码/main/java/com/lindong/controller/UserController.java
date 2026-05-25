@@ -48,7 +48,7 @@ public class UserController {
         System.out.println("===="+username+"==="+password+"==="+vCode+"======"+last_login_ip);
         //CodeMsg codeMsg = null;
         //验证码忽略大小写进行判断
-        if (imgCode.equalsIgnoreCase(vCode)){
+        if (imgCode != null && vCode != null && imgCode.equalsIgnoreCase(vCode)){
             Map<String,String> param = new HashMap<>();
             param.put("username",username);
             param.put("password",password);
@@ -66,7 +66,7 @@ public class UserController {
     public ApiResult register(@RequestBody(required = true) Map map, HttpServletRequest request){
         String imgCode = (String)map.get("imgCode");
         String vCode = (String) request.getSession().getAttribute("vImgCode");
-        if (imgCode.equalsIgnoreCase(vCode)){
+        if (imgCode != null && vCode != null && imgCode.equalsIgnoreCase(vCode)){
             User byNameUser = userService.findByName((String)map.get("username"));
             if (byNameUser != null){
                 throw new CustomException(ResultCode.USER_EXIST);

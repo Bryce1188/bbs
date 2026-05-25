@@ -1,6 +1,12 @@
 -- Patch missing schema objects required by application mappers.
 USE bbs;
 
+ALTER TABLE `user`
+    MODIFY COLUMN `username` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '账号',
+    MODIFY COLUMN `email` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '邮箱',
+    MODIFY COLUMN `register_ip` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '注册ip',
+    MODIFY COLUMN `last_login_ip` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '最后登录ip';
+
 SET @has_profession := (
     SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_SCHEMA = 'bbs' AND TABLE_NAME = 'user' AND COLUMN_NAME = 'profession'

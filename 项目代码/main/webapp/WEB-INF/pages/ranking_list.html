@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/leek_bbs/statics/yu-ui/js_css/yu.css">
     <link rel="stylesheet" href="/leek_bbs/statics/layui/css/layui.css">
     <link rel="stylesheet" href="/leek_bbs/statics/bootstrap-3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/leek_bbs/statics/css/head.css?v=20260525h">
+    <link rel="stylesheet" href="/leek_bbs/statics/css/head.css?v=20260525j">
     <style>
         .numberOn{
             color: #fff;
@@ -178,6 +178,67 @@
             background: #141922 !important;
             border-color: #141922 !important;
             color: #fff !important;
+        }
+        .rank-layout{
+            align-items: stretch;
+            display: flex;
+            gap: 30px;
+        }
+        .rank-layout:before,
+        .rank-layout:after{
+            content: none;
+        }
+        .rank-sidebar,
+        .rank-main-panel{
+            border: 1px solid #e5e5e5;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        .rank-sidebar{
+            flex: 0 0 240px;
+            padding-bottom: 20px;
+        }
+        .rank-main-panel{
+            flex: 1 1 auto;
+            margin-left: 0 !important;
+            min-height: 472px;
+        }
+        .rank-sidebar .row{
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .rank-sidebar h4{
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            padding: 20px 22px;
+        }
+        .rank-sidebar h5{
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            padding: 16px 22px;
+        }
+        #rankApp .rank-sidebar .m-hover-bg,
+        #rankApp .rank-sidebar .m-active{
+            border-radius: 0 !important;
+        }
+        #rankApp .rank-sidebar .m-hover-bg:hover{
+            background-color: #f3f3f3 !important;
+            border-left: 2px solid #ff6f3d !important;
+            color: #111827 !important;
+        }
+        #rankApp .rank-sidebar .m-active{
+            background-color: #ffffff !important;
+            border-left: 2px solid #ff6f3d !important;
+            color: #111827 !important;
+        }
+        #rankApp .rank-sidebar .m-hover-bg:hover a,
+        #rankApp .rank-sidebar .m-active a{
+            color: #111827 !important;
+        }
+        .rank-main-panel .layui-tab{
+            max-width: none !important;
         }
         .bbs-nav{
             align-items: center;
@@ -352,14 +413,14 @@
             </span>
            <!-- <span style="float: right;"><a href="javascript:;">我的收藏</a></span>-->
         </div>
-        <div class="row" style="margin-top: 20px;">
-            <div class="col-sm-2" style="padding-bottom:20px;border: 1px solid #e5e5e5;background-color: #fff;">
+        <div class="row rank-layout" style="margin-top: 20px;">
+            <div class="rank-sidebar">
                 <div class="row" style="border-bottom: 1px solid #e5e5e5;"><h4>排行榜</h4></div>
                 <div class="row m-hover-bg m-active" id="userBtn"><h5><a href="javascript:;">用户</a></h5></div>
                 <div class="row m-hover-bg" id="postsBtn"><h5><a href="javascript:;">帖子</a></h5></div>
                 <div class="row m-hover-bg" id="plateBtn"><h5><a href="javascript:;">板块</a></h5></div>
             </div>
-            <div class="col-sm-9" style="margin-left:30px;border: 1px solid #e5e5e5;background-color: #fff;">
+            <div class="rank-main-panel">
                 <div class="layui-tab" id="tab-user" lay-filter="tabUser"style="max-width: 840px">
                     <ul class="layui-tab-title">
                         <li class="layui-this">积分排行</li>
