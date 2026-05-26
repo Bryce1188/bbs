@@ -30,7 +30,7 @@
         <where>
             pr.uid=u.id
             <if test="rp_type != null and rp_type != ''">
-                and pr.rp_type like CONCAT('%',#{rp_type},'%')
+                and pr.rp_type = #{rp_type}
             </if>
             <if test="r_status != null and r_status != ''">
                 and pr.r_status like CONCAT('%',#{r_status},'%')
@@ -148,6 +148,15 @@
     <!-- 查询回帖作者uid -->
     <select id="getPostDetailsOwnerId" parameterType="int" resultType="int">
         select pd_uid from post_details where pid=#{pid} limit 1
+    </select>
+
+    <!-- 查询用户是否拥有该内容的下架申诉通知 -->
+    <select id="countAppealNotice" resultType="int">
+        select count(*)
+        from sys_warn
+        where uid=#{uid}
+          and title='内容下架通知'
+          and content like CONCAT('%[APPEAL:pid=', #{pid}, ',type=', #{rpType}, ']%')
     </select>
 
 </mapper>

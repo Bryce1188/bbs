@@ -183,6 +183,20 @@
             height: 80px !important;
             background: #f8fafc;
         }
+        .appeal-action-btn{
+            display: inline-block;
+            margin-top: 8px;
+            border-radius: 8px;
+            background: #111827;
+            color: #fff !important;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .appeal-action-btn:hover{
+            color: #fff !important;
+            opacity: .86;
+        }
         #layer-3 .m-btn{
             display: flex;
             justify-content: flex-end;
@@ -316,8 +330,9 @@
                                         <span style="font-size: 14px;opacity: 1">{{item.title}}</span>&emsp;
                                         <span style="font-size: 12px;">{{item.w_time | formDate}}</span>
                                         <h5 style="font-size: 13px">
-                                            {{item.content}}
+                                            {{cleanWarnContent(item.content)}}
                                         </h5>
+                                        <a v-if="getAppealMeta(item.content)" class="appeal-action-btn" href="javascript:;" @click="openAppealFromWarn(item)">申诉</a>
                                     </div>
                                     <div class="col-sm-2"><a href="javascript:;" style="margin-left: 25px;line-height: 54px;" @click="deleteCollects(item.id)">删除</a></div>
                                 </div>
@@ -577,6 +592,26 @@
                     ui.alert("获取数据失败",1500,true);
                     console.log(error);
                 })
+            },
+            getAppealMeta(content){
+                var match = String(content || '').match(/\[APPEAL:pid=(\d+),type=(\d+)\]/);
+                if (!match) {
+                    return null;
+                }
+                return {
+                    pid: match[1],
+                    type: match[2]
+                };
+            },
+            cleanWarnContent(content){
+                return String(content || '').replace(/\s*\[APPEAL:pid=\d+,type=\d+\]/, '');
+            },
+            openAppealFromWarn(item){
+                var meta = this.getAppealMeta(item && item.content);
+                if (!meta) {
+                    return;
+                }
+                window.location.href = '/leek_bbs/skipPage/post-appeal?pid=' + meta.pid + '&type=' + meta.type;
             },
             checkAll(){
                 this.collectIds = [];

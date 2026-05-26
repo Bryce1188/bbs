@@ -64,4 +64,9 @@ public interface IPostReportDao extends IBaseDao{
      */
     Integer getPostDetailsOwnerId(@Param("pid") Integer pid);
 
+    /**
+     * 查询用户是否收到了指定内容的下架申诉通知
+     */
+    int countAppealNotice(@Param("uid") Integer uid, @Param("pid") Integer pid, @Param("rpType") Integer rpType);
+
 }

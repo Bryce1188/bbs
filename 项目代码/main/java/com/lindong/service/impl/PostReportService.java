@@ -61,18 +61,27 @@ public class PostReportService implements IPostReportService {
     @Transactional(rollbackFor=CustomException.class)
     @Override
     public boolean disposeReport(Map<String, Object> params) {
-        //params.put("rp_type",1);
         int id = Integer.parseInt(params.get("id").toString());
         int i1 = reportDao.alterPostReport(id);
-        int i2 = reportDao.insertWarnList(params);
-
-        if (i1 == 0 || i2 == 0){
+        if (i1 == 0){
             throw new CustomException(ResultCode.REPORT_DISPOSE_ERROR);
         }
-        if (params.get("digit").equals("1")){     //举报通过,对举报数据进行处理
+        String rpType = params.get("rp_type").toString();
+        boolean approved = params.get("digit").equals("1");
+        if (approved && (rpType.equals("1") || rpType.equals("2"))){     //举报通过,对举报数据进行处理
+            Integer pid = Integer.parseInt(params.get("pid").toString());
+            Integer ownerId = rpType.equals("1") ? reportDao.getPostOwnerId(pid) : reportDao.getPostDetailsOwnerId(pid);
+            if (ownerId == null){
+                throw new CustomException(ResultCode.REPORT_DISPOSE_ERROR);
+            }
+            String reason = params.get("r_type") == null ? "违规内容" : params.get("r_type").toString();
+            String targetName = rpType.equals("1") ? "主题" : "回帖";
+            params.put("uid", ownerId);
+            params.put("title", "内容下架通知");
+            params.put("content", "你的" + targetName + "因“" + reason + "”被举报，管理员审核通过后已下架。如你认为处理有误，可以在本通知中提交申诉。 [APPEAL:pid=" + pid + ",type=" + rpType + "]");
             List<Integer> ids = new ArrayList<>();
-            if (params.get("rp_type").toString().equals("1")){       //对主题数据进行处理
-                ids.add(Integer.parseInt(params.get("pid").toString()));
+            if (rpType.equals("1")){       //对主题数据进行处理
+                ids.add(pid);
                 Map<String,Object> map = new HashMap();
                 map.put("ids",ids);
                 map.put("post_status","0");
@@ -81,12 +90,16 @@ public class PostReportService implements IPostReportService {
                     throw new CustomException(ResultCode.REPORT_DISPOSE_ERROR);
                 }
             }else{                      //对帖子数据进行处理
-                ids.add(Integer.parseInt(params.get("pid").toString()));
+                ids.add(pid);
                 int i = postsDetailsManageDao.deletePostsDetails(ids);
                 if (i == 0){
                     throw new CustomException(ResultCode.REPORT_DISPOSE_ERROR);
                 }
             }
+        }
+        int i2 = reportDao.insertWarnList(params);
+        if (i2 == 0){
+            throw new CustomException(ResultCode.REPORT_DISPOSE_ERROR);
         }
         return true;
     }
@@ -140,17 +153,6 @@ public class PostReportService implements IPostReportService {
             return false;
         }
 
-        int reportCount = reportDao.countBaseReport(pid, baseType);
-        if (reportCount <= 0) {
-            return false;
-        }
-
-        Integer ownerId;
-        if (baseType == 1) {
-            ownerId = reportDao.getPostOwnerId(pid);
-        } else {
-            ownerId = reportDao.getPostDetailsOwnerId(pid);
-        }
-        return ownerId != null && ownerId.equals(uid);
+        return reportDao.countAppealNotice(uid, pid, baseType) > 0;
     }
 }

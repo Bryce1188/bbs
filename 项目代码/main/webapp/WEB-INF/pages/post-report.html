@@ -115,7 +115,6 @@
 
     <div class="report-actions">
         <button id="submitReport" class="layui-btn">提交举报</button>
-        <button id="toAppeal" class="layui-btn layui-btn-primary">去申诉</button>
         <button id="goBack" class="layui-btn layui-btn-primary">返回</button>
     </div>
     <div class="hint">举报记录会进入后台“举报管理”列表，由管理员审核处理。</div>
@@ -191,11 +190,6 @@
             }).catch(function () {
                 toast("请求异常，请稍后重试");
             });
-        });
-
-        $("#toAppeal").on("click", function () {
-            var q = "?pid=" + (isNaN(pid) ? "" : pid) + "&type=" + targetType;
-            window.location.href = "/leek_bbs/skipPage/post-appeal" + q;
         });
 
         $("#goBack").on("click", function () {
