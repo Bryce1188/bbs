@@ -51,7 +51,7 @@ Vue.component('head_menu_comp', {
     template: `<header class="bbs-topbar">
         <div class="bbs-topbar-inner">
             <a class="bbs-brand" :href="ctx + '/skipPage/index'">
-                <img class="bbs-brand-logo" :src="ctx + '/statics/images/pulse_forum_logo.png?v=20260526a'" alt="Pulse Forum">
+                <img class="bbs-brand-logo" :src="ctx + '/statics/images/unitalk_logo.svg?v=20260526a'" alt="UniTalk">
             </a>
             <nav class="bbs-topnav">
                 <a :href="ctx + '/skipPage/index'">首页</a>
