@@ -90,6 +90,22 @@ CREATE TABLE IF NOT EXISTS `user_friend` (
     KEY `idx_user_friend_group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
+CREATE TABLE IF NOT EXISTS `private_msg` (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `src_user_id` int NOT NULL,
+    `tar_user_id` int NOT NULL,
+    `content` text,
+    `img` varchar(255) NULL DEFAULT NULL,
+    `msg_time` bigint NOT NULL,
+    `is_read` tinyint(1) NOT NULL DEFAULT 0,
+    `src_deleted` tinyint(1) NOT NULL DEFAULT 0,
+    `tar_deleted` tinyint(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    KEY `idx_pm_src_tar_time` (`src_user_id`, `tar_user_id`, `msg_time`),
+    KEY `idx_pm_tar_src_time` (`tar_user_id`, `src_user_id`, `msg_time`),
+    KEY `idx_pm_tar_unread` (`tar_user_id`, `is_read`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
 CREATE TABLE IF NOT EXISTS `grade` (
     `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(32) NULL DEFAULT NULL,
@@ -212,6 +228,16 @@ SET @root_id := (SELECT `id` FROM `user` WHERE `username` = 'root' LIMIT 1);
 SET @ljj_id := (SELECT `id` FROM `user` WHERE `username` = 'ljj' LIMIT 1);
 SET @lp_id := (SELECT `id` FROM `user` WHERE `username` = 'lp' LIMIT 1);
 SET @xzr_id := (SELECT `id` FROM `user` WHERE `username` = 'xzr' LIMIT 1);
+
+INSERT INTO `private_msg` (`src_user_id`, `tar_user_id`, `content`, `img`, `msg_time`, `is_read`, `src_deleted`, `tar_deleted`)
+SELECT @ljj_id, @lp_id, '你好，我先去看会话列表接口。', 'statics/images/01_small.gif', ROUND(UNIX_TIMESTAMP(NOW(3)) * 1000) - 4800000, 1, 0, 0
+WHERE @ljj_id IS NOT NULL AND @lp_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `private_msg` LIMIT 1);
+INSERT INTO `private_msg` (`src_user_id`, `tar_user_id`, `content`, `img`, `msg_time`, `is_read`, `src_deleted`, `tar_deleted`)
+SELECT @lp_id, @ljj_id, '收到，我正在排查。', 'statics/images/01_small.gif', ROUND(UNIX_TIMESTAMP(NOW(3)) * 1000) - 4200000, 1, 0, 0
+WHERE @ljj_id IS NOT NULL AND @lp_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `private_msg` WHERE `src_user_id` = @lp_id AND `tar_user_id` = @ljj_id);
+INSERT INTO `private_msg` (`src_user_id`, `tar_user_id`, `content`, `img`, `msg_time`, `is_read`, `src_deleted`, `tar_deleted`)
+SELECT @ljj_id, @lp_id, '对，发送后要立刻本地回显。', 'statics/images/01_small.gif', ROUND(UNIX_TIMESTAMP(NOW(3)) * 1000) - 3600000, 1, 0, 0
+WHERE @ljj_id IS NOT NULL AND @lp_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM `private_msg` WHERE `src_user_id` = @ljj_id AND `tar_user_id` = @lp_id AND `content` = '对，发送后要立刻本地回显。');
 
 -- Keep real user data. The launcher must not wipe forum activity on every start.
 -- Seed only missing demo records, then recompute counters from real detail tables.
