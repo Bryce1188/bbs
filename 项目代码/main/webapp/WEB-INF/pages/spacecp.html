@@ -448,6 +448,11 @@
             border-radius: 14px;
             border-color: #cbd5e1;
             background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
         #pictureUpload:hover {
             border-color: #111827;
@@ -455,12 +460,13 @@
         #pictureUpload .layui-icon {
             color: #111827;
             font-size: 56px;
-            margin-top: 24px;
+            margin-top: 0;
         }
         #pictureUpload p {
             color: #334155;
             font-size: 15px;
             font-weight: 600;
+            margin: 12px auto 0;
         }
         .security-form-wrap {
             max-width: 520px;
@@ -473,9 +479,10 @@
             width: 350px !important;
         }
         .security-form-wrap .layui-form-label {
-            width: 88px;
+            width: 98px;
             color: #1f2937;
             font-weight: 600;
+            white-space: nowrap;
         }
         .security-actions {
             padding-top: 8px;
