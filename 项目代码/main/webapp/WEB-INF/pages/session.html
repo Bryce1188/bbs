@@ -7,12 +7,20 @@
     <link rel="stylesheet" href="/leek_bbs/statics/layui/css/layui.css">
     <link rel="stylesheet" href="/leek_bbs/statics/bootstrap-3.3.7/css/bootstrap.min.css">
     <style lang="less">
+        html,body{
+            height: 100%;
+            margin: 0;
+            background: #ffffff;
+        }
         .m-message {
-            padding: 10px 15px;
-            height: 250px;
+            padding: 10px 14px 12px;
+            height: 100%;
+            box-sizing: border-box;
             overflow-x: hidden;
             overflow-y: auto;
             scrollbar-gutter: stable;
+            background: #ffffff;
+            font-family: "Microsoft YaHei","PingFang SC",sans-serif;
         }
         .m-message::-webkit-scrollbar{
             width: 8px;
@@ -27,66 +35,79 @@
         .text {
             display: inline-block;
             position: relative;
-            padding: 0 10px;
-            max-width: 360px;
-            min-height: 30px;
-            line-height: 2.5;
-            font-size: 12px;
+            padding: 10px 14px;
+            max-width: 72%;
+            min-height: 24px;
+            line-height: 1.45;
+            font-size: 14px;
             text-align: left;
             word-break: break-all;
-            background-color: #e2e2e2;
-            border-radius: 4px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            vertical-align: top;
 
         }
         .m-message ul{
             padding-left: 0;
         }
+        .sys-tip{
+            margin: 10px auto 6px;
+            color: #6b7280;
+            font-size: 13px;
+            text-align: center;
+            max-width: 92%;
+            line-height: 1.8;
+        }
         ul li {
             list-style: none;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .time {
-            margin: 7px 0;
+            margin: 8px 0 10px;
             text-align: center;
         }
         .time > span {
             display: inline-block;
-            padding: 0 18px;
+            padding: 1px 12px;
             font-size: 12px;
             color: #fff;
-            border-radius: 2px;
+            border-radius: 3px;
             background-color: #dcdcdc;
         }
         .avatar {
             float: left;
-            margin: 0 10px 0 0;
+            margin: 0 8px 0 0;
             border-radius: 3px;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
         }
         .text:before {
             content: " ";
             position: absolute;
-            top: 9px;
+            top: 12px;
             right: 100%;
             border: 6px solid transparent;
-            border-right-color: #fafafa;
+            border-right-color: #ffffff;
         }
         .self {
             text-align: right;
         }
         .self .avatar {
             float: right;
-            margin: 0 0 0 10px;
+            margin: 0 0 0 8px;
         }
         .self .text {
             /*background-color: #b2e281;*/
-            background-color: #5FB878;
+            background-color: #95ec69;
+            color: #111827;
         }
 
         .self .text:before {
             right: inherit;
             left: 100%;
             border-right-color: transparent;
-            border-left-color: #b2e281;
+            border-left-color: #95ec69;
         }
 
     </style>
@@ -97,10 +118,11 @@
     <audio id="audioPlay" src="/leek_bbs/statics/mp3/liaotian.mp3" hidden></audio>
     <ul v-if="isShowMessage"><!--v-for-start-->
         <li v-for="item in messageList">
-            <p class="time">
-                <span>{{item.time | formDate}}</span>
+            <p class="time" v-if="!item.isSystemTip && item.showTime">
+                <span>{{item.timeLabel}}</span>
             </p>
-            <div :class="[{ self: judgeOneself(item.srcUser.userId) }]"><img class="avatar" width="30" height="30" :src="'/leek_bbs/'+item.img">
+            <p class="sys-tip" v-if="item.isSystemTip">{{item.content}}</p>
+            <div v-if="!item.isSystemTip" :class="[{ self: judgeOneself(item.srcUser.userId) }]"><img class="avatar" width="30" height="30" :src="'/leek_bbs/'+item.img">
                 <div class="text" v-html="item.content"></div>
             </div>
         </li>
@@ -114,16 +136,12 @@
     let tId;
     let loginUid;
     let messageList=[];
+    const CHAT_TIME_GAP_MS = 2 * 60 * 1000;
     layui.define(['layer','util'],function (exports) {
-       let util = layui.util,
-           layer = layui.layer;
+       let layer = layui.layer;
         let index = layer.load();
 
         tId = parent.window.getId();
-
-       exports('formDate',function (date) {
-           return util.timeAgo(date, true);
-       });
         exports('closeLay',function () {
             layer.close(index);
         })
@@ -156,16 +174,16 @@
                         peerId: tId
                     }).then((response)=>{
                         let list = (response.data && response.data.data) ? response.data.data : [];
-                        this.messageList = list.map(function (item) {
-                            return {
+                        this.messageList = buildChatMessageList(list.map(function (item) {
+                            return enrichMessageRow({
                                 id: item.id,
                                 srcUser: {userId: item.srcUserId},
                                 tarUser: {userId: item.tarUserId},
                                 img: item.img || item.srcPicture,
                                 time: item.time,
                                 content: item.content
-                            };
-                        });
+                            });
+                        }));
                         return axios.post('/leek_bbs/bbs/privateMsg/markSessionRead',{
                             userId: loginUid,
                             peerId: tId
@@ -181,11 +199,6 @@
             },
             updated(){
                 loadBottom();
-            },
-            filters:{
-                formDate(val){
-                    return layui.formDate(val);
-                }
             }
         });
     },200);
@@ -195,17 +208,117 @@
 
     //将消息添加到页面
     function sendMessage(data,loginUserId) {
-        chatSession.messageList.push(data);
+        if (!data) {
+            return;
+        }
+        var duplicated = chatSession && chatSession.messageList && chatSession.messageList.some(function (item) {
+            if (!item) {
+                return false;
+            }
+            if (data.clientMsgId && item.clientMsgId) {
+                return item.clientMsgId === data.clientMsgId;
+            }
+            var itemSrc = item.srcUser && item.srcUser.userId ? item.srcUser.userId : '';
+            var itemTar = item.tarUser && item.tarUser.userId ? item.tarUser.userId : '';
+            var dataSrc = data.srcUser && data.srcUser.userId ? data.srcUser.userId : '';
+            var dataTar = data.tarUser && data.tarUser.userId ? data.tarUser.userId : '';
+            return String(itemSrc) === String(dataSrc)
+                && String(itemTar) === String(dataTar)
+                && String(item.time || '') === String(data.time || '')
+                && String(item.content || '') === String(data.content || '');
+        });
+        if (duplicated) {
+            return;
+        }
+        chatSession.messageList.push(enrichMessageRow(data));
+        updateMessageTimeFlags(chatSession.messageList);
         if (data.srcUser.userId != loginUserId){
             let player = document.getElementById("audioPlay");
             player.play();
         }
     }
 
+    function appendSystemTip(text) {
+        if (!chatSession || !text) {
+            return;
+        }
+        chatSession.messageList.push({
+            id: "tip_" + Date.now(),
+            srcUser: {userId: 0},
+            tarUser: {userId: 0},
+            img: "",
+            time: Date.now(),
+            content: text,
+            isSystemTip: true,
+            showTime: false,
+            timeLabel: ""
+        });
+    }
+
     // 聊天定位到底部
     function loadBottom() {
         let ele = document.getElementById('messageApp');
         ele.scrollTop = ele.scrollHeight;
+    }
+
+    function buildChatMessageList(list) {
+        if (!Array.isArray(list)) {
+            return [];
+        }
+        let normalized = list.map(enrichMessageRow);
+        updateMessageTimeFlags(normalized);
+        return normalized;
+    }
+
+    function enrichMessageRow(item) {
+        if (!item) {
+            return item;
+        }
+        let ts = Number(item.time || Date.now());
+        if (!Number.isFinite(ts)) {
+            ts = Date.now();
+        }
+        item.time = ts;
+        item.showTime = false;
+        item.timeLabel = formatChatTime(ts);
+        return item;
+    }
+
+    function updateMessageTimeFlags(list) {
+        let lastVisibleTs = null;
+        for (let i = 0; i < list.length; i++) {
+            const cur = list[i];
+            if (!cur || cur.isSystemTip) {
+                continue;
+            }
+            if (lastVisibleTs == null || Math.abs(cur.time - lastVisibleTs) >= CHAT_TIME_GAP_MS) {
+                cur.showTime = true;
+                cur.timeLabel = formatChatTime(cur.time);
+                lastVisibleTs = cur.time;
+            } else {
+                cur.showTime = false;
+            }
+        }
+    }
+
+    function pad2(num) {
+        return num < 10 ? "0" + num : String(num);
+    }
+
+    function formatChatTime(ts) {
+        const d = new Date(ts);
+        const now = new Date();
+        const hhmm = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const msgDayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+        const dayDiff = Math.floor((todayStart - msgDayStart) / (24 * 60 * 60 * 1000));
+        if (dayDiff <= 0) {
+            return hhmm;
+        }
+        if (dayDiff === 1) {
+            return "昨天 " + hhmm;
+        }
+        return pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " + hhmm;
     }
     
 </script>

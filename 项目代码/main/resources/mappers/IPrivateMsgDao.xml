@@ -157,6 +157,36 @@
           and tar_user_id = #{tarUserId}
     </select>
 
+    <select id="countDirectionalMessagesSince" resultType="int">
+        select count(*)
+        from private_msg
+        where src_user_id = #{srcUserId}
+          and tar_user_id = #{tarUserId}
+          and msg_time >= #{sinceTime}
+    </select>
+
+    <select id="countDistinctUnrepliedStrangersContactedSince" resultType="int">
+        select count(distinct pm.tar_user_id)
+        from private_msg pm
+        where pm.src_user_id = #{srcUserId}
+          and pm.msg_time >= #{sinceTime}
+          and not exists (
+              select 1 from attention a
+              where a.uid = #{srcUserId}
+                and a.aid = pm.tar_user_id
+          )
+          and not exists (
+              select 1 from attention a
+              where a.uid = pm.tar_user_id
+                and a.aid = #{srcUserId}
+          )
+          and not exists (
+              select 1 from private_msg r
+              where r.src_user_id = pm.tar_user_id
+                and r.tar_user_id = #{srcUserId}
+          )
+    </select>
+
     <update id="markSessionRead" parameterType="map">
         update private_msg
         set is_read = 1

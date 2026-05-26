@@ -81,6 +81,10 @@
             min-width: 0;
         }
         .rank-user-name{
+            color: #111827 !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            line-height: 1.25 !important;
             font-weight: bold;
             margin: 0;
         }
@@ -447,7 +451,7 @@
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                        <a :href="personalUrl(integral)" :title="'进入'+integral.another_name+'空间'"><img :src="'/leek_bbs/'+integral.picture" class="img-circle rank-avatar"></a>
+                                        <a :href="personalUrl(integral)" :title="'进入'+displayUserName(integral)+'空间'"><img :src="'/leek_bbs/'+integral.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
                                             <p class="rank-user-name">{{displayUserName(integral)}}</p>
                                             <p class="rank-user-extra">积分数:<em>{{integral.integral.total_integral}}</em></p>
@@ -470,7 +474,7 @@
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px"><em>{{index+1>9?index+1:(index+1)}}</em></span>
-                                        <a :href="personalUrl(essay)" :title="'进入'+essay.another_name+'空间'"><img :src="'/leek_bbs/'+essay.picture" class="img-circle rank-avatar"></a>
+                                        <a :href="personalUrl(essay)" :title="'进入'+displayUserName(essay)+'空间'"><img :src="'/leek_bbs/'+essay.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
                                             <p class="rank-user-name">{{displayUserName(essay)}}</p>
                                             <p class="rank-user-extra">发帖数:<em>{{essay.posts}}</em></p>
@@ -493,7 +497,7 @@
                                 <div class="col-sm-8">
                                     <div class="rank-user-card">
                                         <span :class="(index <= 2) ? 'numberOn':'number'" style="padding-left:4px;padding-right: 4px">{{index+1>9?index+1:(index+1)}}</span>
-                                        <a :href="personalUrl(experience)" :title="'进入'+experience.another_name+'空间'"><img :src="'/leek_bbs/'+experience.picture" class="img-circle rank-avatar"></a>
+                                        <a :href="personalUrl(experience)" :title="'进入'+displayUserName(experience)+'空间'"><img :src="'/leek_bbs/'+experience.picture" class="img-circle rank-avatar"></a>
                                         <div class="rank-user-meta">
                                             <p class="rank-user-name">{{displayUserName(experience)}}</p>
                                             <p class="rank-user-extra">经验数:<em>{{experience.total_experience}}</em></p>
@@ -864,7 +868,15 @@
                 if (!user) {
                     return "匿名用户";
                 }
-                return user.another_name || user.username || ("用户" + (this.resolveUserId(user) || ""));
+                var name = user.another_name || user.anotherName || user.username || user.userName;
+                if (name != null) {
+                    name = String(name).trim();
+                }
+                if (name && name !== "null" && name !== "undefined") {
+                    return name;
+                }
+                var uid = this.resolveUserId(user);
+                return uid ? ("用户" + uid) : "匿名用户";
             },
             personalUrl: function (user) {
                 var userId = user;

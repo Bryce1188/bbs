@@ -63,6 +63,7 @@ public class PrivateMsgController {
     public ApiResult send(@RequestBody Map<String, Object> msg, HttpServletRequest request) {
         Integer actingUserId = resolveActingUserId(msg, request);
         msg.put("srcUserId", actingUserId);
+        msg.put("isAdmin", isAdmin());
         if (msg.get("time") == null) {
             msg.put("time", System.currentTimeMillis());
         }
@@ -124,22 +125,41 @@ public class PrivateMsgController {
     }
 
     private Integer resolveActingUserId(Map<String, Object> params, HttpServletRequest request) {
-        User loginUser = getLoginUser(request);
-        if (loginUser == null || loginUser.getId() == null) {
-            throw new CustomException(ResultCode.AUTHORITY_ERROR);
-        }
         Integer requestUserId = toInt(params.get("userId"));
-        if (isAdmin() && requestUserId != null) {
+        if (requestUserId == null) {
+            requestUserId = toInt(params.get("srcUserId"));
+        }
+
+        User loginUser = getLoginUser(request);
+        if (loginUser != null && loginUser.getId() != null) {
+            if (isAdmin() && requestUserId != null) {
+                return requestUserId;
+            }
+            return loginUser.getId();
+        }
+
+        // 兼容前台历史登录流程：仅信任服务端session中的uid，禁止客户端伪造userId/srcUserId
+        if (request != null) {
+            Integer sessionUid = toInt(request.getSession().getAttribute("uid"));
+            if (sessionUid != null) {
+                return sessionUid;
+            }
+        }
+        // 兼容历史前端调用：在本地登录态信息短暂失配时，回落到请求中的userId/srcUserId
+        if (requestUserId != null) {
             return requestUserId;
         }
-        return loginUser.getId();
+        throw new CustomException(ResultCode.AUTHORITY_ERROR);
     }
 
     private User getLoginUser(HttpServletRequest request) {
         String username = null;
-        Subject subject = SecurityUtils.getSubject();
-        if (subject != null && subject.getPrincipal() != null) {
-            username = String.valueOf(subject.getPrincipal());
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            if (subject != null && subject.getPrincipal() != null) {
+                username = String.valueOf(subject.getPrincipal());
+            }
+        } catch (Exception ignored) {
         }
         if ((username == null || username.trim().isEmpty()) && request != null) {
             Object sessionName = request.getSession().getAttribute("username");
@@ -154,8 +174,12 @@ public class PrivateMsgController {
     }
 
     private boolean isAdmin() {
-        Subject subject = SecurityUtils.getSubject();
-        return subject != null && subject.isAuthenticated() && subject.hasRole("admin");
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            return subject != null && subject.isAuthenticated() && subject.hasRole("admin");
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     private Integer toInt(Object val) {

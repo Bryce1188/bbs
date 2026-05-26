@@ -1,9 +1,11 @@
 package com.lindong.service.impl;
 
+import com.lindong.dao.IAttentionDao;
 import com.lindong.dao.IPrivateMsgDao;
 import com.lindong.exception.CustomException;
 import com.lindong.exception.ResultCode;
 import com.lindong.service.IPrivateMsgService;
+import com.lindong.utils.PrivateMsgCryptoUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +18,13 @@ import java.util.Map;
 @Service
 public class PrivateMsgService implements IPrivateMsgService {
 
+    private static final long CHAT_LIMIT_WINDOW_MS = 24L * 60L * 60L * 1000L;
+    private static final int STRANGER_DAILY_REACH_LIMIT = 5;
+
     @Resource
     private IPrivateMsgDao privateMsgDao;
+    @Resource
+    private IAttentionDao attentionDao;
 
     @Override
     public Map<String, Object> listInbox(Integer userId, Integer pageNo, Integer pageSize) {
@@ -33,6 +40,7 @@ public class PrivateMsgService implements IPrivateMsgService {
         params.put("pageSize", safePageSize);
         int total = privateMsgDao.countInbox(params);
         List<Map<String, Object>> list = privateMsgDao.listInbox(params);
+        decryptField(list, "content");
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("lists", list);
@@ -55,6 +63,7 @@ public class PrivateMsgService implements IPrivateMsgService {
         params.put("pageSize", safePageSize);
         int total = privateMsgDao.countConversations(params);
         List<Map<String, Object>> list = privateMsgDao.listConversations(params);
+        decryptField(list, "lastContent");
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("lists", list);
@@ -71,7 +80,9 @@ public class PrivateMsgService implements IPrivateMsgService {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("peerId", peerId);
-        return privateMsgDao.listSession(params);
+        List<Map<String, Object>> list = privateMsgDao.listSession(params);
+        decryptField(list, "content");
+        return list;
     }
 
     @Override
@@ -87,17 +98,46 @@ public class PrivateMsgService implements IPrivateMsgService {
         }
         msg.put("srcUserId", srcUserId);
         msg.put("tarUserId", tarUserId);
+        Object rawContent = msg.get("content");
+        if (rawContent == null) {
+            throw new CustomException(ResultCode.DATA_ERROR);
+        }
+        msg.put("content", PrivateMsgCryptoUtil.encrypt(String.valueOf(rawContent)));
+        Long msgTime = toLong(msg.get("time"));
+        if (msgTime == null) {
+            msgTime = System.currentTimeMillis();
+            msg.put("time", msgTime);
+        }
+        long sinceTime = msgTime - CHAT_LIMIT_WINDOW_MS;
+        boolean isAdmin = toBoolean(msg.get("isAdmin"));
 
-        // 对方已发过消息给我：判定为“已回复”，解除限制可继续聊天
+        // Level 3：互关好友，直接放行
+        boolean sourceFollowTarget = isFollowing(srcUserId, tarUserId);
+        boolean targetFollowSource = isFollowing(tarUserId, srcUserId);
+        if (sourceFollowTarget && targetFollowSource) {
+            return privateMsgDao.insertPrivateMsg(msg) > 0;
+        }
+
+        // Level 2：对方已回复过，直接放行
         boolean receiverHasMessagedSender = privateMsgDao.countDirectionalMessages(tarUserId, srcUserId) > 0;
         if (receiverHasMessagedSender) {
             return privateMsgDao.insertPrivateMsg(msg) > 0;
         }
 
-        // 未收到对方回复前：每个会话只允许先发一条
-        if (privateMsgDao.countDirectionalMessages(srcUserId, tarUserId) > 0) {
+        // Level 0 / Level 1：对方未回复前，24小时内同一对象仅允许1条
+        if (privateMsgDao.countDirectionalMessagesSince(srcUserId, tarUserId, sinceTime) > 0) {
             throw new CustomException(ResultCode.CHAT_WAIT_REPLY);
         }
+
+        // Level 0：陌生人触达人数限制（普通用户5人/24小时，管理员不限）
+        boolean isStranger = !sourceFollowTarget && !targetFollowSource;
+        if (isStranger && !isAdmin) {
+            int strangerTouchedCount = privateMsgDao.countDistinctUnrepliedStrangersContactedSince(srcUserId, sinceTime);
+            if (strangerTouchedCount >= STRANGER_DAILY_REACH_LIMIT) {
+                throw new CustomException(ResultCode.CHAT_STRANGER_DAILY_LIMIT);
+            }
+        }
+
         return privateMsgDao.insertPrivateMsg(msg) > 0;
     }
 
@@ -192,6 +232,47 @@ public class PrivateMsgService implements IPrivateMsgService {
             return Integer.parseInt(String.valueOf(value));
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private Long toLong(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return Long.parseLong(String.valueOf(value));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private boolean toBoolean(Object value) {
+        if (value == null) {
+            return false;
+        }
+        return Boolean.parseBoolean(String.valueOf(value));
+    }
+
+    private boolean isFollowing(Integer uid, Integer aid) {
+        Map<String, Integer> params = new HashMap<>();
+        params.put("uid", uid);
+        params.put("aid", aid);
+        return attentionDao.selectCare(params) > 0;
+    }
+
+    private void decryptField(List<Map<String, Object>> rows, String fieldName) {
+        if (rows == null || rows.isEmpty() || fieldName == null) {
+            return;
+        }
+        for (Map<String, Object> row : rows) {
+            if (row == null) {
+                continue;
+            }
+            Object raw = row.get(fieldName);
+            if (raw == null) {
+                continue;
+            }
+            row.put(fieldName, PrivateMsgCryptoUtil.decrypt(String.valueOf(raw)));
         }
     }
 

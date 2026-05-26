@@ -283,28 +283,27 @@ layui.define(['element','layer','jquery','layedit'], function(exports){
                 '<div class="layui-col-sm2"><img src="/leek_bbs/'+item.picture+'" class="img-circle img-size" alt=""></div>' +
                 '<div class="layui-col-sm2 m-class" style="height: 70px;margin-left: -10px;"><h4 style="line-height:32px;margin-top: 8px;font-size:18px;">'+item.another_name+'</h4></div>' +
                 '</div>',
-            content: `<div id="layer-3" class="layui-container-fluid" style="display: none">
-                        <iframe src="/leek_bbs/skipPage/session" frameborder="0" id="chatSession-W" style="width: 100%; height: 250px;"></iframe>
+            content: `<div class="layui-container-fluid chat-layer-shell" style="display: none">
+                        <iframe src="/leek_bbs/skipPage/session" frameborder="0" id="chatSession-W" style="width: 100%; height: 392px;"></iframe>
                         <div class="layui-row" >
                             <textarea id="chatEdit" style="display: none;"></textarea>
                         </div>
                         <div class="layui-row">
                             <div class="layui-col-sm4 layui-col-sm-offset8">
                                 <div class="m-btn">
-                                    <button id="closeBtn2" class="layui-btn layui-btn-sm">关闭</button>
                                     <button id="sendBtn" class="layui-btn layui-btn-sm">发送</button>
                                 </div>
                             </div>
                         </div>
                     </div>`,
-            /*skin: 'm-bg-color',*/
+            skin: 'chat-window-layer',
             anim: 2,    //动画
             shade: 0,
             fixed: false,
             maxmin: true,   //最大化
             resize: false,  //关闭拉伸
             scrollbar: false,   //不允许出现滚动条
-            area: ['600px', '522px'],
+            area: ['760px', '640px'],
             moveEnd: function(layero){
                 /*console.log(layero);*/
             },
@@ -327,37 +326,34 @@ layui.define(['element','layer','jquery','layedit'], function(exports){
 
                 $("#layui-layer"+index).find(".layui-layer-title").addClass("m-layer-title");
                 //显示编辑器
-                $("#layer-3").css("display","block");
+                layero.find(".chat-layer-shell").css("display","block");
                 //建立编辑器
                 editIndex = layedit.build('chatEdit',{
-                    width:560,  //设置宽度
-                    height: 82, //设置编辑器高度
+                    width:720,  //设置宽度
+                    height: 96, //设置编辑器高度
                     tool: [
                         'face' //表情
                         ,'image' //插入图片
                     ]
                 });
+                bindLayeditEnterSend(editIndex, '#sendBtn');
                 //获取聊天对象信息
                 tarUser = item;
                 id = item.id;
             },
             full: function(layero){ //最大化
-                //调整按钮位置
-                $("#layer-3 .layui-row .m-btn").css("margin-left","190px");
                 //调整用户名称及状态位置
                 layero.find(".layui-layer-title .m-class").css("margin-left","-90px");
             },
             restore: function(layero){    //还原
-                //还原按钮初始位置
-                $("#layer-3 .layui-row .m-btn").css("margin-left","30px");
                 //还原用户名称及状态位置
                 layero.find(".layui-layer-title .m-class").css("margin-left","-10px");
             },
             end: function () {
-                //在未还原时,直接关闭弹窗,则还原按钮初始位置
-                $("#layer-3 .layui-row .m-btn").css("margin-left","30px");
                 //隐藏编辑器
-                $("#layer-3").css("display","none");
+                if (indexOpen != null){
+                    $("#layui-layer" + indexOpen).find(".chat-layer-shell").css("display","none");
+                }
                 indexOpen = null;
             }
 
@@ -365,9 +361,21 @@ layui.define(['element','layer','jquery','layedit'], function(exports){
 
     });
 
-    $(document).on('click','#closeBtn',function () {
-        layer.close(indexOpen)
-    });
+    function bindLayeditEnterSend(curEditIndex, sendBtnSelector) {
+        setTimeout(function () {
+            var iframe = $("#LAY_layedit_" + curEditIndex);
+            if (!iframe || iframe.length === 0) {
+                return;
+            }
+            var body = iframe.contents().find("body");
+            body.off("keydown.chatEnter").on("keydown.chatEnter", function (e) {
+                if (e.keyCode === 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    $(sendBtnSelector).trigger("click");
+                }
+            });
+        }, 60);
+    }
 
     let online_status;
 
@@ -377,28 +385,45 @@ layui.define(['element','layer','jquery','layedit'], function(exports){
             var str = layedit.getContent(editIndex);
             if (str != null && str != ''){
                 var date = new Date();
+                var clientMsgId = "cmsg_" + userInfo.id + "_" + tarUser.id + "_" + date.getTime() + "_" + Math.floor(Math.random() * 1000000);
                 var payload = {
                     "type": "1",
                     "tarUser": {"userId":tarUser.id},
                     "srcUser": {"userId":userInfo.id},
                     "img":userInfo.picture,
                     "time":date.getTime(),
-                    "content": str
+                    "content": str,
+                    "clientMsgId": clientMsgId
                 };
                 axios.post('/leek_bbs/bbs/privateMsg/send',{
                     srcUserId:userInfo.id,
                     tarUserId:tarUser.id,
                     content:str,
                     img:userInfo.picture,
-                    time:date.getTime()
+                    time:date.getTime(),
+                    clientMsgId: clientMsgId
                 }).then(function (response) {
                     var data = response.data || {};
                     if (data.code === "500020") {
-                        ws.send(JSON.stringify(payload));
+                        let ifr = document.getElementById("chatSession-W");
+                        if (ifr && ifr.contentWindow && typeof ifr.contentWindow.sendMessage === 'function'){
+                            ifr.contentWindow.sendMessage(payload, userInfo.id);
+                        }
+                        if (ws && ws.readyState === WebSocket.OPEN) {
+                            ws.send(JSON.stringify(payload));
+                        }
                         //该方法layedit接口中未定义,修改layedit.js文件自己添加的方法
                         layedit.clearContent(editIndex);
                     } else {
-                        layer.msg(data.msg || '发送失败，请稍后重试',{icon:5,time:2000});
+                        var failMsg = data.msg || '发送失败，请稍后重试';
+                        if (failMsg.indexOf('每天只能发1条消息') !== -1) {
+                            let ifr = document.getElementById("chatSession-W");
+                            if (ifr && ifr.contentWindow && typeof ifr.contentWindow.appendSystemTip === 'function'){
+                                ifr.contentWindow.appendSystemTip(failMsg);
+                            }
+                        } else {
+                            layer.msg(failMsg,{icon:5,time:2000});
+                        }
                     }
                 }).catch(function () {
                     layer.msg('消息保存失败，请稍后重试',{icon:5,time:1800});

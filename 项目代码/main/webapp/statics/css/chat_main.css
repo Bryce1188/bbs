@@ -172,17 +172,133 @@ img.img-size{
     border-style: solid solid none;
 }
 #layer-3 .m-btn .layui-btn{
-    margin-left: 6px;
+    margin: 0;
 }
 .m-btn{
-    margin-left: 30px;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin: 10px 12px 0 0;
 }
 .m-btn > button{
-    font-size: 14px;
-    padding: 0 20px;
-    background-color: #5FB878;
+    font-size: 15px;
+    min-width: 98px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #374151;
+    transition: all .2s ease;
+}
+.m-btn > #sendBtn{
+    background: #111827;
     color: #fff;
-    border-radius: 3px;
+    border-color: #111827;
+}
+.m-btn > button:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(17,24,39,.12);
+}
+
+.chat-window-layer .layui-layer-setwin{
+    top: 12px;
+    right: 12px;
+}
+.chat-window-layer .layui-layer-setwin a{
+    background: none !important;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    height: 24px;
+    margin-left: 8px;
+    overflow: hidden;
+    position: relative;
+    text-indent: -9999px;
+    width: 24px;
+    font-size: 0;
+    line-height: 0;
+}
+.chat-window-layer .layui-layer-setwin a:hover{
+    border-color: #9ca3af;
+    background: #f3f4f6 !important;
+}
+.chat-window-layer .layui-layer-setwin .layui-layer-min cite{
+    background: #374151;
+    height: 2px;
+    left: 5px;
+    top: 11px;
+    width: 12px;
+}
+.chat-window-layer .layui-layer-setwin .layui-layer-max::before,
+.chat-window-layer .layui-layer-setwin .layui-layer-maxmin::before{
+    border: 2px solid #374151;
+    box-sizing: border-box;
+    content: "";
+    height: 10px;
+    left: 6px;
+    position: absolute;
+    top: 6px;
+    width: 10px;
+}
+.chat-window-layer .layui-layer-setwin .layui-layer-close1::before,
+.chat-window-layer .layui-layer-setwin .layui-layer-close2::before,
+.chat-window-layer .layui-layer-setwin .layui-layer-close1::after,
+.chat-window-layer .layui-layer-setwin .layui-layer-close2::after{
+    background: #374151;
+    content: "";
+    height: 2px;
+    left: 5px;
+    position: absolute;
+    top: 11px;
+    width: 12px;
+}
+.chat-window-layer .layui-layer-setwin .layui-layer-close1::before,
+.chat-window-layer .layui-layer-setwin .layui-layer-close2::before{
+    transform: rotate(45deg);
+}
+.chat-window-layer .layui-layer-setwin .layui-layer-close1::after,
+.chat-window-layer .layui-layer-setwin .layui-layer-close2::after{
+    transform: rotate(-45deg);
+}
+
+.chat-window-layer .layui-layer-content{
+    padding: 0 !important;
+    background: #ffffff;
+}
+.chat-window-layer .chat-layer-shell{
+    background: #ffffff;
+    display: block !important;
+    height: auto;
+    padding: 0;
+}
+.chat-window-layer .chat-layer-shell > iframe{
+    background: #ffffff;
+    border: 0;
+    display: block;
+    height: 392px !important;
+    width: 100%;
+}
+.chat-window-layer .layui-col-sm4.layui-col-sm-offset8{
+    float: none;
+    margin-left: 0;
+    padding: 0;
+    width: 100%;
+}
+.chat-window-layer .layui-layedit{
+    border-left: 0;
+    border-right: 0;
+    margin-top: 2px;
+}
+.chat-window-layer .m-btn{
+    justify-content: flex-end;
+    margin: 8px 14px 12px 0;
+}
+.chat-window-layer .m-btn .layui-btn{
+    border-radius: 10px;
+    font-size: 18px;
+    height: 44px;
+    line-height: 44px;
+    min-width: 104px;
+    padding: 0 20px;
 }
 
 

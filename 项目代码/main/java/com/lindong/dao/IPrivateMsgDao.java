@@ -21,6 +21,13 @@ public interface IPrivateMsgDao extends IBaseDao {
 
     int countDirectionalMessages(@Param("srcUserId") Integer srcUserId, @Param("tarUserId") Integer tarUserId);
 
+    int countDirectionalMessagesSince(@Param("srcUserId") Integer srcUserId,
+                                      @Param("tarUserId") Integer tarUserId,
+                                      @Param("sinceTime") Long sinceTime);
+
+    int countDistinctUnrepliedStrangersContactedSince(@Param("srcUserId") Integer srcUserId,
+                                                      @Param("sinceTime") Long sinceTime);
+
     int markSessionRead(Map<String, Object> params);
 
     int markAllRead(@Param("userId") Integer userId);

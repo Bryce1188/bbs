@@ -54,7 +54,12 @@ public class UserController {
             param.put("password",password);
             param.put("last_login_ip",last_login_ip);
             userService.login(param);
-            //request.getSession().setAttribute("username",username);
+            // 供非shiro接口识别登录用户（如私信接口）
+            request.getSession().setAttribute("username", username);
+            User loginUser = userService.findByName(username);
+            if (loginUser != null) {
+                request.getSession().setAttribute("uid", loginUser.getId());
+            }
         }else {
             throw new CustomException(ResultCode.VERIFY_ERROR);
         }

@@ -201,16 +201,125 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 6px;
+            margin: 10px 12px 0 0;
         }
         #layer-3 .m-btn .layui-btn{
-            border-radius: 12px;
-            font-size: 18px;
-            height: 44px;
-            min-width: 104px;
+            font-size: 15px;
+            min-width: 98px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background: #fff;
+            color: #374151;
+            transition: all .2s ease;
+        }
+        #layer-3 .m-btn #sendBtn2{
             background: #111827;
             color: #fff;
+            border-color: #111827;
+        }
+        #layer-3 .m-btn .layui-btn:hover{
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(17,24,39,.12);
+        }
+        .chat-window-layer .layui-layer-setwin{
+            top: 12px;
+            right: 12px;
+        }
+        .chat-window-layer .layui-layer-setwin a{
+            background: none !important;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            height: 24px;
+            margin-left: 8px;
+            overflow: hidden;
+            position: relative;
+            text-indent: -9999px;
+            width: 24px;
+            font-size: 0;
+            line-height: 0;
+        }
+        .chat-window-layer .layui-layer-setwin a:hover{
+            border-color: #9ca3af;
+            background: #f3f4f6 !important;
+        }
+        .chat-window-layer .layui-layer-setwin .layui-layer-min cite{
+            background: #374151;
+            height: 2px;
+            left: 5px;
+            top: 11px;
+            width: 12px;
+        }
+        .chat-window-layer .layui-layer-setwin .layui-layer-max::before,
+        .chat-window-layer .layui-layer-setwin .layui-layer-maxmin::before{
+            border: 2px solid #374151;
+            box-sizing: border-box;
+            content: "";
+            height: 10px;
+            left: 6px;
+            position: absolute;
+            top: 6px;
+            width: 10px;
+        }
+        .chat-window-layer .layui-layer-setwin .layui-layer-close1::before,
+        .chat-window-layer .layui-layer-setwin .layui-layer-close2::before,
+        .chat-window-layer .layui-layer-setwin .layui-layer-close1::after,
+        .chat-window-layer .layui-layer-setwin .layui-layer-close2::after{
+            background: #374151;
+            content: "";
+            height: 2px;
+            left: 5px;
+            position: absolute;
+            top: 11px;
+            width: 12px;
+        }
+        .chat-window-layer .layui-layer-setwin .layui-layer-close1::before,
+        .chat-window-layer .layui-layer-setwin .layui-layer-close2::before{
+            transform: rotate(45deg);
+        }
+        .chat-window-layer .layui-layer-setwin .layui-layer-close1::after,
+        .chat-window-layer .layui-layer-setwin .layui-layer-close2::after{
+            transform: rotate(-45deg);
+        }
+        .chat-window-layer .layui-layer-content{
+            padding: 0 !important;
+            background: #ffffff;
+        }
+        .chat-window-layer .chat-layer-shell{
+            background: #ffffff;
+            display: block !important;
+            height: auto;
+            padding: 0;
+        }
+        .chat-window-layer .chat-layer-shell > iframe{
+            background: #ffffff;
             border: 0;
+            display: block;
+            height: 392px !important;
+            width: 100%;
+        }
+        .chat-window-layer .layui-col-sm4.layui-col-sm-offset8{
+            float: none;
+            margin-left: 0;
+            padding: 0;
+            width: 100%;
+        }
+        .chat-window-layer .layui-layedit{
+            border-left: 0;
+            border-right: 0;
+            margin-top: 2px;
+        }
+        .chat-window-layer .m-btn{
+            justify-content: flex-end;
+            margin: 8px 14px 12px 0;
+        }
+        .chat-window-layer .m-btn .layui-btn{
+            border-radius: 10px;
+            font-size: 18px;
+            height: 44px;
+            line-height: 44px;
+            min-width: 104px;
+            padding: 0 20px;
         }
         footer{
             /*position: fixed;
@@ -852,35 +961,36 @@
                     '<h5 style="opacity:.8;">私聊中</h5>' +
                     '</div>' +
                     '</div>',
-                content: `<div id="layer-3" class="layui-container-fluid" style="display:none;">
-                            <iframe src="/leek_bbs/skipPage/session" frameborder="0" id="chatSession-W" style="width: 100%; height: 250px;"></iframe>
+                content: `<div class="layui-container-fluid chat-layer-shell" style="display:none;">
+                            <iframe src="/leek_bbs/skipPage/session" frameborder="0" id="chatSession-W" style="width: 100%; height: 392px;"></iframe>
                             <div class="layui-row">
                                 <textarea id="chatEdit" style="display: none;"></textarea>
                             </div>
                             <div class="layui-row">
                                 <div class="layui-col-sm4 layui-col-sm-offset8">
                                     <div class="m-btn">
-                                        <button id="closeBtn2" class="layui-btn layui-btn-sm">关闭</button>
                                         <button id="sendBtn2" class="layui-btn layui-btn-sm">发送</button>
                                     </div>
                                 </div>
                             </div>
                         </div>`,
+                skin: 'chat-window-layer',
                 anim: 2,
                 shade: 0,
                 fixed: false,
                 maxmin: true,
                 resize: false,
                 scrollbar: false,
-                area: ['600px', '522px'],
+                area: ['760px', '640px'],
                 success: function(layero, index) {
                     $("#layui-layer"+index).find(".layui-layer-title").addClass("m-layer-title");
-                    $("#layer-3").css("display","block");
+                    layero.find(".chat-layer-shell").css("display","block");
                     chatEditIndex = layedit.build('chatEdit',{
-                        width:560,
-                        height: 82,
+                        width:720,
+                        height: 96,
                         tool: ['face']
                     });
+                    bindLayeditEnterSend(chatEditIndex, '#sendBtn2');
                     axios.post('/leek_bbs/bbs/privateMsg/markSessionRead',{
                         userId:userInfo.id,
                         peerId:item.id
@@ -889,7 +999,7 @@
                     });
                 },
                 end: function () {
-                    $("#layer-3").css("display","none");
+                    layero.find(".chat-layer-shell").css("display","none");
                     chatPeerId = null;
                     chatTargetUser = null;
                     chatEditIndex = null;
@@ -899,13 +1009,21 @@
             });
         });
 
-        $(document).on('click','#closeBtn2',function () {
-            if (chatLayerIndex != null){
-                layer.close(chatLayerIndex);
-            }else{
-                layer.closeAll();
-            }
-        });
+        function bindLayeditEnterSend(curEditIndex, sendBtnSelector) {
+            setTimeout(function () {
+                var iframe = $("#LAY_layedit_" + curEditIndex);
+                if (!iframe || iframe.length === 0) {
+                    return;
+                }
+                var body = iframe.contents().find("body");
+                body.off("keydown.chatEnter").on("keydown.chatEnter", function (e) {
+                    if (e.keyCode === 13 && !e.shiftKey) {
+                        e.preventDefault();
+                        $(sendBtnSelector).trigger("click");
+                    }
+                });
+            }, 60);
+        }
 
         $(document).on('click','#sendBtn2',function () {
             if (!userInfo || !chatTargetUser || !chatTargetUser.id) {
@@ -917,35 +1035,45 @@
                 return;
             }
             let date = new Date();
+            let clientMsgId = "cmsg_" + userInfo.id + "_" + chatTargetUser.id + "_" + date.getTime() + "_" + Math.floor(Math.random() * 1000000);
             let payload = {
                 "type": "1",
                 "tarUser": {"userId":chatTargetUser.id},
                 "srcUser": {"userId":userInfo.id},
                 "img":userInfo.picture,
                 "time":date.getTime(),
-                "content": str
+                "content": str,
+                "clientMsgId": clientMsgId
             };
             axios.post('/leek_bbs/bbs/privateMsg/send',{
                 srcUserId:userInfo.id,
                 tarUserId:chatTargetUser.id,
                 content:str,
                 img:userInfo.picture,
-                time:date.getTime()
+                time:date.getTime(),
+                clientMsgId: clientMsgId
             }).then(function (response) {
                 var data = response.data || {};
                 if (data.code === "500020") {
+                    let ifr = document.getElementById("chatSession-W");
+                    if (ifr && ifr.contentWindow && typeof ifr.contentWindow.sendMessage === 'function'){
+                        ifr.contentWindow.sendMessage(payload, userInfo.id);
+                    }
                     if (ws && ws.readyState === WebSocket.OPEN){
                         ws.send(JSON.stringify(payload));
-                    }else{
-                        let ifr = document.getElementById("chatSession-W");
-                        if (ifr && ifr.contentWindow && typeof ifr.contentWindow.sendMessage === 'function'){
-                            ifr.contentWindow.sendMessage(payload, userInfo.id);
-                        }
                     }
                     layedit.clearContent(chatEditIndex);
                     msgApp.getPrivateSessions(msgApp.currentPrivatePage);
                 } else {
-                    layer.msg(data.msg || '发送失败，请稍后重试',{icon:5,time:2000});
+                    var failMsg = data.msg || '发送失败，请稍后重试';
+                    if (failMsg.indexOf('每天只能发1条消息') !== -1) {
+                        let ifr = document.getElementById("chatSession-W");
+                        if (ifr && ifr.contentWindow && typeof ifr.contentWindow.appendSystemTip === 'function'){
+                            ifr.contentWindow.appendSystemTip(failMsg);
+                        }
+                    } else {
+                        layer.msg(failMsg,{icon:5,time:2000});
+                    }
                 }
             }).catch(function () {
                 layer.msg('消息保存失败，请稍后重试',{icon:5,time:1800});
