@@ -341,8 +341,12 @@ a:hover {
 }
 
 body .layui-container {
-    background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(246,248,252,.96)),
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.88), rgba(246,248,252,.92)),
+        linear-gradient(to right, rgba(216, 216, 220, .45) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(216, 216, 220, .45) 1px, transparent 1px),
         url("/leek_bbs/statics/images/figma-bbs/wide.jpg") center/cover no-repeat !important;
+    background-size: auto, 36px 36px, 36px 36px, cover !important;
 }
 
 .admin-login-background {

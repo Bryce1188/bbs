@@ -391,7 +391,9 @@ footer .row > p >span{
 
 /* Unified Header (same design language as homepage) */
 .bbs-topbar{
-    background: rgba(255,255,255,.94);
+    background: rgba(255,255,255,.78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid #e9edf3;
     position: sticky;
     top: 0;
