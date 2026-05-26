@@ -1,0 +1,423 @@
+:root {
+    --admin-text: #0f172a;
+    --admin-muted: #64748b;
+    --admin-border: #e5e7eb;
+    --admin-soft: #f8fafc;
+    --admin-blue: #1f63ff;
+    --admin-black: #111827;
+    --admin-shadow: 0 18px 45px rgba(15, 23, 42, .08);
+}
+
+html,
+body {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    color: var(--admin-text) !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif !important;
+    letter-spacing: 0 !important;
+}
+
+a {
+    color: var(--admin-text);
+}
+
+a:hover {
+    color: var(--admin-blue);
+}
+
+.layui-layout-admin .layui-header.header {
+    background: rgba(255, 255, 255, .96) !important;
+    border-bottom: 1px solid var(--admin-border) !important;
+    box-shadow: none !important;
+    height: 76px !important;
+}
+
+.layuimini-logo {
+    background: #ffffff !important;
+    border-right: 1px solid var(--admin-border) !important;
+    height: 76px !important;
+    line-height: 76px !important;
+    width: 240px !important;
+}
+
+.layuimini-logo > a {
+    align-items: center !important;
+    display: flex !important;
+    gap: 10px !important;
+    height: 76px !important;
+    justify-content: center !important;
+    padding: 0 16px !important;
+}
+
+.layuimini-logo > a img {
+    height: 44px !important;
+    left: auto !important;
+    object-fit: contain !important;
+    position: static !important;
+    top: auto !important;
+    width: 154px !important;
+}
+
+.layuimini-logo > a h1 {
+    display: none !important;
+}
+
+.layuimini-header-content {
+    background: transparent !important;
+    margin-left: 240px !important;
+}
+
+.layuimini-tool,
+.layui-layout-admin .layui-header .layui-nav .layui-nav-item > a {
+    color: var(--admin-text) !important;
+    height: 76px !important;
+    line-height: 76px !important;
+}
+
+.layui-layout-admin .layui-header .layui-nav .layui-nav-item > a:hover,
+.layui-nav .layui-this > a,
+.layui-nav .layui-nav-item a:hover {
+    background: transparent !important;
+    color: var(--admin-blue) !important;
+}
+
+.layui-layout-admin .layui-header .layui-nav {
+    background: transparent !important;
+}
+
+.layuimini-menu-left {
+    background: #ffffff !important;
+    border-right: 1px solid var(--admin-border) !important;
+    box-shadow: none !important;
+    top: 76px !important;
+    width: 240px !important;
+}
+
+.layuimini-menu-left .layui-nav,
+.layuimini-menu-left .layui-nav-tree {
+    background: #ffffff !important;
+    color: var(--admin-text) !important;
+}
+
+.layuimini-menu-left .layui-nav-tree .layui-nav-item,
+.layuimini-menu-left .layui-nav-tree .layui-nav-child {
+    background: transparent !important;
+}
+
+.layuimini-menu-left .layui-nav-tree .layui-nav-item > a,
+.layuimini-menu-left .layui-nav-tree .layui-nav-child a {
+    border-radius: 10px !important;
+    color: #334155 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    margin: 4px 10px !important;
+}
+
+.layuimini-menu-left .layui-nav-tree .layui-nav-item > a:hover,
+.layuimini-menu-left .layui-nav-tree .layui-nav-child a:hover {
+    background: #f3f6fb !important;
+    color: var(--admin-blue) !important;
+}
+
+.layuimini-menu-left .layui-nav-tree .layui-this > a,
+.layuimini-menu-left .layui-nav-tree .layui-nav-bar,
+.layuimini-menu-left .layui-nav-tree .layui-nav-itemed > a {
+    background: var(--admin-black) !important;
+    color: #ffffff !important;
+}
+
+.layuimini-menu-left .layui-nav-tree .layui-nav-more {
+    border-top-color: #94a3b8 !important;
+}
+
+.layuimini-menu-left .layui-nav-tree .layui-nav-mored {
+    border-color: transparent transparent #94a3b8 !important;
+}
+
+.layui-layout-admin .layui-side {
+    top: 76px !important;
+}
+
+.layui-layout-admin .layui-body {
+    background: var(--admin-soft) !important;
+    bottom: 0 !important;
+    left: 240px !important;
+    top: 76px !important;
+}
+
+.layuimini-tab {
+    background: #ffffff !important;
+    border-bottom: 1px solid var(--admin-border) !important;
+    box-shadow: none !important;
+}
+
+.layuimini-tab .layui-tab-title {
+    border-bottom-color: var(--admin-border) !important;
+}
+
+.layui-tab-title li {
+    color: var(--admin-muted);
+    font-weight: 700;
+}
+
+.layui-tab-title .layui-this {
+    color: var(--admin-text) !important;
+}
+
+.layui-tab-title .layui-this:after {
+    border-bottom: 2px solid var(--admin-black) !important;
+}
+
+.layuimini-container,
+.layuimini-main,
+.layui-layout-admin,
+.layui-tab-content {
+    background: transparent !important;
+}
+
+.layuimini-container {
+    padding: 18px !important;
+}
+
+.layuimini-main,
+.layui-card,
+.layui-tab-content > .layui-tab-item,
+.layui-form,
+.panel {
+    border-radius: 12px !important;
+}
+
+.layuimini-main,
+.layui-card,
+.panel,
+.login-form {
+    background: rgba(255, 255, 255, .96) !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: var(--admin-shadow) !important;
+}
+
+.layui-card-header {
+    border-bottom: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    min-height: 54px !important;
+    line-height: 54px !important;
+}
+
+.layui-card-body {
+    padding: 18px !important;
+}
+
+.layui-form {
+    color: var(--admin-text) !important;
+}
+
+.layui-form-label {
+    color: var(--admin-text) !important;
+    font-weight: 700 !important;
+}
+
+.layui-input,
+.layui-select,
+.layui-textarea {
+    background: #ffffff !important;
+    border: 1px solid #d8dee8 !important;
+    border-radius: 10px !important;
+    color: var(--admin-text) !important;
+    min-height: 40px !important;
+}
+
+.layui-input:hover,
+.layui-textarea:hover,
+.layui-input:focus,
+.layui-textarea:focus {
+    border-color: var(--admin-black) !important;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, .08) !important;
+}
+
+.layui-btn,
+.layui-btn-normal,
+.layui-btn-warm,
+.layui-btn-danger {
+    background: var(--admin-black) !important;
+    border: 1px solid var(--admin-black) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    min-height: 38px !important;
+}
+
+.layui-btn-primary {
+    background: #ffffff !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+}
+
+.layui-btn:hover {
+    opacity: .92 !important;
+}
+
+.layui-table-view,
+.layui-table-box,
+.layui-table-header,
+.layui-table-body,
+.layui-table-page {
+    border-color: var(--admin-border) !important;
+}
+
+.layui-table-view {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: var(--admin-shadow) !important;
+    overflow: hidden !important;
+}
+
+.layui-table th,
+.layui-table thead tr,
+.layui-table-header {
+    background: #f8fafc !important;
+    color: var(--admin-text) !important;
+    font-weight: 800 !important;
+}
+
+.layui-table td,
+.layui-table th {
+    border-color: #edf1f6 !important;
+}
+
+.layui-table tbody tr:hover {
+    background: #f6f8fc !important;
+}
+
+.layui-laypage .layui-laypage-curr .layui-laypage-em {
+    background: var(--admin-black) !important;
+    border-radius: 8px !important;
+}
+
+.layui-laypage a,
+.layui-laypage span {
+    border-radius: 8px !important;
+}
+
+.layui-layer,
+.layui-layer-title,
+.layui-layer-content {
+    border-radius: 12px !important;
+}
+
+.icon,
+.icon-blue,
+.icon-cray,
+.icon-tip {
+    color: var(--admin-blue) !important;
+}
+
+.layui-bg-number {
+    background: #f8fafc !important;
+}
+
+.panel-content h1,
+.no-margins {
+    color: var(--admin-blue) !important;
+    font-size: 34px !important;
+    font-weight: 900 !important;
+}
+
+.layuimini-qiuck-module a i {
+    background: linear-gradient(180deg, #ffffff 0%, #f2f6ff 100%) !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: 14px !important;
+    color: var(--admin-blue) !important;
+}
+
+.layuimini-qiuck-module a:hover i {
+    background: var(--admin-black) !important;
+    color: #ffffff !important;
+}
+
+.layuimini-qiuck-module a cite {
+    color: var(--admin-text) !important;
+    font-weight: 700 !important;
+}
+
+body .layui-container {
+    background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(246,248,252,.96)),
+        url("/leek_bbs/statics/images/figma-bbs/wide.jpg") center/cover no-repeat !important;
+}
+
+.admin-login-background {
+    height: auto !important;
+    left: 50% !important;
+    margin-left: -230px !important;
+    margin-top: -220px !important;
+    top: 50% !important;
+    width: 460px !important;
+}
+
+.login-form {
+    border-radius: 18px !important;
+    padding: 32px 34px 34px !important;
+}
+
+.logo-title {
+    padding: 0 0 24px !important;
+}
+
+.logo-title:before {
+    background: url("/leek_bbs/statics/images/unitalk_logo.svg?v=20260526a") center/contain no-repeat;
+    content: "";
+    display: block;
+    height: 64px;
+    margin: 0 auto 10px;
+    width: 220px;
+}
+
+.logo-title h1 {
+    color: var(--admin-text) !important;
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0 !important;
+}
+
+.login-form .layui-form-item {
+    margin-bottom: 18px !important;
+}
+
+.login-form .layui-form-item label {
+    color: var(--admin-muted) !important;
+}
+
+.login-form .layui-input {
+    height: 44px !important;
+}
+
+.captcha-img img {
+    border: 1px solid var(--admin-border) !important;
+    border-radius: 10px !important;
+    height: 42px !important;
+    object-fit: cover !important;
+}
+
+#loginBtn .layui-btn {
+    height: 46px !important;
+    width: 100% !important;
+}
+
+@media (max-width: 768px) {
+    .layuimini-logo {
+        width: 190px !important;
+    }
+    .layuimini-header-content,
+    .layui-layout-admin .layui-body {
+        margin-left: 190px !important;
+        left: 190px !important;
+    }
+    .layuimini-menu-left {
+        width: 190px !important;
+    }
+    .admin-login-background {
+        left: 20px !important;
+        margin-left: 0 !important;
+        width: calc(100% - 40px) !important;
+    }
+}
