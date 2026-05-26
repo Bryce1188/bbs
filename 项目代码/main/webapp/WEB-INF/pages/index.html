@@ -67,6 +67,13 @@
             white-space: nowrap;
         }
 
+        .bbs-brand-logo {
+            display: block;
+            width: 174px;
+            max-height: 56px;
+            object-fit: contain;
+        }
+
         .bbs-brand-mark {
             display: inline-flex;
             align-items: center;
@@ -649,8 +656,7 @@
 <div class="bbs-shell" id="indexApp" v-cloak>
     <header class="bbs-nav">
         <a class="bbs-brand" href="/leek_bbs/skipPage/index">
-            <span class="bbs-brand-mark">BBS</span>
-            <span>校园论坛</span>
+            <img class="bbs-brand-logo" src="/leek_bbs/statics/images/pulse_forum_logo.png?v=20260526a" alt="Pulse Forum">
         </a>
         <nav class="bbs-nav-items">
             <a href="/leek_bbs/skipPage/index">首页</a>
@@ -687,8 +693,8 @@
 
     <section class="bbs-hero">
         <div class="bbs-hero-copy">
-            <h1>分享校园里的每一个新鲜想法</h1>
-            <p>把部门交流、学习资源、游戏开黑、求助问答放在同一个清爽的入口里。首页会实时读取板块和帖子数据，旧内容清空后也能继续正常发帖统计。</p>
+            <h1>连接公司里的每一次高效沟通</h1>
+            <p>把部门协作、项目讨论、资料沉淀和问题求助放在同一个清爽入口里。首页实时读取板块和帖子数据，让团队信息更容易被看见、被回应、被沉淀。</p>
             <div class="bbs-hero-actions">
                 <a class="bbs-button" href="javascript:;" @click.prevent="handlePublishEntry">现在发帖</a>
                 <a class="bbs-button bbs-button-light" href="#plates">浏览板块</a>
@@ -696,8 +702,8 @@
         </div>
         <div class="bbs-hero-image">
             <div class="bbs-hero-panel">
-                <strong>一个更轻、更安静的论坛首页</strong>
-                <span>参考 Figma 模板的留白、图片区和卡片网格，把原来的信息重新组织成更适合浏览的页面。</span>
+                <strong>一个更清爽的企业论坛首页</strong>
+                <span>围绕部门协作、知识共享和问题反馈重新组织信息，让内部交流更专注、更高效。</span>
             </div>
         </div>
     </section>
@@ -818,7 +824,7 @@
     </main>
 </div>
 
-<script src="/leek_bbs/statics/component/head_menu.js?v=20260525i"></script>
+<script src="/leek_bbs/statics/component/head_menu.js?v=20260526b"></script>
 <script type="text/javascript">
     var indexApp = new Vue({
         el: "#indexApp",
