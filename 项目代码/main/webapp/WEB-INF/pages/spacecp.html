@@ -269,6 +269,181 @@
             line-height: 42px;
             opacity: .7;
         }
+        .settings-side {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding-bottom: 12px;
+            background: #ffffff;
+        }
+        .settings-main {
+            margin-left: 30px;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            background-color: #fff;
+            min-height: 620px;
+            overflow: hidden;
+        }
+        .settings-title-row {
+            border-bottom: 1px solid #eef1f5;
+            padding: 16px 22px;
+        }
+        .settings-title-row h4 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: #101827;
+        }
+        .avatar-editor-wrap {
+            padding: 22px;
+        }
+        .avatar-editor-summary {
+            margin-bottom: 18px;
+        }
+        .avatar-editor-summary h5 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+        .avatar-editor-grid {
+            display: grid;
+            grid-template-columns: 280px minmax(360px, 1fr);
+            gap: 22px;
+            align-items: stretch;
+        }
+        .avatar-preview-card {
+            background: linear-gradient(165deg, #f8fafc, #f1f5f9);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .avatar-preview-card h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .avatar-preview-card p {
+            margin: 0;
+            color: #475569;
+            line-height: 1.7;
+            font-size: 13px;
+        }
+        .avatar-preview-box {
+            width: 100%;
+            height: 220px;
+            border: 1px dashed #c7d2e3;
+            border-radius: 14px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .avatar-preview-box img {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, .12);
+        }
+        .avatar-upload-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            background: #ffffff;
+        }
+        .avatar-upload-card h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .avatar-upload-card p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 0 0 14px;
+        }
+        #pictureUpload {
+            width: 100%;
+            min-height: 250px;
+            border-radius: 14px;
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
+        #pictureUpload:hover {
+            border-color: #111827;
+        }
+        #pictureUpload .layui-icon {
+            color: #111827;
+            font-size: 56px;
+            margin-top: 24px;
+        }
+        #pictureUpload p {
+            color: #334155;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .security-form-wrap {
+            max-width: 520px;
+            padding: 26px 22px 28px;
+        }
+        .security-form-wrap .layui-form-item {
+            margin-bottom: 18px;
+        }
+        .security-form-wrap .layui-input-inline {
+            width: 350px !important;
+        }
+        .security-form-wrap .layui-form-label {
+            width: 88px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        .security-actions {
+            padding-top: 8px;
+        }
+        .security-actions .layui-btn {
+            width: 110px !important;
+            height: 40px;
+            border-radius: 10px;
+            background: #111827 !important;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .phone-helper {
+            margin-top: 6px;
+            margin-left: 110px;
+            color: #64748b;
+            font-size: 12px;
+        }
+        @media (max-width: 992px) {
+            .settings-main {
+                margin-left: 0;
+                margin-top: 18px;
+            }
+            .avatar-editor-grid {
+                grid-template-columns: 1fr;
+            }
+            .avatar-preview-box {
+                height: 200px;
+            }
+            .security-form-wrap .layui-input-inline {
+                width: 100% !important;
+            }
+            .security-form-wrap .layui-form-label {
+                width: 100%;
+                text-align: left;
+                padding-bottom: 8px;
+            }
+            .phone-helper {
+                margin-left: 0;
+            }
+        }
         footer{
             margin-top: 164px;
         }
@@ -294,30 +469,40 @@
            <!-- <span style="float: right;"><a href="javascript:;">我的收藏</a></span>-->
         </div>
         <div class="row" style="margin-top: 20px;">
-            <div class="col-sm-2" style="padding-bottom:20px;border: 1px solid #e5e5e5;background-color: #fff;">
+            <div class="col-sm-2 settings-side">
                 <div class="row" style="border-bottom: 1px solid #e5e5e5;"><h4>设置</h4></div>
                 <div class="row m-hover-bg m-active" id="userBtn"><h5><a href="javascript:;">头像修改</a></h5></div>
                 <div class="row m-hover-bg" id="postsBtn"><h5><a href="javascript:;">个人资料</a></h5></div>
                 <div class="row m-hover-bg" id="plateBtn"><h5><a href="javascript:;">密码安全</a></h5></div>
                 <div class="row m-hover-bg" id="careBtn"><h5><a href="javascript:;">我的关注</a></h5></div>
             </div>
-            <div class="col-sm-8" style="margin-left:30px;border: 1px solid #e5e5e5;background-color: #fff;">
+            <div class="col-sm-8 settings-main">
                 <div class="layui-tab" id="tab-user" lay-filter="tabUser">
-                    <div class="row">
+                    <div class="settings-title-row">
                         <h4>头像设置</h4>
-                        <h5>系统会显示为默认头像，可以自己上传一张新照片来作为个人头像</h5>
-                        <div class="row"><img src="/leek_bbs/statics/images/avatar.jpg" width="160" height="160" alt=""></div>
-                        <h3>设置新头像</h3>
-                        <div class="row" style="padding-bottom: 10px;">
-                            <span>请上传照片进行编辑。<br>头像保存后，需要刷新一下本页面，才能查看最新的头像效果</span>
+                    </div>
+                    <div class="avatar-editor-wrap">
+                        <div class="avatar-editor-summary">
+                            <h5>使用清晰正方形照片会获得更好的展示效果。上传后系统会立即更新头像显示。</h5>
                         </div>
-                        <div class="row">
-                            <div class="layui-upload-drag" id="pictureUpload">
-                                <i class="layui-icon"></i>
-                                <p>点击上传，或将文件拖拽到此处</p>
-                                <div class="layui-hide" id="uploadDemoView">
-                                    <hr>
-                                    <img src="" alt="上传成功后渲染" style="max-width: 196px">
+                        <div class="avatar-editor-grid">
+                            <div class="avatar-preview-card">
+                                <h3>当前头像</h3>
+                                <p>头像会显示在导航栏、帖子列表、个人资料和聊天入口。</p>
+                                <div class="avatar-preview-box">
+                                    <img id="currentAvatarPreview" src="/leek_bbs/statics/images/avatar.jpg" alt="当前头像">
+                                </div>
+                            </div>
+                            <div class="avatar-upload-card">
+                                <h3>上传新头像</h3>
+                                <p>支持拖拽上传，建议使用 JPG/PNG 图片。保存后可立即在页面顶部看到更新效果。</p>
+                                <div class="layui-upload-drag" id="pictureUpload">
+                                    <i class="layui-icon"></i>
+                                    <p>点击上传，或将文件拖拽到此处</p>
+                                    <div class="layui-hide" id="uploadDemoView">
+                                        <hr>
+                                        <img src="" alt="上传成功后渲染" style="max-width: 196px">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -355,6 +540,13 @@
                                             <input type="radio" name="sex" value="男" title="男" checked="">
                                             <input type="radio" name="sex" value="女" title="女">
                                         </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">电话</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="phone" autocomplete="off" placeholder="请输入手机号（选填）" class="layui-input profile-phone">
+                                        </div>
+                                        <div class="phone-helper">用于联系与消息通知，不会公开展示。</div>
                                     </div>
 
                                     <div class="layui-form-item profile-area-picker" id="area-picker">
@@ -478,8 +670,8 @@
                 </div>
 
                 <div class="layui-tab" id="tab-plate" lay-filter="tabPlate" style="display: none;">
-                    <div class="row" style="padding: 10px;border-bottom: 1px solid #f3f3f3;"><span>密码修改</span></div>
-                    <div style="margin-top: 20px;">
+                    <div class="settings-title-row"><h4>密码安全</h4></div>
+                    <div class="security-form-wrap">
                         <div class="layui-form" lay-filter="alterPwdForm">
                             <input type="hidden" name="username" class="layui-input user-name">
                             <div class="layui-form-item">
@@ -501,13 +693,11 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <div class="layui-input-block" style="margin-bottom: 52px;">
-                                    <span id="errorRes" style="margin-left:0;font-size: 18px;color: red;"></span>
-                                </div>
+                                <div class="layui-input-block"><span id="errorRes" style="margin-left:0;font-size: 15px;color: #dc2626;"></span></div>
                             </div>
-                            <div class="layui-form-item">
-                                <div class="layui-input-block" style="margin-top: -40px;">
-                                    <button type="submit" class="layui-btn layui-btn-sm" style="width: 74px;background-color: #fd8738;" lay-submit="" lay-filter="alterPwdBtn">保存</button>
+                            <div class="layui-form-item security-actions">
+                                <div class="layui-input-block">
+                                    <button type="submit" class="layui-btn layui-btn-sm" lay-submit="" lay-filter="alterPwdBtn">保存</button>
                                 </div>
                             </div>
                         </div>
@@ -800,8 +990,10 @@
                 $(".user-name").val(userInfo.username);
                 $(".user-nickname").text(userInfo.another_name);
                 $(".nickname").val(userInfo.another_name);
+                $(".profile-phone").val(userInfo.phone || "");
                 $(".user-username").text(userInfo.username);
                 $(".user-email").text(userInfo.email);
+                $("#currentAvatarPreview").attr("src", careApp.getAvatar());
                 applyAddressPickerDefaults(userInfo.address || address);
                 renderAreaPicker();
                 $("#addressInp").val(address);
@@ -894,7 +1086,9 @@
                 if(res.code == 0){
                     let username = userInfo.username;
                     ui.success('头像上传成功',2000,true);
-                    layui.$('#uploadDemoView').removeClass('layui-hide').find('img').attr('src','/leek_bbs/'+res.picture);
+                    let picPath = '/leek_bbs/' + res.picture;
+                    layui.$('#uploadDemoView').removeClass('layui-hide').find('img').attr('src',picPath);
+                    $("#currentAvatarPreview").attr("src", picPath);
                     localStorage.removeItem("initUser");
                     getUserInformation(username);
                 }else {
