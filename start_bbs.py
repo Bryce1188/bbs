@@ -21,6 +21,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -30,6 +31,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 PROJECT_MAIN = ROOT / "项目代码" / "main"
 TARGET_WAR = PROJECT_MAIN / "target" / "bbs.war"
+if not PROJECT_MAIN.exists():
+    alt_project_main = ROOT / "项目代码" / "main"
+    if alt_project_main.exists():
+        PROJECT_MAIN = alt_project_main
+        TARGET_WAR = PROJECT_MAIN / "target" / "bbs.war"
 
 TOOLS = ROOT / ".tools"
 TOMCAT_HOME = TOOLS / "apache-tomcat-9.0.105"
@@ -44,6 +50,10 @@ JDK8_HOME = Path(r"C:\Program Files\Eclipse Adoptium\jdk-8.0.492.9-hotspot")
 
 MYSQLD = Path(r"C:\Program Files\MySQL\MySQL Server 8.4\bin\mysqld.exe")
 MYSQL_CONF = ROOT / ".tools" / "mysql" / "mysql-bbs.ini"
+if not MYSQL_CONF.exists():
+    alt_mysql_conf = ROOT / ".tools" / "mysql-bbs.ini"
+    if alt_mysql_conf.exists():
+        MYSQL_CONF = alt_mysql_conf
 
 REDIS_CONF = Path(r"C:\Program Files\Redis\redis.windows-service.conf")
 REDIS_SERVER = Path(r"C:\Program Files\Redis\redis-server.exe")
@@ -99,8 +109,16 @@ def ensure_mysql() -> None:
         raise FileNotFoundError(f"MySQL not found: {MYSQLD}")
     if not MYSQL_CONF.exists():
         raise FileNotFoundError(f"MySQL config not found: {MYSQL_CONF}")
+    # MySQL on Windows may fail to open --defaults-file when path contains non-ASCII chars.
+    # Copy config to an ASCII temp path and launch with that runtime config.
+    runtime_conf = Path(tempfile.gettempdir()) / "bbs-mysql-runtime.ini"
+    try:
+        conf_text = MYSQL_CONF.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        conf_text = MYSQL_CONF.read_text(encoding="gbk", errors="replace")
+    runtime_conf.write_text(conf_text, encoding="utf-8")
     subprocess.Popen(
-        [str(MYSQLD), f"--defaults-file={MYSQL_CONF}"],
+        [str(MYSQLD), f"--defaults-file={runtime_conf}"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
