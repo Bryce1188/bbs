@@ -3,6 +3,7 @@
 
 document.write('' +
     '<link rel="stylesheet" href="/leek_bbs/statics/css/bbs-theme.css?v=20260526i">\n' +
+    '<link rel="stylesheet" href="/leek_bbs/statics/css/fork-exact.css?v=20260526a">\n' +
     '<script src="/leek_bbs/statics/yu-ui/js_css/yu.min.js"></script>\n' +
     '<script src="/leek_bbs/statics/bootstrap-3.3.7/js/jquery.min.js"></script>\n' +
     '<script src="/leek_bbs/statics/bootstrap-3.3.7/js/bootstrap.min.js"></script>\n' +

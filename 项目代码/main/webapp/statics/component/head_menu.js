@@ -55,8 +55,10 @@ Vue.component('head_menu_comp', {
             </a>
             <nav class="bbs-topnav">
                 <a :href="ctx + '/skipPage/index'">首页</a>
-                <a :href="ctx + '/skipPage/daodu'">全部帖子</a>
+                <a :href="ctx + '/skipPage/index#plates'">板块</a>
                 <a :href="ctx + '/skipPage/ranking_list'">排行</a>
+                <a :href="ctx + '/skipPage/daodu'">导读</a>
+                <a :href="ctx + '/skipPage/dynamic'">动态</a>
                 <template v-if="isUserShow">
                     <div class="bbs-user-menu" @mouseenter="openMenu" @mouseleave="scheduleMenuClose">
                         <div class="bbs-user-access">
