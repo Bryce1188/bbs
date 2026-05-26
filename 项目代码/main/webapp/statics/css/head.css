@@ -87,6 +87,12 @@ a:link,a:hover,a:active{
     display: none;
 }
 
+/* 全站隐藏分页控件（上一页/下一页/前往页） */
+.el-pagination,
+.layui-laypage {
+    display: none !important;
+}
+
 /*用户注册,登录弹窗部分*/
 .lay-head-title{
     color: #fff !important;
